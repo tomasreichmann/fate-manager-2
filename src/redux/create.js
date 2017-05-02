@@ -26,6 +26,7 @@ export default function createStore(history, client, data) {
   const reducer = require('./modules/reducer');
   if (data) {
     data.pagination = Immutable.fromJS(data.pagination);
+    data.firebase = Immutable.fromJS(data.firebase);
   }
   const store = finalCreateStore(reducer, data);
 

@@ -7,29 +7,36 @@ import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
 import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/modules/auth';
+import { getSheets } from 'redux/modules/firebase';
 import { push } from 'react-router-redux';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
-import { getDb } from '../../utils/firebase';
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
     const promises = [];
 
     if (!isAuthLoaded(getState())) {
-      promises.push(dispatch(loadAuth()));
+      promises.push( dispatch( loadAuth() ) );
     }
+
+    promises.push( dispatch( getSheets() ) );
 
     return Promise.all(promises);
   }
 }])
 @connect(
-  state => ({user: state.auth.user}),
-  {logout, pushState: push})
+  state => ({
+    user: state.auth.user,
+    sheets: state.firebase.get('sheets')
+  }),
+  {logout, pushState: push}
+)
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
     user: PropTypes.object,
+    sheets: PropTypes.object,
     logout: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired
   };
@@ -48,26 +55,16 @@ export default class App extends Component {
     }
   }
 
-  getSheets() {
-    console.log('getSheets');
-    getDb()
-      .ref('/sheets')
-      .once('value')
-      .then((snapshot) => {
-        const val = snapshot.val();
-        console.log('val', val);
-      })
-    ;
-  }
-
   handleLogout = (event) => {
     event.preventDefault();
     this.props.logout();
   };
 
   render() {
-    const {user} = this.props;
+    const {user, sheets} = this.props;
     const styles = require('./App.scss');
+
+    console.log('render sheets', sheets.toJS() );
 
     return (
       <div className={styles.app}>
@@ -112,7 +109,6 @@ export default class App extends Component {
         <div className={styles.appContent}>
           {this.props.children}
         </div>
-        <p><button onClick={this.getSheets} >Get ma sheet!!!</button></p>
 
         <hr />
 
