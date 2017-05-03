@@ -1,0 +1,20 @@
+.SheetList {
+  &-item {
+    padding: 4px 0;
+    border-bottom: 2px solid #000;
+    display: flex;
+
+    &:hover {
+      background-color: #f2f2f2;
+    }
+
+    &-title {
+      flex: 1 0 auto;
+      font-weight: bold;
+    }
+
+    &-actions .button + .button {
+      margin-left: 10px;
+    }
+  }
+}

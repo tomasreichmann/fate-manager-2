@@ -28,7 +28,6 @@ import { asyncConnect } from 'redux-async-connect';
 @connect(
   state => ({
     user: state.auth.user,
-    sheets: state.firebase.get('sheets')
   }),
   {logout, pushState: push}
 )
@@ -36,7 +35,6 @@ export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
     user: PropTypes.object,
-    sheets: PropTypes.object,
     logout: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired
   };
@@ -61,10 +59,8 @@ export default class App extends Component {
   };
 
   render() {
-    const {user, sheets} = this.props;
+    const {user} = this.props;
     const styles = require('./App.scss');
-
-    console.log('render sheets', sheets.toJS() );
 
     return (
       <div className={styles.app}>
@@ -105,6 +101,8 @@ export default class App extends Component {
             <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.name}</strong>.</p>}
           </Navbar.Collapse>
         </Navbar>
+
+        <hr />
 
         <div className={styles.appContent}>
           {this.props.children}

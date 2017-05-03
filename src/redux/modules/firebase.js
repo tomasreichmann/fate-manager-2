@@ -13,7 +13,8 @@ const LOGOUT_FAIL = 'fate-manager/firebase/LOGOUT_FAIL';
 
 const initialState = Map({
   sheets: Map({
-    loaded: false
+    loaded: false,
+    list: Map()
   })
 });
 
@@ -28,7 +29,7 @@ export default function reducer(state = initialState, action = {}) {
         .mergeIn(['sheets'], {
           loading: false,
           loaded: true,
-          sheets: action.result.val
+          list: action.result.val
         })
       ;
     }
