@@ -37,18 +37,20 @@ export default class SheetBlock extends Component {
     const aspectBlock = aspectElements ? <p className={styles['SheetBlock-aspects']}>{aspectElements}</p> : null;
     const consequencesBlock = consequences ? null : null;
     const stressBlock = stress ? null : null;
-    const stuntsBlock = stunts ? null : null;
+    const stuntsBlock = stunts && stunts.size ? (<div><h3>Stunts</h3>{stunts.map( (stunt)=>(
+        <p className={styles['SheetBlock-stunt']}>{stunt}</p>
+      ) )}</div>) : null;
     const extrasBlock = extras ? null : null;
 
     return (
       <div className={styles.SheetBlock + ' container'} key={key} >
         <h2 className={styles['SheetBlock-name']} ><span>{name}</span>{headingRefresh}</h2>
         {aspectBlock}
-        {children}
         {consequencesBlock}
         {stressBlock}
         {stuntsBlock}
         {extrasBlock}
+        {children}
       </div>
     );
   }
