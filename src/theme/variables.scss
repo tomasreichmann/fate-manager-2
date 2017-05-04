@@ -18,6 +18,20 @@ $brand-warning: #f0ad4e;
 $brand-danger: #d9534f;
 $brand-info: #5bc0de;
 
+$inverse-bg: #111;
+
+$padding-base-vertical: 1px;
+$padding-large-vertical: 10px;
+$padding-base-horizontal: 4px;
+$padding-large-horizontal: 20px;
+
+$btn-default-bg: $inverse-bg;
+$btn-border-radius-base: 0;
+
+$inputBorder: 2px solid $inverse-bg;
+$btn-clipping-size: 8px;
+$clip-top-right: polygon(0 0, 0 100%, 100% 100%, 100% #{$btn-clipping-size}, calc(100% - #{$btn-clipping-size}) 0);
+
 $text-color: #333;
 
 $font-size-base: 14px;

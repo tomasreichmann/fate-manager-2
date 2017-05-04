@@ -1,0 +1,114 @@
+@import "../../theme/variables.scss";
+
+.Button {
+  clip-path: $clip-top-right;
+  text-transform: uppercase;
+  background: $btn-default-bg;
+  border: 0;
+  color: #fff;
+  vertical-align: middle;
+  padding: $padding-base-vertical ($btn-clipping-size + $padding-base-horizontal) $padding-base-vertical $padding-base-horizontal;
+  transition: background-color 0.3s;
+  outline: none;
+
+
+  &--noClip,
+  &--link {
+    clip-path: none;
+  }
+
+  &--block {
+    display: block;
+    width: 100%;
+  }
+
+  &--link {
+    text-transform: none;
+    padding: 0;
+    background-color: transparent;
+    color: $btn-default-bg;
+    border-bottom: 1px dotted $btn-default-bg;
+    transition: border 0.3s;
+    &:hover {
+      border-bottom-color: transparent;
+    }
+    &:active, &:focus, &.Button--active {
+      border-bottom-style: solid;
+    }
+  }
+
+  &--disabled {
+    pointer-events: none;
+    cursor: disabled;
+  }
+
+  &--primary {
+    background: $brand-primary;
+    &:hover {
+      background-color: lighten($brand-primary, 10%);
+    }
+    &:active, &:focus, &.Button--active {
+      background-color: darken($brand-primary, 10%);
+    }
+    &.Button--disabled{
+      background-color: desaturate($brand-primary, 50%);
+    }
+
+  }
+
+  &--secondary {
+    background: $brand-secondary;
+    &:hover {
+      background-color: lighten($brand-secondary, 10%);
+    }
+    &:active, &:focus, &.Button--active {
+      background-color: darken($brand-secondary, 10%);
+    }
+    &.Button--disabled{
+      background-color: desaturate($brand-secondary, 50%);
+    }
+
+  }
+
+  &--success {
+    background: $brand-success;
+    &:hover {
+      background-color: lighten($brand-success, 10%);
+    }
+    &:active, &:focus, &.Button--active {
+      background-color: darken($brand-success, 10%);
+    }
+    &.Button--disabled{
+      background-color: desaturate($brand-success, 50%);
+    }
+
+  }
+
+  &--warning {
+    background: $brand-warning;
+    &:hover {
+      background-color: lighten($brand-warning, 10%);
+    }
+    &:active, &:focus, &.Button--active {
+      background-color: darken($brand-warning, 10%);
+    }
+    &.Button--disabled{
+      background-color: desaturate($brand-warning, 50%);
+    }
+
+  }
+
+  &--danger {
+    background: $brand-danger;
+    &:hover {
+      background-color: lighten($brand-danger, 10%);
+    }
+    &:active, &:focus, &.Button--active {
+      background-color: darken($brand-danger, 10%);
+    }
+    &.Button--disabled{
+      background-color: desaturate($brand-danger, 50%);
+    }
+
+  }
+}

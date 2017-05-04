@@ -1,16 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 // import { Link } from 'react-router';
-import config from '../../config';
 import Helmet from 'react-helmet';
-import { Input, SheetList } from 'components';
+import { SheetList, Button } from 'components';
 
 @connect(
   state => ({sheets: state.firebase.getIn(['sheets', 'list'])})
 )
 export default class Home extends Component {
   static propTypes = {
-    sheets: PropTypes.object
+    sheets: PropTypes.object,
   };
   static contextTypes = {
     store: PropTypes.object.isRequired
@@ -27,11 +26,12 @@ export default class Home extends Component {
         <Helmet title="Home"/>
 
         <div className="container">
-          <h1>{config.app.title}</h1>
-
-          Input2: <Input type="textarea" val="xxxxxxxx" />
 
           <SheetList sheets={sheets} />
+
+          <hr />
+
+          <p><Button block success >New sheet</Button></p>
 
         </div>
 

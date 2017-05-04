@@ -5,8 +5,9 @@
  *
  */
 
-export MiniInfoBar from './MiniInfoBar/MiniInfoBar';
 export SurveyForm from './SurveyForm/SurveyForm';
 export WidgetForm from './WidgetForm/WidgetForm';
 export SheetList from './SheetList/SheetList';
 export Input from './Input/Input';
+export Button from './Button/Button';
+export SheetBlock from './SheetBlock/SheetBlock';

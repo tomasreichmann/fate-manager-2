@@ -1,0 +1,95 @@
+@import "../../theme/variables.scss";
+
+.SheetBlock {
+  h2, h3 {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+
+    span {
+      flex: 0 0 auto;
+    }
+  }
+
+  &::after {
+    display: block;
+    margin-top: $padding-base-horizontal;
+    border-top: $btn-clipping-size solid $inverse-bg;
+    border-right: $btn-clipping-size solid transparent;
+  }
+
+  .Aspect-main {
+    font-weight: bold;
+  }
+
+  .Aspect-trouble {
+    font-style: italic;
+  }
+
+  &-note {
+    display: inline-block;
+    font-size: 10px;
+    line-height: inherit;
+  }
+
+  .Checkbox + .Checkbox {
+    margin-left: 20px;
+  }
+
+  &-superscript {
+    position: absolute;
+    font-size: 1.8rem;
+    font-weight: bold;
+    left: 0;
+    top: 0;
+    font-style: normal;
+    z-index: 1;
+    text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, -2px 2px 0 #fff, 2px -2px 0 #fff;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+
+  &-consequence {
+    position: relative;
+    display: flex;
+    min-width: 64px;
+
+    &.disabled, &.skill-locked  {
+      input, span, i {
+        border-color: #888;
+        color: #888;
+        pointer-events: none;
+      }
+    }
+
+    &.skill-invalid  {
+      input, span i {
+        border-color: #a00;
+        color: #a00;
+        pointer-events: none;
+      }
+    }
+
+    span {
+      flex: 0 1 auto;
+      border-right: 0;
+      min-width: 32px;
+      &+input {
+        border-left: 0;
+      }
+    }
+
+    input {
+      line-height: 1.5;
+      flex: 1 0 0;
+      width: 0;
+      border: $inputBorder;
+      padding: 0 5px;
+      min-width: 32px;
+      &:focus + .skill-list {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+  }
+}

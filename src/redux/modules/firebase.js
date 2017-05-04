@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map, fromJS } from 'immutable';
 import { getDb } from '../../utils/firebase';
 
 const SHEETS = 'fate-manager/firebase/SHEETS';
@@ -109,7 +109,7 @@ export function getSheets() {
         .ref('/sheets')
         .once('value')
         .then((snapshot) => {
-          const val = snapshot.val();
+          const val = fromJS(snapshot.val());
           console.log('on value');
           return {
             val,

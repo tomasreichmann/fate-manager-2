@@ -1,3 +1,5 @@
+@import "../../theme/variables.scss";
+
 .app {
   .brand {
     position: absolute;
@@ -16,7 +18,21 @@
     font-size: 2em;
     line-height: 20px;
   }
+
 }
+
 .appContent {
   margin: 50px 0; // for fixed navbar
+}
+
+h2, h3 {
+  position: relative;
+  background-color: $inverse-bg;
+  color: #fff;
+  text-transform: uppercase;
+  padding: $padding-base-vertical ($padding-base-horizontal + $btn-clipping-size) $padding-base-vertical $padding-base-horizontal;
+  margin: $padding-large-vertical*2 0 $padding-large-vertical 0;
+  font-size: 14px;
+  line-height: 18px;
+  clip-path: $clip-top-right;
 }

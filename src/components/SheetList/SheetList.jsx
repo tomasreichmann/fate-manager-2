@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import { push } from 'react-router-redux';
 // import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import { Button } from 'components';
 // import {load} from 'redux/modules/info';
 
 @connect(
@@ -11,13 +12,20 @@ import {connect} from 'react-redux';
     // dispatch => bindActionCreators({load}, dispatch)
 )
 export default class InfoBar extends Component {
+
   static propTypes = {
-    sheets: PropTypes.object
+    sheets: PropTypes.object,
+    pushState: PropTypes.func.isRequired
   };
 
   static contextTypes = {
     store: PropTypes.object.isRequired
   };
+
+  constructor(props) {
+    super(props);
+    this.redirect = this.redirect.bind(this);
+  }
 
   displayDeleteSheetConfirmation(item) {
     console.log('displayDeleteSheetConfirmation', item.toJS() );
@@ -26,6 +34,7 @@ export default class InfoBar extends Component {
   redirect(to) {
     return ()=>{
       console.log('redirect', to );
+      this.props.pushState(to);
     };
   }
 
@@ -41,11 +50,11 @@ export default class InfoBar extends Component {
       <div className={styles.SheetList} >
         { sheets.map( (item)=>( <div className={styles['SheetList-item']} key={item.get('key')} >
           <div className={styles['SheetList-item-title']} >
-            <button onClick={this.redirect('/block/' + encodeURIComponent(item.get('key')) )} >{item.get('name')}</button>
+            <Button link className="text-left" block onClick={this.redirect('/block/' + encodeURIComponent(item.get('key')) )} >{item.get('name')}</Button>
           </div>
           <div className={styles['SheetList-item-actions']} >
-            <button className="edit button" onClick={this.redirect( '/edit/' + encodeURIComponent(item.get('key')) )} >{text.edit}</button>
-            <button className="delete button button-danger" onClick={ this.displayDeleteSheetConfirmation.bind(this, item) } >{text.delete}</button>
+            <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(item.get('key')) )} >{text.edit}</Button>
+            <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, item) } >{text.delete}</Button>
           </div>
         </div> ) ) }
       </div>
