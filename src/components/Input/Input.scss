@@ -38,6 +38,7 @@ $inputBorder: 2px solid $inverse-bg;
 
 .Label {
   position: relative;
+  vertical-align: middle;
 
   &-superscript {
     position: absolute;

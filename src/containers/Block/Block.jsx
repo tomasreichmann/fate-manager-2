@@ -38,7 +38,7 @@ export default class Block extends Component {
   render() {
     const {sheets, params} = this.props;
     console.log('this.props', this.props);
-    const keys = params.keys.split('|');
+    const keys = params.keys.split(';');
     const styles = require('./Block.scss');
     const selectedSheets = sheets.filter( (sheet)=>( keys.indexOf( sheet.get('key') ) > -1 ) );
 
@@ -52,6 +52,7 @@ export default class Block extends Component {
             </div>
           </SheetBlock>
         </div> ) ) }
+        { selectedSheets.length === 0 ? <p className="alert alert-warning" >No sheet found</p> : null }
       </div>
     );
   }
