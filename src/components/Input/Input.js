@@ -3,8 +3,11 @@ import React, { Component, PropTypes } from 'react';
 export default class Input extends Component {
   static propTypes = {
     type: PropTypes.string,
+    label: PropTypes.any,
     className: PropTypes.string,
-    handleChange: PropTypes.func.isRequired
+    handleChange: PropTypes.func,
+    superscriptBefore: PropTypes.any,
+    superscriptAfter: PropTypes.any,
   };
 
   constructor(props) {
@@ -13,56 +16,69 @@ export default class Input extends Component {
   }
 
   inputTemplates = {
-    text: ({path, val, className, styles})=>(
+    text: ({path, value, className, styles, ...props})=>(
       <input
-        className={ ['Input'].concat(className.split(' ')).map( (cls) => ( styles[cls] ) ).join(' ') }
+        {...props}
+        className={ [styles.Input].concat(className.split(' ')).join(' ')}
         type="text"
         key={path}
         data-model={path}
-        value={val}
+        value={value}
         onChange={this.handleChange}
       />
     ),
-    textarea: ({path, val, className, styles})=>(
+    textarea: ({path, value, className, styles, ...props})=>(
       <textarea
-        className={['Input', 'Input--textarea'].concat(className.split(' ')).map( (cls) => ( styles[cls] ) ).join(' ') }
+        {...props}
+        className={[styles.Input, styles['Input--textarea']].concat(className.split(' ')).join(' ')}
         data-model={path}
         key={path}
-        value={val}
+        value={value}
         onChange={this.handleChange}
       ></textarea>
     ),
-    checkbox: ({path, val, className, styles})=>(
+    checkbox: ({path, value, className, styles, ...props})=>(
       <input
-        className={'Input Input--checkbox ' + className + ' ' + styles.Input}
+        {...props}
+        className={[styles.Input, styles['Input--checkbox']].concat(className.split(' ')).join(' ')}
         type="checkbox"
         key={path}
         data-model={path}
-        checked={!!val}
+        checked={!!value}
         onChange={this.handleChange}
       />
     )
   }
 
   handleChange(event) {
-    this.props.handleChange(this.props.type === 'checkbox' ? event.target.checked : event.target.value);
+    this.props.handleChange((this.props.type === 'checkbox' || this.props.type === 'stressbox') ? event.target.checked : event.target.value);
   }
 
   render() {
     const styles = require('./Input.scss');
     const {
       handleChange = (()=>{ return null; }),
+      label,
       className = '',
       type = 'text',
+      superscriptBefore,
+      superscriptAfter,
       ...props
     } = this.props;
 
-    return type in this.inputTemplates ? this.inputTemplates[type]({
-      ...props,
-      type,
-      className,
-      styles,
-      handleChange
-    }) : null;
+    return type in this.inputTemplates ? <label className={[styles.Label, styles['Label--' + type]].join(' ')}>
+      {superscriptBefore ? <span className={[styles['Label-superscript'], styles['Label-superscript--before']].join(' ')} >{superscriptBefore}</span> : null}
+      {label ? <span className={styles.Label} >{label}</span> : null}
+      {this.inputTemplates[type]({
+        ...props,
+        type,
+        className,
+        styles,
+        handleChange
+      })}
+      {type === 'checkbox' ? <span className={styles['Input-fauxCheckbox']} ></span> : null}
+      {superscriptAfter ? <span className={[styles['Label-superscript'], styles['Label-superscript--after']].join(' ')} >{superscriptAfter}</span> : null}
+      </label>
+    : null;
   }
 }

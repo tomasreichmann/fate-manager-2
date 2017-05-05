@@ -1,6 +1,6 @@
 @import "../../theme/variables.scss";
 
-$inputBorder: 2px solid #000;
+$inputBorder: 2px solid $inverse-bg;
 
 .Input {
   line-height: 1.5;
@@ -9,8 +9,50 @@ $inputBorder: 2px solid #000;
   border: $inputBorder;
   padding: 0 5px;
   min-width: 32px;
-  &:focus + .skill-list {
-    visibility: visible;
-    opacity: 1;
+
+  &--checkbox {
+    position: absolute;
+    clip: rect(0,0,0,0);
+  }
+
+  &--checkbox + &-fauxCheckbox {
+    position: relative;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: $inputBorder;
+    cursor: pointer;
+  }
+
+  &--checkbox:checked + &-fauxCheckbox:before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: $inverse-bg;
+  }
+}
+
+.Label {
+  position: relative;
+
+  &-superscript {
+    position: absolute;
+    font-size: 1.8rem;
+    font-weight: bold;
+    left: 0;
+    top: 0;
+    font-style: normal;
+    z-index: 1;
+    text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, -2px 2px 0 #fff, 2px -2px 0 #fff;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+
+    &--after {
+      left: 100%;
+    }
   }
 }

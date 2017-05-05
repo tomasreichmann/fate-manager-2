@@ -27,12 +27,27 @@
 
 h2, h3 {
   position: relative;
-  background-color: $inverse-bg;
-  color: #fff;
   text-transform: uppercase;
-  padding: $padding-base-vertical ($padding-base-horizontal + $btn-clipping-size) $padding-base-vertical $padding-base-horizontal;
   margin: $padding-large-vertical*2 0 $padding-large-vertical 0;
   font-size: 14px;
   line-height: 18px;
+}
+
+h2 {
+  background-color: $inverse-bg;
+  color: #fff;
+  padding: $padding-base-vertical ($padding-base-horizontal + $btn-clipping-size) $padding-base-vertical $padding-base-horizontal;
   clip-path: $clip-top-right;
+}
+
+h3 {
+  color: $inverse-bg;
+
+  &::before {
+    display: block;
+    content: '';
+    margin-bottom: $padding-base-horizontal;
+    border-bottom: $btn-clipping-size solid $inverse-bg;
+    border-right: $btn-clipping-size solid transparent;
+  }
 }
