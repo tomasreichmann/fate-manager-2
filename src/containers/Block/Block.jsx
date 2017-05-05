@@ -43,16 +43,16 @@ export default class Block extends Component {
     const selectedSheets = sheets.filter( (sheet)=>( keys.indexOf( sheet.get('key') ) > -1 ) );
 
     return (
-      <div className={styles.SheetBlock + ' container'} >
-        { selectedSheets.map( (sheet)=>( <div className={styles['SheetBlock-item']} key={sheet.get('key')} >
+      <div className={styles.Blocks + ' container'} >
+        { selectedSheets.map( (sheet)=>( <div className={styles['Blocks-item']} key={sheet.get('key')} >
           <SheetBlock sheet={sheet} >
-            <div className={styles['SheetBlock-actions']} >
+            <div className={styles['Blocks-actions']} >
               <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(sheet.get('key')) )} >Edit</Button>
               <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, sheet) } >Delete</Button>
             </div>
           </SheetBlock>
         </div> ) ) }
-        { selectedSheets.length === 0 ? <p className="alert alert-warning" >No sheet found</p> : null }
+        { selectedSheets.size === 0 ? <p className="alert alert-warning" >No sheet found</p> : null }
       </div>
     );
   }

@@ -12,7 +12,7 @@ function asyncValidate(data, dispatch, {isValidEmail}) {
   return isValidEmail(data);
 }
 @connect(() => ({}),
-  dispatch => bindActionCreators(surveyActions, dispatch)
+  dispatch => (bindActionCreators(surveyActions, dispatch))
 )
 @reduxForm({
   form: 'survey',

@@ -1,6 +1,14 @@
 @import "../../theme/variables.scss";
 
-.SheetBlock {
+.Blocks {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+
+  &-item {
+    padding: $padding-large-vertical $padding-large-horizontal;
+    flex: 1 1 300px;
+  }
   &-actions {
     text-align: right;
 

@@ -6,6 +6,7 @@ export default class Input extends Component {
     label: PropTypes.any,
     className: PropTypes.string,
     handleChange: PropTypes.func,
+    handleChangeParams: PropTypes.any,
     superscriptBefore: PropTypes.any,
     superscriptAfter: PropTypes.any,
   };
@@ -51,13 +52,15 @@ export default class Input extends Component {
   }
 
   handleChange(event) {
-    this.props.handleChange((this.props.type === 'checkbox' || this.props.type === 'stressbox') ? event.target.checked : event.target.value);
+    console.log('handleChange', this.props.handleChange, this.props.handleChangeParams);
+    if (this.props.handleChange) {
+      this.props.handleChange((this.props.type === 'checkbox' || this.props.type === 'stressbox') ? event.target.checked : event.target.value, ...this.props.handleChangeParams );
+    }
   }
 
   render() {
     const styles = require('./Input.scss');
     const {
-      handleChange = (()=>{ return null; }),
       label,
       className = '',
       type = 'text',
@@ -74,7 +77,6 @@ export default class Input extends Component {
         type,
         className,
         styles,
-        handleChange
       })}
       {type === 'checkbox' ? <span className={styles['Input-fauxCheckbox']} ></span> : null}
       {superscriptAfter ? <span className={[styles['Label-superscript'], styles['Label-superscript--after']].join(' ')} >{superscriptAfter}</span> : null}

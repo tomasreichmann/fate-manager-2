@@ -2,6 +2,7 @@ import { Map, fromJS } from 'immutable';
 import { getDb } from '../../utils/firebase';
 
 const SHEETS = 'fate-manager/firebase/SHEETS';
+const SHEETS_TOGGLE = 'fate-manager/firebase/SHEETS_TOGGLE';
 const SHEETS_SUCCESS = 'fate-manager/firebase/SHEETS_SUCCESS';
 const SHEETS_FAIL = 'fate-manager/firebase/SHEETS_FAIL';
 const LOGIN = 'fate-manager/firebase/LOGIN';
@@ -14,7 +15,8 @@ const LOGOUT_FAIL = 'fate-manager/firebase/LOGOUT_FAIL';
 const initialState = Map({
   sheets: Map({
     loaded: false,
-    list: Map()
+    list: Map(),
+    selected: Map(),
   })
 });
 
@@ -41,6 +43,9 @@ export default function reducer(state = initialState, action = {}) {
           error: action.error
         })
       ;
+    }
+    case SHEETS_TOGGLE: {
+      return state.updateIn(['sheets', 'selected', action.payload.key], (selected)=>(!selected) );
     }
     case LOGIN:
       return {
@@ -97,6 +102,16 @@ export function logout() {
   return {
     types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
     promise: (client) => client.get('/logout')
+  };
+}
+
+export function toggleSheetSelection(key) {
+  console.log('toggleSheetSelection');
+  return {
+    type: SHEETS_TOGGLE,
+    payload: {
+      key
+    }
   };
 }
 

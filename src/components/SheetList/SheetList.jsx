@@ -1,21 +1,28 @@
 import React, {Component, PropTypes} from 'react';
 import { push } from 'react-router-redux';
-// import {bindActionCreators} from 'redux';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import { Button } from 'components';
-// import {load} from 'redux/modules/info';
+import { Button, Input } from 'components';
+import {toggleSheetSelection} from 'redux/modules/firebase';
 
 @connect(
-    state => ({sheets: state.firebase.getIn(['sheets', 'list'])}),
+    state => ({
+      sheets: state.firebase.getIn(['sheets', 'list']),
+      selection: state.firebase.getIn(['sheets', 'selected']),
+    }),
 
-    {pushState: push}
-    // dispatch => bindActionCreators({load}, dispatch)
+    dispatch => bindActionCreators({
+      toggleSheetSelection,
+      pushState: push,
+    }, dispatch)
 )
 export default class InfoBar extends Component {
 
   static propTypes = {
     sheets: PropTypes.object,
-    pushState: PropTypes.func.isRequired
+    selection: PropTypes.object,
+    pushState: PropTypes.func.isRequired,
+    toggleSheetSelection: PropTypes.func.isRequired,
   };
 
   static contextTypes = {
@@ -25,6 +32,7 @@ export default class InfoBar extends Component {
   constructor(props) {
     super(props);
     this.redirect = this.redirect.bind(this);
+    this.select = this.select.bind(this);
   }
 
   displayDeleteSheetConfirmation(item) {
@@ -38,26 +46,38 @@ export default class InfoBar extends Component {
     };
   }
 
+  select(value, key) {
+    this.props.toggleSheetSelection(key);
+  }
+
   render() {
     // const {info, load} = this.props; // eslint-disable-line no-shadow
-    const {sheets} = this.props;
+    const {sheets, selection} = this.props;
     const styles = require('./SheetList.scss');
     const text = {
       edit: 'edit',
       delete: 'delete'
     };
-    return (
-      <div className={styles.SheetList} >
-        { sheets.map( (item)=>( <div className={styles['SheetList-item']} key={item.get('key')} >
-          <div className={styles['SheetList-item-title']} >
-            <Button link className="text-left" block onClick={this.redirect('/block/' + encodeURIComponent(item.get('key')) )} >{item.get('name')}</Button>
-          </div>
-          <div className={styles['SheetList-item-actions']} >
-            <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(item.get('key')) )} >{text.edit}</Button>
-            <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, item) } >{text.delete}</Button>
-          </div>
-        </div> ) ) }
-      </div>
-    );
+    const filteredSelection = selection
+      .filter( (isSelected)=>(isSelected) )
+      .map( (isSelected, key) => (
+        sheets.getIn([key, 'name'])
+      ) )
+    ;
+    return (<div className={styles.SheetList} >
+      { sheets.map( (item)=>( <div className={styles['SheetList-item']} key={item.get('key')} >
+        <div className={styles['SheetList-item-select']} >
+          <Input type="checkbox" handleChange={this.select} handleChangeParams={[item.get('key')]} value={!!selection.get(item.get('key'))}/>
+        </div>
+        <div className={styles['SheetList-item-title']} >
+          <Button link className="text-left" block onClick={this.redirect('/block/' + encodeURIComponent(item.get('key')) )} >{item.get('name')}</Button>
+        </div>
+        <div className={styles['SheetList-item-actions']} >
+          <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(item.get('key')) )} >{text.edit}</Button>
+          <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, item) } >{text.delete}</Button>
+        </div>
+      </div> ) ) }
+      { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Button link block onClick={this.redirect('/block/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';') )} >Open: { filteredSelection.join(', ') }</Button></div> : null }
+    </div>);
   }
 }

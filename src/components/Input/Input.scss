@@ -18,8 +18,8 @@ $inputBorder: 2px solid $inverse-bg;
   &--checkbox + &-fauxCheckbox {
     position: relative;
     display: inline-block;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border: $inputBorder;
     cursor: pointer;
   }

@@ -23,16 +23,23 @@ export default class SheetBlock extends Component {
       main: mainAspect,
       trouble: troubleAspect,
       ...otherAspects
-    } = aspects.toObject();
+    } = aspects ? aspects.toObject() : {};
+    console.log('---');
+    console.log('aspects.toObject()', aspects.toObject() );
+    console.log('[ mainAspect, troubleAspect, ...otherAspects ]', [ mainAspect, troubleAspect, ...otherAspects ], [ mainAspect, troubleAspect, ...otherAspects ].length );
     const aspectClassNameMap = { 0: 'Aspect-main', 1: 'Aspect-trouble' };
-    const aspectElements = intersperse([ mainAspect, troubleAspect, ...otherAspects ].reduce( (output, aspect, index)=>{
-      const classNames = [
-        styles.Aspect,
-        styles[aspectClassNameMap[index] || 'Aspect-other']
-      ].join(' ');
-      return aspect ? output.concat([<span className={classNames} key={'aspect-' + index} >{aspect}</span>]) : aspectElements;
-    }, [] ), ', ');
-    const aspectBlock = aspectElements ? <p className={styles['SheetBlock-aspects']}>{aspectElements}</p> : null;
+    const aspectElements = intersperse(
+      [ mainAspect, troubleAspect, ...otherAspects ]
+        .reduce( (output, aspect, index)=>{
+          const classNames = [
+            styles.Aspect,
+            styles[aspectClassNameMap[index] || 'Aspect-other']
+          ].join(' ');
+          return aspect ? output.concat([<span className={classNames} key={'aspect-' + index} >{aspect}</span>]) : output;
+        }, [] ),
+      ', ')
+    ;
+    const aspectBlock = aspectElements.length ? <p className={styles['SheetBlock-aspects']}>{aspectElements}</p> : null;
 
 
     // skills ---
@@ -42,20 +49,20 @@ export default class SheetBlock extends Component {
     const skillBlock = skillsElements ? <p className={styles['SheetBlock-skills']}>{skillsElements}</p> : null;
 
     // stunts ---
-    const stuntsBlock = stunts && stunts.size ? (<div><h3>Stunts</h3>{stunts.map( (stunt)=>(
-        <p className={styles['SheetBlock-stunt']}>{stunt}</p>
+    const stuntsBlock = stunts && stunts.size ? (<div><h3>Stunts</h3>{stunts.map( (stunt, index)=>(
+        <p key={index} className={styles['SheetBlock-stunt']}>{stunt}</p>
       ) )}</div>) : null;
 
     // extras ---
-    const extrasBlock = extras && extras.size ? (<div><h3>Extras</h3>{extras.map( (extra)=>(
-        <p className={styles['SheetBlock-extra']}>{extra}</p>
+    const extrasBlock = extras && extras.size ? (<div><h3>Extras</h3>{extras.map( (extra, index)=>(
+        <p key={index} className={styles['SheetBlock-extra']}>{extra}</p>
       ) )}</div>) : null;
 
     // stress ---
     const stressBlock = stress ? <div>
       <h3>Stress</h3>
       { stress.map( (stressLane, stressLaneKey)=>(
-        <div className={styles.StressLane} >
+        <div className={styles.StressLane} key={stressLaneKey} >
           <strong>{stressLaneKey}: </strong>
           { stressLane.map( (isUsed, value)=>(
             <Input type="checkbox" value={isUsed} superscriptAfter={value + 1} />
@@ -72,7 +79,7 @@ export default class SheetBlock extends Component {
     const consequencesBlock = consequenceElements && consequenceElements.length ? (<div className={styles['SheetBlock-consequences']} ><strong>Consequences: </strong>{consequenceElements}</div>) : null;
 
     return (
-      <div className={styles.SheetBlock + ' container'} key={key} >
+      <div className={styles.SheetBlock} key={key} >
         <h2 className={styles['SheetBlock-name']} ><span>{name}</span>{headingRefresh}</h2>
         {aspectBlock}
         {skillBlock}

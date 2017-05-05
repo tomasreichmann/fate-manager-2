@@ -10,6 +10,10 @@
       background-color: #f2f2f2;
     }
 
+    &-select {
+      margin-right: $padding-base-horizontal;
+    }
+
     &-title {
       flex: 1 0 auto;
       font-weight: bold;
