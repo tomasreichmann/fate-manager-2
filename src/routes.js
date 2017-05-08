@@ -6,6 +6,7 @@ import {
     Home,
     About,
     Block,
+    EditSheet,
     Login,
     LoginSuccess,
     NotFound,
@@ -37,6 +38,7 @@ export default (store) => {
       <IndexRoute component={Home} />
 
       <Route path="/block/:keys" component={Block}/>
+      <Route path="/edit/:key" component={EditSheet}/>
       /*
       <Route onEnter={requireLogin}>
         <Route path="loginSuccess" component={LoginSuccess}/>
