@@ -6,8 +6,7 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/modules/auth';
-import { getSheets } from 'redux/modules/firebase';
+import { getSheets, logout, isSessionConnected, isUserLoggedIn, connectSession } from 'redux/modules/firebase';
 import { push } from 'react-router-redux';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
@@ -15,9 +14,10 @@ import { asyncConnect } from 'redux-async-connect';
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
     const promises = [];
+    const state = getState();
 
-    if (!isAuthLoaded(getState())) {
-      promises.push( dispatch( loadAuth() ) );
+    if ( !isSessionConnected(state) && isUserLoggedIn(state) ) {
+      connectSession(dispatch, state);
     }
 
     promises.push( dispatch( getSheets() ) );
@@ -27,7 +27,7 @@ import { asyncConnect } from 'redux-async-connect';
 }])
 @connect(
   state => ({
-    user: state.auth.user,
+    user: state.firebase.get('user'),
   }),
   {logout, pushState: push}
 )
@@ -98,7 +98,7 @@ export default class App extends Component {
               </LinkContainer>}
             </Nav>
             {user &&
-            <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.name}</strong>.</p>}
+            <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.get('displayName') || user.get('email')}</strong>.</p>}
           </Navbar.Collapse>
         </Navbar>
 
