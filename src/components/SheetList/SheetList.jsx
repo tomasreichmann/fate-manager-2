@@ -77,7 +77,7 @@ export default class InfoBar extends Component {
           <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, item) } >{text.delete}</Button>
         </div>
       </div> ) ) }
-      { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Button link block onClick={this.redirect('/block/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';') )} >Open: { filteredSelection.join(', ') }</Button></div> : null }
+      { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Button link onClick={this.redirect('/block/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';') )} >Open: { filteredSelection.join(', ') }</Button></div> : null }
     </div>);
   }
 }

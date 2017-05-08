@@ -1,6 +1,7 @@
 @import "../../theme/variables.scss";
 
 .SheetList {
+
   &-item {
     padding: $padding-base-horizontal 0;
     border-bottom: 2px solid #000;
@@ -24,5 +25,10 @@
         margin-left: $padding-base-horizontal;
       }
     }
+  }
+
+  &-openAll {
+    text-align: center;
+    margin-top: $padding-large-horizontal;
   }
 }
