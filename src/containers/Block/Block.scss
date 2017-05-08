@@ -6,6 +6,8 @@
   flex-wrap: wrap;
 
   &-item {
+    flex: 1 0 400px;
+    min-width: 400px;
     padding: $padding-large-vertical $padding-large-horizontal;
   }
   &-actions {

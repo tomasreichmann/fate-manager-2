@@ -63,7 +63,7 @@ export default class InfoBar extends Component {
     return (<div className={styles.SheetList} >
       { sheets.map( (item)=>( <div className={styles['SheetList-item']} key={item.get('key')} >
         <div className={styles['SheetList-item-select']} >
-          <Input type="checkbox" handleChange={this.select} handleChangeParams={[item.get('key')]} value={!!selection.get(item.get('key'))}/>
+          <Input type="checkbox" handleChange={this.select} handleChangeParams={item.get('key')} value={!!selection.get(item.get('key'))}/>
         </div>
         <div className={styles['SheetList-item-title']} >
           <Button link className="text-left" block onClick={this.redirect('/block/' + encodeURIComponent(item.get('key')) )} >{item.get('name')}</Button>
