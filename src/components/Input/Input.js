@@ -17,20 +17,22 @@ export default class Input extends Component {
   }
 
   inputTemplates = {
-    text: ({path, value, className, styles, ...props})=>(
+    text: ({path, inputRef, type, value, className, styles, ...props})=>(
       <input
         {...props}
+        ref={inputRef}
         className={ [styles.Input].concat(className.split(' ')).join(' ')}
-        type="text"
+        type={type}
         key={path}
         data-model={path}
         value={value}
         onChange={this.handleChange}
       />
     ),
-    textarea: ({path, value, className, styles, ...props})=>(
+    textarea: ({path, inputRef, value, className, styles, ...props})=>(
       <textarea
         {...props}
+        ref={inputRef}
         className={[styles.Input, styles['Input--textarea']].concat(className.split(' ')).join(' ')}
         data-model={path}
         key={path}
@@ -38,9 +40,10 @@ export default class Input extends Component {
         onChange={this.handleChange}
       ></textarea>
     ),
-    checkbox: ({path, value, className, styles, ...props})=>(
+    checkbox: ({path, inputRef, value, className, styles, ...props})=>(
       <input
         {...props}
+        ref={inputRef}
         className={[styles.Input, styles['Input--checkbox']].concat(className.split(' ')).join(' ')}
         type="checkbox"
         key={path}
@@ -52,7 +55,6 @@ export default class Input extends Component {
   }
 
   handleChange(event) {
-    console.log('handleChange', this.props.handleChange, this.props.handleChangeParams);
     if (this.props.handleChange) {
       this.props.handleChange((this.props.type === 'checkbox' || this.props.type === 'stressbox') ? event.target.checked : event.target.value, ...this.props.handleChangeParams );
     }
@@ -69,10 +71,12 @@ export default class Input extends Component {
       ...props
     } = this.props;
 
-    return type in this.inputTemplates ? <label className={[styles.Label, styles['Label--' + type]].join(' ')}>
+    const template = type in this.inputTemplates ? type : 'text';
+
+    return (<label className={[styles.Label, styles['Label--' + type]].join(' ')}>
       {superscriptBefore ? <span className={[styles['Label-superscript'], styles['Label-superscript--before']].join(' ')} >{superscriptBefore}</span> : null}
       {label ? <span className={styles.Label} >{label}</span> : null}
-      {this.inputTemplates[type]({
+      {this.inputTemplates[template]({
         ...props,
         type,
         className,
@@ -80,7 +84,6 @@ export default class Input extends Component {
       })}
       {type === 'checkbox' ? <span className={styles['Input-fauxCheckbox']} ></span> : null}
       {superscriptAfter ? <span className={[styles['Label-superscript'], styles['Label-superscript--after']].join(' ')} >{superscriptAfter}</span> : null}
-      </label>
-    : null;
+    </label>);
   }
 }

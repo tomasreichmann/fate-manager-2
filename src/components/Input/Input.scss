@@ -4,11 +4,8 @@ $inputBorder: 2px solid $inverse-bg;
 
 .Input {
   line-height: 1.5;
-  flex: 1 0 100px;
-  width: 0;
   border: $inputBorder;
   padding: 0 5px;
-  min-width: 32px;
 
   &--checkbox {
     position: absolute;
@@ -39,6 +36,7 @@ $inputBorder: 2px solid $inverse-bg;
 .Label {
   position: relative;
   vertical-align: middle;
+  display: block;
 
   &-superscript {
     position: absolute;
