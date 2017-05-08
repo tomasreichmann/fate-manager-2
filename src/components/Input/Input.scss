@@ -38,6 +38,10 @@ $inputBorder: 2px solid $inverse-bg;
   vertical-align: middle;
   display: block;
 
+  &--inline {
+    display: inline-block;
+  }
+
   &-superscript {
     position: absolute;
     font-size: 1.8rem;

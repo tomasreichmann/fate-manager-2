@@ -47,10 +47,10 @@ export default class Login extends Component {
         <div>
           <form className="login-form form-inline" onSubmit={this.handleSubmit}>
             <div className="form-group">
-              <Input inputRef={(el) => (this.emailElement = el)} type="email" label="Email" className="form-control" placeholder="Email" />
+              <Input inputRef={(el) => (this.emailElement = el)} type="email" label="Email" placeholder="Email" />
             </div>
             <div className="form-group">
-              <Input inputRef={(el) => (this.passwordElement = el)} type="password" label="Password" className="form-control" placeholder="Password" />
+              <Input inputRef={(el) => (this.passwordElement = el)} type="password" label="Password" placeholder="Password" />
             </div>
             { this.props.errorMessage && <Alert message={this.props.errorMessage} /> }
             <Button success onClick={this.handleSubmit}><i className="fa fa-sign-in"/>{' '}Log In

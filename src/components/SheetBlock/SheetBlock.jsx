@@ -65,7 +65,7 @@ export default class SheetBlock extends Component {
         <div className={styles.StressLane} key={stressLaneKey} >
           <strong>{stressLaneKey}: </strong>
           { stressLane.map( (isUsed, value)=>(
-            <Input type="checkbox" value={isUsed} superscriptAfter={value + 1} />
+            <Input type="checkbox" value={isUsed} inline superscriptAfter={value + 1} />
           ) ) }
         </div>
       ) ) }
