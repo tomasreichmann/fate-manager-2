@@ -103,6 +103,9 @@ export default function reducer(state = initialState, action = {}) {
         logoutError: action.error,
       });
     }
+    case SESSION_UPDATE: {
+      return state.set('session', action.payload.session);
+    }
     default:
       return state;
   }
@@ -144,21 +147,26 @@ export function register({email, password}) {
   };
 }
 
-export function connectSession(dispatch, globalState) {
-  const user = globalState.firebase.get('user');
-  firebaseDb.ref('users/' + user.get('uid') ).on('value', (snapshot)=>{
-    console.log('connectSession on value', snapshot.val() );
-    dispatch({
-      type: SESSION_UPDATE,
-      payload: snapshot.val(),
+export function connectSession() {
+  console.log('connectSession');
+  return function dispatchOnSessionValue(dispatch, getState) {
+    const user = getState().firebase.get('user');
+    firebaseDb.ref('users/' + user.get('uid') ).on('value', (snapshot)=>{
+      console.log('connectSession on value', snapshot.val() );
+      dispatch({
+        type: SESSION_UPDATE,
+        payload: {
+          session: Map(snapshot.val() || {})
+        },
+      });
     });
-  });
+  };
 }
 
 export function logout() {
   return {
     types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
-    promise: firebase.auth().signOut
+    promise: ()=>(firebase.auth().signOut() )
   };
 }
 

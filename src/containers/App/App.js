@@ -6,19 +6,14 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { getSheets, logout, isSessionConnected, isUserLoggedIn, connectSession } from 'redux/modules/firebase';
+import { getSheets, logout, connectSession } from 'redux/modules/firebase';
 import { push } from 'react-router-redux';
 import config from '../../config';
 import { asyncConnect } from 'redux-async-connect';
 
 @asyncConnect([{
-  promise: ({store: {dispatch, getState}}) => {
+  promise: ({store: {dispatch}}) => {
     const promises = [];
-    const state = getState();
-
-    if ( !isSessionConnected(state) && isUserLoggedIn(state) ) {
-      connectSession(dispatch, state);
-    }
 
     promises.push( dispatch( getSheets() ) );
 
@@ -28,15 +23,18 @@ import { asyncConnect } from 'redux-async-connect';
 @connect(
   state => ({
     user: state.firebase.get('user'),
+    session: state.firebase.get('session'),
   }),
-  {logout, pushState: push}
+  {logout, pushState: push, connectSession}
 )
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
     user: PropTypes.object,
+    session: PropTypes.object,
     logout: PropTypes.func.isRequired,
-    pushState: PropTypes.func.isRequired
+    pushState: PropTypes.func.isRequired,
+    connectSession: PropTypes.func.isRequired,
   };
 
   static contextTypes = {
@@ -45,8 +43,13 @@ export default class App extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (!this.props.user && nextProps.user) {
-      // login
-      this.props.pushState('/loginSuccess');
+      // on user login connect session
+      this.props.connectSession();
+      // this.props.pushState('/loginSuccess');
+    } else if (!this.props.session && nextProps.session) {
+      // TODO: on session connect redirect to last page or home
+      const redirectTo = nextProps.session.route || '/';
+      this.props.pushState(redirectTo);
     } else if (this.props.user && !nextProps.user) {
       // logout
       this.props.pushState('/');

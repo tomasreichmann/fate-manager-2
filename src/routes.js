@@ -1,6 +1,5 @@
 import React from 'react';
 import {IndexRoute, Route} from 'react-router';
-import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/auth';
 import {
     App,
     Home,
@@ -14,20 +13,12 @@ import {
 
 export default (store) => {
   const requireLogin = (nextState, replace, cb) => {
-    function checkAuth() {
-      const { auth: { user }} = store.getState();
-      if (!user) {
-        // oops, not logged in, so can't be here!
-        replace('/');
-      }
-      cb();
+    const user = store.getState().firebase.get('user');
+    if (!user) {
+      // oops, not logged in, so can't be here!
+      replace('/');
     }
-
-    if (!isAuthLoaded(store.getState())) {
-      store.dispatch(loadAuth()).then(checkAuth);
-    } else {
-      checkAuth();
-    }
+    cb();
   };
 
   /**
@@ -38,7 +29,7 @@ export default (store) => {
       <IndexRoute component={Home} />
 
       <Route path="/block/:keys" component={Block}/>
-      <Route path="/edit/:key" component={EditSheet}/>
+      <Route path="/edit/:key" onEnter={requireLogin} component={EditSheet}/>
       /*
       <Route onEnter={requireLogin}>
         <Route path="loginSuccess" component={LoginSuccess}/>
