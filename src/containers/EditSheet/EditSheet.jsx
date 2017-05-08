@@ -1,17 +1,27 @@
 import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
 import { connect } from 'react-redux';
-// import { Button, SheetBlock } from 'components';
+import { Input, Button } from 'components';
+import { updateSession, updateSheet, discardSheetUpdates } from 'redux/modules/firebase';
 
 @connect(
-    state => ({sheets: state.firebase.getIn(['sheets', 'list'])}),
-    {pushState: push}
+  state => ({
+    sheets: state.firebase.getIn(['sheets', 'list']),
+    editedSheets: state.firebase.getIn(['session', 'editedSheets'])
+  }),
+  {
+    pushState: push,
+    updateSession,
+    discardSheetUpdates,
+  }
 )
 export default class EditSheet extends Component {
 
   static propTypes = {
-    sheets: PropTypes.object,
+    editedSheets: PropTypes.object,
     pushState: PropTypes.func.isRequired,
+    updateSession: PropTypes.func.isRequired,
+    discardSheetUpdates: PropTypes.func.isRequired,
     params: PropTypes.object.isRequired,
   };
 
@@ -22,6 +32,10 @@ export default class EditSheet extends Component {
   constructor(props) {
     super(props);
     this.redirect = this.redirect.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.discard = this.discard.bind(this);
+    this.save = this.save.bind(this);
+    this.viewAsBlock = this.viewAsBlock.bind(this);
   }
 
   redirect(to) {
@@ -31,23 +45,53 @@ export default class EditSheet extends Component {
     };
   }
 
-  displayDeleteSheetConfirmation(item) {
-    console.log('displayDeleteSheetConfirmation', item.toJS() );
+  discard(event) {
+    event.preventDefault();
+    console.log('discard');
+    this.props.discardSheetUpdates(this.props.params.key);
+    this.props.pushState('/');
+  }
+
+  save(event) {
+    event.preventDefault();
+    console.log('save');
+    const key = this.props.params.key;
+    updateSheet(key, this.props.editedSheets.get(key).toJSON() );
+    this.props.pushState('/block/' + key);
+    this.props.discardSheetUpdates(this.props.params.key);
+  }
+
+  viewAsBlock(event) {
+    event.preventDefault();
+    console.log('viewAsBlock');
+    const key = this.props.params.key;
+    this.props.pushState('/block/' + key);
+  }
+
+  handleChange(value, {path}) {
+    const sessionPath = 'editedSheets/' + this.props.params.key + '/' + path;
+    this.props.updateSession(sessionPath, value);
   }
 
   render() {
-    const {sheets, params} = this.props;
-    console.log('this.props', this.props);
-    const key = params.key;
-    console.log('key', key);
-    const sheet = sheets.get(key);
-
+    const {params, editedSheets} = this.props;
     const styles = require('./EditSheet.scss');
+    console.log('this.props', this.props, editedSheets);
+    const key = params.key;
+    const sheet = editedSheets.get(key);
 
     return (
-      <div className={styles.Blocks + ' container'} >
-        { sheet.get('name') }
-        { !sheet ? <p className="alert alert-warning" >Sheet not found</p> : null }
+      <div className={styles.EditSheet + ' container'} >
+        { sheet ?
+          <form className={styles['EditSheet-form']}>
+            <h2><Input value={sheet.get('name')} path="name" handleChange={this.handleChange} handleChangeParams={{path: 'name'}} /></h2>
+            <div className={styles['EditSheet-actions']} >
+              <Button danger onClick={this.discard} >Discard updates</Button>
+              <Button primary onClick={this.viewAsBlock} >Leave unsaved and view as Block</Button>
+              <Button success onClick={this.save} >Save</Button>
+            </div>
+          </form>
+        : <p className="alert alert-warning" >Sheet not found</p> }
       </div>
     );
   }

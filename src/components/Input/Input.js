@@ -57,7 +57,9 @@ export default class Input extends Component {
 
   handleChange(event) {
     if (this.props.handleChange) {
-      this.props.handleChange((this.props.type === 'checkbox' || this.props.type === 'stressbox') ? event.target.checked : event.target.value, ...this.props.handleChangeParams );
+      this.props.handleChange((this.props.type === 'checkbox' || this.props.type === 'stressbox')
+        ? event.target.checked
+        : event.target.value, this.props.handleChangeParams );
     }
   }
 

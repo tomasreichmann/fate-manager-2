@@ -8,6 +8,7 @@ const firebaseDb = firebaseApp.database();
 const SHEETS = 'fate-manager/firebase/SHEETS';
 const SHEETS_SUCCESS = 'fate-manager/firebase/SHEETS_SUCCESS';
 const SHEETS_FAIL = 'fate-manager/firebase/SHEETS_FAIL';
+const SHEETS_UPDATE = 'fate-manager/firebase/SHEETS_UPDATE';
 const SHEETS_TOGGLE = 'fate-manager/firebase/SHEETS_TOGGLE';
 const LOGIN = 'fate-manager/firebase/LOGIN';
 const LOGIN_SUCCESS = 'fate-manager/firebase/LOGIN_SUCCESS';
@@ -68,6 +69,16 @@ export default function reducer(state = initialState, action = {}) {
         })
       ;
     }
+    case SHEETS_UPDATE: {
+      console.log('action', action);
+      return state
+        .mergeIn(['sheets'], {
+          loading: false,
+          loaded: true,
+          list: action.payload.list,
+        })
+      ;
+    }
     case SHEETS_TOGGLE: {
       return state.updateIn(['sheets', 'selected', action.payload.key], (selected)=>(!selected) );
     }
@@ -104,7 +115,7 @@ export default function reducer(state = initialState, action = {}) {
       });
     }
     case SESSION_UPDATE: {
-      return state.set('session', action.payload.session);
+      return state.set('session', fromJS(action.payload.session) );
     }
     default:
       return state;
@@ -147,20 +158,54 @@ export function register({email, password}) {
   };
 }
 
+export function updateDb(path, value, method = 'set') {
+  const params = method !== 'remove' ? [value] : [];
+  console.log('updateDb', path, value, method, params);
+  firebaseDb.ref(path)[method](...params);
+}
+
+export function updateSession(path, value) {
+  return function dispatchOnSessionValue(dispatch, getState) {
+    const user = getState().firebase.get('user');
+    updateDb('users/' + user.get('uid') + '/' + path, value);
+  };
+}
+
+export function updateSheet(key, sheet) {
+  updateDb('sheets/' + key, sheet);
+}
+
+export function discardSheetUpdates(key) {
+  return function dispatchOnSessionValue(dispatch, getState) {
+    const user = getState().firebase.get('user');
+    updateDb('users/' + user.get('uid') + '/editedSheets/' + key, null, 'remove');
+  };
+}
+
 export function connectSession() {
   console.log('connectSession');
   return function dispatchOnSessionValue(dispatch, getState) {
     const user = getState().firebase.get('user');
     firebaseDb.ref('users/' + user.get('uid') ).on('value', (snapshot)=>{
-      console.log('connectSession on value', snapshot.val() );
       dispatch({
         type: SESSION_UPDATE,
         payload: {
-          session: Map(snapshot.val() || {})
+          session: fromJS(snapshot.val() || {})
         },
       });
     });
   };
+}
+
+export function startEditingSheet(state, key) {
+  const sheetSession = state.firebase.getIn(['session', 'editedSheets', key]);
+  console.log('startEditingSheet', state, key, sheetSession);
+  if (!sheetSession) {
+    const user = state.firebase.get('user');
+    const originalSheet = state.firebase.getIn(['sheets', 'list', key]);
+    console.log('no sheet session. Original sheet', originalSheet);
+    firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/' + key ).set(originalSheet.toJSON());
+  }
 }
 
 export function logout() {
@@ -175,7 +220,6 @@ export function createUserData() {
 }
 
 export function toggleSheetSelection(key) {
-  console.log('toggleSheetSelection');
   return {
     type: SHEETS_TOGGLE,
     payload: {
@@ -200,5 +244,20 @@ export function getSheets() {
         })
       ;
     }
+  };
+}
+
+
+export function connectSheets() {
+  console.log('connectSession');
+  return function dispatchOnSheetsValue(dispatch) {
+    firebaseDb.ref('sheets/').orderByChild('name').on('value', (snapshot)=>{
+      dispatch({
+        type: SHEETS_UPDATE,
+        payload: {
+          list: fromJS(snapshot.val() || {})
+        },
+      });
+    });
   };
 }

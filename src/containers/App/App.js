@@ -6,26 +6,16 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { getSheets, logout, connectSession } from 'redux/modules/firebase';
+import { connectSheets, logout, connectSession } from 'redux/modules/firebase';
 import { push } from 'react-router-redux';
 import config from '../../config';
-import { asyncConnect } from 'redux-async-connect';
 
-@asyncConnect([{
-  promise: ({store: {dispatch}}) => {
-    const promises = [];
-
-    promises.push( dispatch( getSheets() ) );
-
-    return Promise.all(promises);
-  }
-}])
 @connect(
   state => ({
     user: state.firebase.get('user'),
     session: state.firebase.get('session'),
   }),
-  {logout, pushState: push, connectSession}
+  {logout, pushState: push, connectSession, connectSheets}
 )
 export default class App extends Component {
   static propTypes = {
@@ -35,6 +25,7 @@ export default class App extends Component {
     logout: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
     connectSession: PropTypes.func.isRequired,
+    connectSheets: PropTypes.func.isRequired,
   };
 
   static contextTypes = {
@@ -45,6 +36,7 @@ export default class App extends Component {
     if (!this.props.user && nextProps.user) {
       // on user login connect session
       this.props.connectSession();
+      this.props.connectSheets();
       // this.props.pushState('/loginSuccess');
     } else if (!this.props.session && nextProps.session) {
       // TODO: on session connect redirect to last page or home

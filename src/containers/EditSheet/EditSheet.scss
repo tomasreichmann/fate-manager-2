@@ -1,5 +1,11 @@
 @import "../../theme/variables.scss";
 
 .EditSheet {
+  &-actions {
+    text-align: right;
 
+    button {
+      margin-left: $padding-base-horizontal;
+    }
+  }
 }

@@ -54,10 +54,6 @@ export default class InfoBar extends Component {
     // const {info, load} = this.props; // eslint-disable-line no-shadow
     const {sheets, selection} = this.props;
     const styles = require('./SheetList.scss');
-    const text = {
-      edit: 'edit',
-      delete: 'delete'
-    };
     const filteredSelection = selection
       .filter( (isSelected)=>(isSelected) )
       .map( (isSelected, key) => (
@@ -73,8 +69,8 @@ export default class InfoBar extends Component {
           <Button link className="text-left" block onClick={this.redirect('/block/' + encodeURIComponent(item.get('key')) )} >{item.get('name')}</Button>
         </div>
         <div className={styles['SheetList-item-actions']} >
-          <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(item.get('key')) )} >{text.edit}</Button>
-          <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, item) } >{text.delete}</Button>
+          <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(item.get('key')) )} >Edit</Button>
+          <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, item) } >Delete</Button>
         </div>
       </div> ) ) }
       { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Button link onClick={this.redirect('/block/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';') )} >Open: { filteredSelection.join(', ') }</Button></div> : null }
