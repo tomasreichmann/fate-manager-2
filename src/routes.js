@@ -4,7 +4,6 @@ import { startEditingSheet } from 'redux/modules/firebase';
 import {
     App,
     Home,
-    About,
     Block,
     EditSheet,
     Login,
@@ -17,20 +16,14 @@ export default (store) => {
     const user = store.getState().firebase.get('user');
     if (!user) {
       // oops, not logged in, so can't be here!
+      // TODO save route to redirect after login
       replace('/login');
     }
     cb();
   };
 
   const initEdit = (nextState, replace, cb) => {
-    requireLogin(nextState, replace, cb);
-    const user = store.getState().firebase.get('user');
-    if (!user) {
-      // oops, not logged in, so can't be here!
-      replace('/login');
-    } else {
-      startEditingSheet(store.getState(), nextState.params.key);
-    }
+    startEditingSheet(store.getState(), nextState.params.key);
     cb();
   };
 
@@ -41,17 +34,12 @@ export default (store) => {
     <Route path="/" component={App}>
       <IndexRoute component={Home} onEnter={requireLogin} />
 
-      <Route path="/block/:keys" component={Block}/>
-      <Route path="/edit/:key" onEnter={initEdit} component={EditSheet}/>
       <Route path="/login" component={Login}/>
-
-      /*
       <Route onEnter={requireLogin}>
-        <Route path="loginSuccess" component={LoginSuccess}/>
+        <Route path="/loginSuccess" component={LoginSuccess} />
+        <Route path="/block/:keys" component={Block} />
+        <Route path="/edit/:key" onEnter={initEdit} component={EditSheet}/>
       </Route>
-
-      <Route path="about" component={About}/>
-      */
 
       <Route path="*" component={NotFound} status={404} />
     </Route>

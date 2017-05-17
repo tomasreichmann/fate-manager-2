@@ -171,6 +171,11 @@ export function updateSession(path, value) {
   };
 }
 
+export function saveRoute(route) {
+  const user = getUser();
+  updateDb('users/' + user.get('uid') + '/route', route);
+}
+
 export function updateSheet(key, sheet) {
   updateDb('sheets/' + key, sheet);
 }

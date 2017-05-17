@@ -6,7 +6,7 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { connectSheets, logout, connectSession } from 'redux/modules/firebase';
+import { connectSheets, logout, connectSession, saveRoute } from 'redux/modules/firebase';
 import { push } from 'react-router-redux';
 import config from '../../config';
 
@@ -26,6 +26,9 @@ export default class App extends Component {
     pushState: PropTypes.func.isRequired,
     connectSession: PropTypes.func.isRequired,
     connectSheets: PropTypes.func.isRequired,
+    location: PropTypes.shape({
+      pathname: PropTypes.string
+    }),
   };
 
   static contextTypes = {
@@ -33,6 +36,10 @@ export default class App extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
+    console.log('componentWillReceiveProps', this.props.location.pathname, nextProps.location.pathname, 'save?', this.props.session && (this.props.location.pathname !== nextProps.location.pathname ));
+    if (this.props.session && (this.props.location.pathname !== nextProps.location.pathname )) {
+      saveRoute(nextProps.location.pathname);
+    }
     if (!this.props.user && nextProps.user) {
       // on user login connect session
       this.props.connectSession();
@@ -40,11 +47,12 @@ export default class App extends Component {
       // this.props.pushState('/loginSuccess');
     } else if (!this.props.session && nextProps.session) {
       // TODO: on session connect redirect to last page or home
-      const redirectTo = nextProps.session.route || '/';
+      const redirectTo = nextProps.session.get('route') || '/';
+      console.log('redirect to', redirectTo);
       this.props.pushState(redirectTo);
     } else if (this.props.user && !nextProps.user) {
       // logout
-      this.props.pushState('/');
+      this.props.pushState('/login');
     }
   }
 

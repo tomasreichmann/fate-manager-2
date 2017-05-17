@@ -84,7 +84,7 @@ export default class EditSheet extends Component {
       <div className={styles.EditSheet + ' container'} >
         { sheet ?
           <form className={styles['EditSheet-form']}>
-            <h2><Input value={sheet.get('name')} path="name" handleChange={this.handleChange} handleChangeParams={{path: 'name'}} /></h2>
+            <h2><Input value={sheet.get('name')} handleChange={this.handleChange} handleChangeParams={{path: 'name'}} /></h2>
             <div className={styles['EditSheet-actions']} >
               <Button danger onClick={this.discard} >Discard updates</Button>
               <Button primary onClick={this.viewAsBlock} >Leave unsaved and view as Block</Button>
