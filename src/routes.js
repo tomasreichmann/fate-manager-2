@@ -15,9 +15,9 @@ export default (store) => {
   const requireLogin = (nextState, replace, cb) => {
     const user = store.getState().firebase.get('user');
     if (!user) {
-      // oops, not logged in, so can't be here!
-      // TODO save route to redirect after login
-      replace('/login');
+      const path = nextState.location.pathname;
+      const pathUri = path.length > 1 ? encodeURIComponent(path) : '';
+      replace('/login/' + pathUri );
     }
     cb();
   };
@@ -34,6 +34,7 @@ export default (store) => {
     <Route path="/" component={App}>
       <IndexRoute component={Home} onEnter={requireLogin} />
 
+      <Route path="/login/:routeBeforeLogin" component={Login}/>
       <Route path="/login" component={Login}/>
       <Route onEnter={requireLogin}>
         <Route path="/loginSuccess" component={LoginSuccess} />

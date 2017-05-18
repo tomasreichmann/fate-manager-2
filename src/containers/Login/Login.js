@@ -16,6 +16,9 @@ export default class Login extends Component {
     login: PropTypes.func,
     logout: PropTypes.func,
     errorMessage: PropTypes.object,
+    params: PropTypes.shape({
+      routeBeforeLogin: PropTypes.string
+    }),
   }
 
   handleSubmit = (event) => {
@@ -23,7 +26,7 @@ export default class Login extends Component {
     const email = this.emailElement;
     const password = this.passwordElement;
     console.log('login', email.value, password.value);
-    this.props.login(email.value, password.value);
+    this.props.login(email.value, password.value, this.props.params.routeBeforeLogin);
     password.value = '';
   }
 

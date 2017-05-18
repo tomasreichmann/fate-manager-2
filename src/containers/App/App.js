@@ -13,6 +13,7 @@ import config from '../../config';
 @connect(
   state => ({
     user: state.firebase.get('user'),
+    routeBeforeLogin: state.firebase.get('routeBeforeLogin'),
     session: state.firebase.get('session'),
   }),
   {logout, pushState: push, connectSession, connectSheets}
@@ -26,6 +27,8 @@ export default class App extends Component {
     pushState: PropTypes.func.isRequired,
     connectSession: PropTypes.func.isRequired,
     connectSheets: PropTypes.func.isRequired,
+    saveRoute: PropTypes.func.isRequired,
+    routeBeforeLogin: PropTypes.string,
     location: PropTypes.shape({
       pathname: PropTypes.string
     }),
@@ -46,9 +49,8 @@ export default class App extends Component {
       this.props.connectSheets();
       // this.props.pushState('/loginSuccess');
     } else if (!this.props.session && nextProps.session) {
-      // TODO: on session connect redirect to last page or home
-      const redirectTo = nextProps.session.get('route') || '/';
-      console.log('redirect to', redirectTo);
+      // On session connect redirect to route before login, last page or home
+      const redirectTo = decodeURIComponent(nextProps.routeBeforeLogin) || nextProps.session.get('route') || '/';
       this.props.pushState(redirectTo);
     } else if (this.props.user && !nextProps.user) {
       // logout
@@ -104,8 +106,6 @@ export default class App extends Component {
             <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.get('displayName') || user.get('email')}</strong>.</p>}
           </Navbar.Collapse>
         </Navbar>
-
-        <hr />
 
         <div className={styles.appContent}>
           {this.props.children}

@@ -41,6 +41,7 @@ const initialState = Map({
     list: Map(),
     selected: Map(),
   }),
+  routeBeforeLogin: null,
   user: initialUser ? processUser(initialUser) : null,
   session: null,
 });
@@ -83,13 +84,16 @@ export default function reducer(state = initialState, action = {}) {
       return state.updateIn(['sheets', 'selected', action.payload.key], (selected)=>(!selected) );
     }
     case LOGIN: {
-      return state.set('loggingIn', true);
+      return state
+        .set('loggingIn', true)
+      ;
     }
     case LOGIN_SUCCESS: {
       console.log('LOGIN_SUCCESS action', action);
       return state.merge({
         loggingIn: false,
-        user: action.result
+        user: action.result,
+        routeBeforeLogin: action.payload.routeBeforeLogin || null
       });
     }
     case LOGIN_FAIL: {
@@ -135,9 +139,12 @@ export function isUserLoggedIn(globalState) {
   return !!globalState.firebase.get('user');
 }
 
-export function login(email, password) {
+export function login(email, password, routeBeforeLogin) {
   return {
     types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL],
+    payload: {
+      routeBeforeLogin
+    },
     promise: () => (
       firebase.auth().signInWithEmailAndPassword(email, password).then( getUser )
     )
@@ -251,7 +258,6 @@ export function getSheets() {
     }
   };
 }
-
 
 export function connectSheets() {
   console.log('connectSession');
