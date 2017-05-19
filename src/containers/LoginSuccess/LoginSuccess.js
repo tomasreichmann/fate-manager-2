@@ -10,24 +10,21 @@ export default
 class LoginSuccess extends Component {
   static propTypes = {
     user: PropTypes.object,
+    route: PropTypes.shape({
+      isNewUser: PropTypes.bool
+    }),
     logout: PropTypes.func
   }
 
   render() {
-    const {user, logout: logoutAction } = this.props;
+    const {user, logout: logoutAction, route } = this.props;
     return (user &&
       <div className="container">
-        <h1>Login Success</h1>
+        <h1>{ route.isNewUser ? 'Registration successfull' : 'Login successfull'}</h1>
 
         <div>
-          <p>Hi, {user.get('displayName') || user.get('email')}. You have just successfully logged in, and were forwarded here
-            by <code>componentWillReceiveProps()</code> in <code>App.js</code>, which is listening to
-            the auth reducer via redux <code>@connect</code>. How exciting!
-          </p>
-
-          <p>
-            The same function will forward you to <code>/</code> should you chose to log out. The choice is yours...
-          </p>
+          { route.isNewUser ? <p>You have been just successfully registered as {user.get('displayName') || user.get('email')}</p>
+          : <p>You have just successfully logged in as {user.get('displayName') || user.get('email')}</p> }
 
           <div>
             <button className="btn btn-danger" onClick={logoutAction}><i className="fa fa-sign-out"/>{' '}Log Out</button>

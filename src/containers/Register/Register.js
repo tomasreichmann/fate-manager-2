@@ -2,19 +2,19 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import { push } from 'react-router-redux';
 import Helmet from 'react-helmet';
-import {login, logout} from 'redux/modules/firebase';
+import {register, logout} from 'redux/modules/firebase';
 import { Button, Alert, Input } from 'components';
 
 @connect(
   state => ({
     user: state.firebase.get('user'),
-    errorMessage: state.firebase.getIn(['loginError', 'message']),
+    errorMessage: state.firebase.getIn(['registerError', 'message']),
   } ),
-  {login, logout, pushState: push})
-export default class Login extends Component {
+  {register, logout, pushState: push})
+export default class Register extends Component {
   static propTypes = {
     user: PropTypes.object,
-    login: PropTypes.func,
+    register: PropTypes.func,
     logout: PropTypes.func,
     pushState: PropTypes.func.isRequired,
     errorMessage: PropTypes.object,
@@ -27,34 +27,33 @@ export default class Login extends Component {
     event.preventDefault();
     const email = this.emailElement;
     const password = this.passwordElement;
-    console.log('login', email.value, password.value, this.props.params.routeBeforeLogin);
-    this.props.login(email.value, password.value, this.props.params.routeBeforeLogin);
+    console.log('register', email.value, password.value);
+    this.props.register(email.value, password.value, this.props.params.routeBeforeLogin);
     password.value = '';
   }
 
-  goRegister = (event) => {
+  goLogin = (event) => {
     event.preventDefault();
-    this.props.pushState('/register/' + (this.props.params.routeBeforeLogin || ''));
+    this.props.pushState('/login/' + (this.props.params.routeBeforeLogin || ''));
   }
 
   render() {
     const {user, logout: logoutAction} = this.props;
-    const styles = require('./Login.scss');
+    const styles = require('./Register.scss');
     console.log('user', user);
     return (
-      <div className={styles.loginPage + ' container'}>
-        <Helmet title="Login"/>
-        <h1>Login</h1>
+      <div className={styles.registerPage + ' container'}>
+        <Helmet title="Register"/>
+        <h1>Register</h1>
         {user ?
         <div>
-          <p>You are currently logged in as {user.get('displayName') || user.get('email') }.</p>
-
+          <Alert warning message={'You are already registered and logged in as ' + (user.get('displayName') || user.get('email'))} />
           <div>
             <Button danger onClick={logoutAction}><i className="fa fa-sign-out"/>{' '}Log Out</Button>
           </div>
         </div>
         :
-        <form className="login-form form-inline" onSubmit={this.handleSubmit}>
+        <form className="register-form form-inline" onSubmit={this.handleSubmit}>
           <div className={styles.formRow}>
             <Input inputRef={(el) => (this.emailElement = el)} type="email" label="Email" placeholder="Email" />
           </div>
@@ -65,8 +64,8 @@ export default class Login extends Component {
           { this.props.errorMessage ? (<div className={styles.formRow}><Alert message={this.props.errorMessage} /></div>) : null }
 
           <div className={styles.formRow}>
-            <Button success block onClick={this.handleSubmit}><i className="fa fa-sign-in"/>{' '}Log In</Button>
-            <Button link block onClick={this.goRegister}><i className="fa fa-user"/>{' '}Register</Button>
+            <Button success block onClick={this.handleSubmit}><i className="fa fa-user"/>{' '}Register and log in</Button>
+            <Button link block onClick={this.goLogin}><i className="fa fa-sign-in"/>{' '}Log In</Button>
           </div>
         </form>
         }

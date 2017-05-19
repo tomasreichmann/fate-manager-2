@@ -40,7 +40,7 @@ export default class App extends Component {
 
   componentWillReceiveProps(nextProps) {
     console.log('componentWillReceiveProps', this.props.location.pathname, nextProps.location.pathname, 'save?', this.props.session && (this.props.location.pathname !== nextProps.location.pathname ));
-    if (this.props.session && (this.props.location.pathname !== nextProps.location.pathname )) {
+    if (nextProps.session && nextProps.location.pathname && (this.props.location.pathname !== nextProps.location.pathname )) {
       saveRoute(nextProps.location.pathname);
     }
     if (!this.props.user && nextProps.user) {
@@ -50,7 +50,7 @@ export default class App extends Component {
       // this.props.pushState('/loginSuccess');
     } else if (!this.props.session && nextProps.session) {
       // On session connect redirect to route before login, last page or home
-      const redirectTo = decodeURIComponent(nextProps.routeBeforeLogin) || nextProps.session.get('route') || '/';
+      const redirectTo = (nextProps.routeBeforeLogin && decodeURIComponent(nextProps.routeBeforeLogin)) || nextProps.session.get('route') || '/';
       this.props.pushState(redirectTo);
     } else if (this.props.user && !nextProps.user) {
       // logout

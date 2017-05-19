@@ -7,6 +7,7 @@ import {
     Block,
     EditSheet,
     Login,
+    Register,
     LoginSuccess,
     NotFound,
   } from 'containers';
@@ -36,8 +37,11 @@ export default (store) => {
 
       <Route path="/login/:routeBeforeLogin" component={Login}/>
       <Route path="/login" component={Login}/>
+      <Route path="/register/:routeBeforeLogin" component={Register}/>
+      <Route path="/register" component={Register}/>
       <Route onEnter={requireLogin}>
         <Route path="/loginSuccess" component={LoginSuccess} />
+        <Route path="/registrationSuccess" component={LoginSuccess} isNewUser />
         <Route path="/block/:keys" component={Block} />
         <Route path="/edit/:key" onEnter={initEdit} component={EditSheet}/>
       </Route>

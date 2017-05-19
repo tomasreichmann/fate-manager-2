@@ -83,12 +83,16 @@ export default function reducer(state = initialState, action = {}) {
     case SHEETS_TOGGLE: {
       return state.updateIn(['sheets', 'selected', action.payload.key], (selected)=>(!selected) );
     }
-    case LOGIN: {
-      return state
-        .set('loggingIn', true)
-      ;
+    case LOGIN:
+    case REGISTER: {
+      return state.merge({
+        loggingIn: true,
+        loginError: null,
+        registerError: null
+      });
     }
-    case LOGIN_SUCCESS: {
+    case LOGIN_SUCCESS:
+    case REGISTER_SUCCESS: {
       console.log('LOGIN_SUCCESS action', action);
       return state.merge({
         loggingIn: false,
@@ -103,6 +107,13 @@ export default function reducer(state = initialState, action = {}) {
         loginError: Map(action.error),
       });
     }
+    case REGISTER_FAIL: {
+      return state.merge({
+        loggingIn: false,
+        user: null,
+        registerError: Map(action.error),
+      });
+    }
     case LOGOUT: {
       return state.set('loggingOut', true);
     }
@@ -110,6 +121,7 @@ export default function reducer(state = initialState, action = {}) {
       return state.merge({
         loggingOut: false,
         user: null,
+        session: null,
       });
     }
     case LOGOUT_FAIL: {
@@ -151,15 +163,21 @@ export function login(email, password, routeBeforeLogin) {
   };
 }
 
-export function register({email, password}) {
+export function register(email, password, routeBeforeLogin) {
+  console.log('register1', email, password, routeBeforeLogin);
   return {
     types: [REGISTER, REGISTER_SUCCESS, REGISTER_FAIL],
+    payload: {
+      routeBeforeLogin
+    },
     promise: () => (
+      console.log('register2', email, password, routeBeforeLogin),
       firebase.auth().createUserWithEmailAndPassword(email, password).then( ()=>{
         const user = getUser();
         firebaseDb.ref('users/' + user.uid).set({
           created: Date.now()
         });
+        return user;
       } )
     )
   };
