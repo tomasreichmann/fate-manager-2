@@ -133,13 +133,14 @@ export default class EditSheet extends Component {
     const stressBlock = (<div className={styles['EditSheet-stressBlock']} >
       <h2>Stress</h2>
       { template.get('stress').map( (stressLane, stressLaneIndex)=>(
-      <div className={styles['EditSheet-stressLane']} key={stressLaneIndex} >
-        <strong>{stressLane.get('label')}: </strong>
-        { (sheet.getIn(['stress', stressLane.get('key')]) || []).map( (isUsed, boxIndex)=>(
-          <Input type="checkbox" className={styles['EditSheet-stressBox']} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
-        ) ) }
-      </div>
-    ) ) }</div>);
+        <div className={styles['EditSheet-stressLane']} key={stressLaneIndex} >
+          <strong>{stressLane.get('label')}: </strong>
+          { (sheet.getIn(['stress', stressLaneIndex.toString()]) || []).map( (isUsed, boxIndex)=>(
+            <Input type="checkbox" className={styles['EditSheet-stressBox']} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
+          ) ) }
+        </div>
+      ) ) }
+    </div>);
 
     const consequencesBlock = (<div className={styles['EditSheet-consequencesBlock']} >
       <h2>Consequences</h2>
@@ -161,6 +162,7 @@ export default class EditSheet extends Component {
           {stuntsBlock}
           {stressBlock}
           {consequencesBlock}
+          <hr />
           <div className={styles['EditSheet-actions']} >
             <Button danger onClick={this.discard} >Discard updates</Button>
             <Button primary onClick={this.viewAsBlock} >Leave unsaved and view as Block</Button>

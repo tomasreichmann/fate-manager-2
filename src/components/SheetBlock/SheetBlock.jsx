@@ -6,20 +6,24 @@ export default class SheetBlock extends Component {
 
   static propTypes = {
     sheet: PropTypes.object,
+    updateSheet: PropTypes.func.isRequired,
+    template: PropTypes.object,
     children: PropTypes.any,
   };
 
   constructor(props) {
     super(props);
-    this.updateStressBox = this.updateStressBox.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  updateStressBox(value, path) {
-    console.log('updateStressBox', value, path);
+  handleChange(value, {key, path}) {
+    console.log('handleChange', value, path);
+    const sessionPath = key + '/' + path;
+    this.props.updateSheet(sessionPath, value);
   }
 
   render() {
-    const { sheet, children } = this.props;
+    const { sheet, template, children } = this.props;
     const { name, key, refresh, description, aspects, skills, consequences, stress, stunts, extras } = sheet.toObject();
     console.log('sheet', sheet);
     console.log('name', name, 'key', key, 'refresh', refresh, 'aspects', aspects, 'skills', skills, 'consequences', consequences, 'stress', stress, 'stunts', stunts, 'extras', extras);
@@ -54,8 +58,8 @@ export default class SheetBlock extends Component {
 
 
     // skills ---
-    const skillsElements = intersperse(skills.sort().reverse().reduce( ( elements, level, skill ) => (
-      level > 0 ? elements.concat([<span className={styles['SheetBlock-skill']} >{skill} {level}</span>]) : elements
+    const skillsElements = intersperse(skills.sort().reverse().reduce( ( elements, level, skillSlug ) => (
+      level > 0 ? elements.concat([<span className={styles['SheetBlock-skill']} >{template.getIn(['skills', skillSlug, 'name'])} {level}</span>]) : elements
     ), [] ), ', ');
     const skillBlock = skillsElements ? <p className={styles['SheetBlock-skills']}>{skillsElements}</p> : null;
 
@@ -72,11 +76,11 @@ export default class SheetBlock extends Component {
     // stress ---
     const stressBlock = stress ? <div>
       <h3>Stress</h3>
-      { stress.map( (stressLane, stressLaneKey)=>(
-        <div className={styles.StressLane} key={stressLaneKey} >
-          <strong>{stressLaneKey}: </strong>
-          { stressLane.map( (isUsed, boxIndex)=>(
-            <Input type="checkbox" value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.updateStressBox} handleChangeParams={stressLaneKey + '/' + boxIndex} />
+      { template.get('stress').map( (stressLane, stressLaneIndex)=>(
+        console.log('stressLaneIndex', stressLaneIndex), <div className={styles['SheetBlock-stressLane']} key={stressLaneIndex} >
+          <strong>{stressLane.get('label')}: </strong>
+          { (sheet.getIn(['stress', stressLaneIndex.toString()]) || []).map( (isUsed, boxIndex)=>(
+            <Input type="checkbox" className={styles['SheetBlock-stressBox']} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
           ) ) }
         </div>
       ) ) }

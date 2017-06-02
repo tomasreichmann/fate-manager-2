@@ -1,16 +1,23 @@
 import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
+import { updateSheet } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
 import { Button, SheetBlock } from 'components';
 
 @connect(
-    state => ({sheets: state.firebase.getIn(['sheets', 'list'])}),
-    {pushState: push}
+  state => ({
+    sheets: state.firebase.getIn(['sheets', 'list']),
+    templates: state.firebase.getIn(['templates', 'list']),
+  }),
+  {
+    pushState: push
+  }
 )
 export default class Block extends Component {
 
   static propTypes = {
     sheets: PropTypes.object,
+    templates: PropTypes.object,
     pushState: PropTypes.func.isRequired,
     params: PropTypes.object.isRequired,
   };
@@ -36,7 +43,7 @@ export default class Block extends Component {
   }
 
   render() {
-    const {sheets, params} = this.props;
+    const {sheets, templates, params} = this.props;
     console.log('this.props', this.props);
     const keys = params.keys.split(';');
     const styles = require('./Block.scss');
@@ -45,7 +52,7 @@ export default class Block extends Component {
     return (
       <div className={styles.Blocks + ' container'} >
         { selectedSheets.map( (sheet)=>( <div className={styles['Blocks-item']} key={sheet.get('key')} >
-          <SheetBlock sheet={sheet} >
+          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') || -1 )} updateSheet={updateSheet} >
             <div className={styles['Blocks-actions']} >
               <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(sheet.get('key')) )} >Edit</Button>
               <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, sheet) } >Delete</Button>
