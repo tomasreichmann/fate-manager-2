@@ -13,7 +13,8 @@ export default class Button extends Component {
     link: PropTypes.bool,
     block: PropTypes.bool,
     disabled: PropTypes.bool,
-    children: PropTypes.any
+    clipBottomLeft: PropTypes.bool,
+    children: PropTypes.any,
   };
 
   constructor(props) {
@@ -33,6 +34,7 @@ export default class Button extends Component {
       link,
       block,
       disabled,
+      clipBottomLeft,
       ...props
     } = this.props;
 
@@ -44,7 +46,8 @@ export default class Button extends Component {
       danger,
       link,
       block,
-      disabled
+      disabled,
+      clipBottomLeft,
     }).reduce( (output, value, key)=>(
       value ? output.concat([ styles['Button--' + key] ]) : output
     ), className.split(' ') );

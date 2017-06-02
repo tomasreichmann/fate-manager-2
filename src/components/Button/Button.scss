@@ -17,6 +17,11 @@
     clip-path: none;
   }
 
+  &--clipBottomLeft {
+    clip-path: $clip-bottom-left;
+    padding: $padding-base-vertical $padding-base-horizontal $padding-base-vertical ($btn-clipping-size + $padding-base-horizontal);
+  }
+
   &--block {
     display: block;
     width: 100%;

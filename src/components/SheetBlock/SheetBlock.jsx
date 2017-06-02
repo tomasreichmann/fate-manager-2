@@ -9,14 +9,28 @@ export default class SheetBlock extends Component {
     children: PropTypes.any,
   };
 
+  constructor(props) {
+    super(props);
+    this.updateStressBox = this.updateStressBox.bind(this);
+  }
+
+  updateStressBox(value, path) {
+    console.log('updateStressBox', value, path);
+  }
+
   render() {
     const { sheet, children } = this.props;
-    const { name, key, refresh, aspects, skills, consequences, stress, stunts, extras } = sheet.toObject();
+    const { name, key, refresh, description, aspects, skills, consequences, stress, stunts, extras } = sheet.toObject();
     console.log('sheet', sheet);
     console.log('name', name, 'key', key, 'refresh', refresh, 'aspects', aspects, 'skills', skills, 'consequences', consequences, 'stress', stress, 'stunts', stunts, 'extras', extras);
     const styles = require('./SheetBlock.scss');
 
     const headingRefresh = <span className={styles['SheetBlock-heading-refresh']}>{refresh}</span>;
+
+    // description ---
+    const descriptionBlock = description ? (<div className={styles['SheetBlock-extras']}>
+      <p>{description}</p>
+    </div>) : null;
 
     // aspects ---
     const {
@@ -24,9 +38,6 @@ export default class SheetBlock extends Component {
       trouble: troubleAspect,
       ...otherAspects
     } = aspects ? aspects.toObject() : {};
-    console.log('---');
-    console.log('aspects.toObject()', aspects.toObject() );
-    console.log('[ mainAspect, troubleAspect, ...otherAspects ]', [ mainAspect, troubleAspect, ...otherAspects ], [ mainAspect, troubleAspect, ...otherAspects ].length );
     const aspectClassNameMap = { 0: 'Aspect-main', 1: 'Aspect-trouble' };
     const aspectElements = intersperse(
       [ mainAspect, troubleAspect, ...otherAspects ]
@@ -64,8 +75,8 @@ export default class SheetBlock extends Component {
       { stress.map( (stressLane, stressLaneKey)=>(
         <div className={styles.StressLane} key={stressLaneKey} >
           <strong>{stressLaneKey}: </strong>
-          { stressLane.map( (isUsed, value)=>(
-            <Input type="checkbox" value={isUsed} inline superscriptAfter={value + 1} />
+          { stressLane.map( (isUsed, boxIndex)=>(
+            <Input type="checkbox" value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.updateStressBox} handleChangeParams={stressLaneKey + '/' + boxIndex} />
           ) ) }
         </div>
       ) ) }
@@ -81,11 +92,11 @@ export default class SheetBlock extends Component {
     return (
       <div className={styles.SheetBlock} key={key} >
         <h2 className={styles['SheetBlock-name']} ><span>{name}</span>{headingRefresh}</h2>
+        {descriptionBlock}
         {aspectBlock}
         {skillBlock}
         {stuntsBlock}
         {extrasBlock}
-
         {stressBlock}
         {consequencesBlock}
 

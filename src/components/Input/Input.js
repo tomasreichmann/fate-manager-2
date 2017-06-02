@@ -84,6 +84,7 @@ export default class Input extends Component {
     return (<label className={classNames.join(' ')}>
       {superscriptBefore ? <span className={[styles['Label-superscript'], styles['Label-superscript--before']].join(' ')} >{superscriptBefore}</span> : null}
       {label ? <span className={styles.Label} >{label}</span> : null}
+      <div className={styles['Label-inputWrap']} >
       {this.inputTemplates[template]({
         ...props,
         type,
@@ -91,6 +92,7 @@ export default class Input extends Component {
       })}
       {type === 'checkbox' ? <span className={styles['Input-fauxCheckbox']} ></span> : null}
       {superscriptAfter ? <span className={[styles['Label-superscript'], styles['Label-superscript--after']].join(' ')} >{superscriptAfter}</span> : null}
+      </div>
     </label>);
   }
 }

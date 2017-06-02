@@ -50,6 +50,10 @@ $inputBorder: 2px solid $inverse-bg;
     }
   }
 
+  &-inputWrap {
+    position: relative;
+  }
+
   &-superscript {
     position: absolute;
     font-size: 1.8rem;

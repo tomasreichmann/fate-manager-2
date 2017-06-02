@@ -1,6 +1,6 @@
 import firebaseConfig from '../../../firebase-config';
 import * as firebase from 'firebase';
-import { Map, fromJS } from 'immutable';
+import { Map, List, fromJS } from 'immutable';
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const firebaseDb = firebaseApp.database();
@@ -40,6 +40,192 @@ const initialState = Map({
     loaded: false,
     list: Map(),
     selected: Map(),
+  }),
+  templates: Map({
+    list: List([fromJS({
+      name: 'Vesmírná Sága',
+      key: -1,
+      aspects: [
+        {
+          type: 'main',
+          required: true,
+        },
+        {
+          type: 'trouble',
+          required: true,
+        },
+        { type: 'other' },
+        { type: 'other' },
+        { type: 'other' },
+      ],
+      skills: {
+        atletika: {
+          key: 'atletika',
+          name: 'Atletika',
+          description: 'házení věcí, úhyb',
+        },
+        zlodejstvi: {
+          key: 'zlodejstvi',
+          name: 'Zlodějství',
+          description: 'např. vypáčení zámku, vykrádání kapes',
+        },
+        konexe: {
+          key: 'konexe',
+          name: 'Konexe',
+          description: 'např. sehnat nocleh na jednu noc, informace, apod.',
+        },
+        remeslo: {
+          key: 'remeslo',
+          name: 'Řemeslo',
+          description: 'Ušít oblečení, zpravit boty, vyrobit nábytek, upéct dort, ukovat prsten, sváření',
+        },
+        klamani: {
+          key: 'klamani',
+          name: 'Klamání',
+          description: 'Lhaní, padělání',
+        },
+        pilotovani: {
+          key: 'pilotovani',
+          name: 'Pilotování',
+          description: 'manévrování s pilotovanou věcí, útok naražením (může dostat zranění i útočník)',
+        },
+        vciteni: {
+          key: 'vciteni',
+          name: 'Vcítění',
+          description: 'čtení emocí, motivací, vyslýchání, léčení psychických následků, svádění',
+        },
+        provokace: {
+          key: 'provokace',
+          name: 'Provokace',
+          description: 'manipulace, vyprovokování agrese',
+        },
+        boj: {
+          key: 'boj',
+          name: 'Boj',
+          description: 'veškerý fyzický boj',
+        },
+        vysetrovani: {
+          key: 'vysetrovani',
+          name: 'Vyšetřování',
+          description: 'Zjištění hlubšího smyslu ze stop, kriminalistika',
+        },
+        veda: {
+          key: 'veda',
+          name: 'Věda',
+          description: 'hlubší znalost fyziky, programování',
+        },
+        medicina: {
+          key: 'medicina',
+          name: 'Medicína',
+          description: 'léčení, znalost anatomie, léčení fyzických následků',
+        },
+        technologie: {
+          key: 'technologie',
+          name: 'Technologie',
+          description: 'Tvorba a oprava elektroniky, hackování',
+        },
+        vsimavost: {
+          key: 'vsimavost',
+          name: 'Všímavost',
+          description: 'Pohotovost, schopnost zpozorovat skryté věci',
+        },
+        fyzickaZdatnost: {
+          key: 'fyzickaZdatnost',
+          name: 'Fyzická zdatnost',
+          description: 'schopnost ustát ránu, zápasení, překonání silou',
+        },
+        diplomacie: {
+          key: 'diplomacie',
+          name: 'Diplomacie',
+          description: 'vyjednávání, obchodování',
+        },
+        zdroje: {
+          key: 'zdroje',
+          name: 'Zdroje',
+          description: 'schopnost získat suroviny, nebo užitečné předměty',
+        },
+        strelba: {
+          key: 'strelba',
+          name: 'Střelba',
+          description: 'veškerý nekontaktní boj',
+        },
+        kradmost: {
+          key: 'kradmost',
+          name: 'Kradmost',
+          description: 'Plížení, útok ze zálohy, pokládání pastí',
+        },
+        vule: {
+          key: 'vule',
+          name: 'Vůle',
+          description: 'schopnost odolat psychickému útoku',
+        },
+        artilerie: {
+          key: 'artilerie',
+          name: 'Artilérie',
+          description: 'používání velkých zbraní, střílení pomocí lodních systémů nebo prostřednictvím dálkového ovládání',
+        },
+      },
+      stress: [
+        {
+          label: 'Fyzický stress',
+          key: 'physical',
+          defaultCount: 2,
+          bonusConditions: [
+            {
+              skill: 'fyzickaZdatnost',
+              level: 1,
+              bonus: 1
+            },
+            {
+              skill: 'fyzickaZdatnost',
+              level: 3,
+              bonus: 1
+            }
+          ]
+        },
+        {
+          label: 'Psychický stress',
+          key: 'mental',
+          defaultCount: 2,
+          bonusConditions: [
+            {
+              skill: 'vule',
+              level: 1,
+              bonus: 1
+            },
+            {
+              skill: 'vule',
+              level: 3,
+              bonus: 1
+            }
+          ]
+        }
+      ],
+      consequences: [
+        {
+          label: 'Mírný',
+          value: 2
+        },
+        {
+          label: 'Střední',
+          value: 4
+        },
+        {
+          label: 'Vážný',
+          value: 6,
+          condition: [
+            {
+              skill: 'fyzickaZdatnost',
+              value: 5
+            },
+            {
+              skill: 'vule',
+              value: 5
+            }
+          ]
+        }
+      ]
+    })])
   }),
   routeBeforeLogin: null,
   user: initialUser ? processUser(initialUser) : null,
@@ -122,6 +308,7 @@ export default function reducer(state = initialState, action = {}) {
         loggingOut: false,
         user: null,
         session: null,
+        sheets: initialState.get('sheets'),
       });
     }
     case LOGOUT_FAIL: {

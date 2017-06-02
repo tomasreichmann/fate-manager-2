@@ -1,6 +1,40 @@
 @import "../../theme/variables.scss";
 
 .EditSheet {
+
+  &-heading {
+    display: flex;
+
+    > div {
+      flex: 1 1 auto;
+
+      + div {
+        flex: 0 1 auto;
+        margin-left: 2rem;
+      }
+    }
+
+    label {
+      display: flex;
+      align-items: baseline;
+
+      > div {
+        flex: 1 1 auto;
+        margin-left: 0.5rem;
+      }
+    }
+  }
+
+  &-skill {
+    strong {
+      margin-right: 2rem;
+    }
+  }
+
+  &-stressBox {
+    margin-right: 1rem;
+  }
+
   &-actions {
     text-align: right;
 
