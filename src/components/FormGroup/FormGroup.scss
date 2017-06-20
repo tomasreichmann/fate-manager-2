@@ -1,0 +1,13 @@
+@import "../../theme/variables.scss";
+
+.FormGroup {
+  display: flex;
+  margin: 1rem 0;
+
+  &-item:first-child {
+    flex: 1 1 auto;
+  }
+  &-item + &-item {
+    margin-left: 1rem;
+  }
+}
