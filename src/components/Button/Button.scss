@@ -10,6 +10,8 @@
   padding: $padding-base-vertical ($btn-clipping-size + $padding-base-horizontal) $padding-base-vertical $padding-base-horizontal;
   transition: background-color 0.3s;
   outline: none;
+  font-size: 1.5rem;
+  line-height: 1.5;
 
 
   &--noClip,

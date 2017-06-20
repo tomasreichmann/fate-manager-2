@@ -9,6 +9,8 @@ $inputBorder: 2px solid $inverse-bg;
   color: $inverse-bg;
   width: 100%;
   display: block;
+  font-size: 1.5rem;
+  line-height: 2rem;
 
   &--checkbox {
     position: absolute;
@@ -41,6 +43,7 @@ $inputBorder: 2px solid $inverse-bg;
   vertical-align: middle;
   display: block;
   margin: 0;
+  font-size: 1.5rem;
 
   &--inline {
     display: inline-block;
