@@ -383,6 +383,13 @@ export function updateSession(path, value) {
   };
 }
 
+export function pushToSession(path, value) {
+  return function dispatchOnSessionValue(dispatch, getState) {
+    const user = getState().firebase.get('user');
+    updateDb('users/' + user.get('uid') + '/' + path, value, 'push');
+  };
+}
+
 export function saveRoute(route) {
   const user = getUser();
   updateDb('users/' + user.get('uid') + '/route', route);

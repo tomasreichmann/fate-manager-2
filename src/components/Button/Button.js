@@ -5,6 +5,7 @@ export default class Button extends Component {
   static propTypes = {
     className: PropTypes.string,
     onClick: PropTypes.func,
+    onClickParams: PropTypes.object,
     primary: PropTypes.bool,
     secondary: PropTypes.bool,
     success: PropTypes.bool,
@@ -19,6 +20,12 @@ export default class Button extends Component {
 
   constructor(props) {
     super(props);
+    this.onClickHandler = this.onClickHandler.bind(this);
+  }
+
+  onClickHandler(event) {
+    const args = this.props.onClickParams ? [this.props.onClickParams, event] : [event];
+    this.props.onClick(...args);
   }
 
   render() {
@@ -34,6 +41,8 @@ export default class Button extends Component {
       link,
       block,
       disabled,
+      onClick,
+      onClickParams,
       clipBottomLeft,
       ...props
     } = this.props;
@@ -54,6 +63,8 @@ export default class Button extends Component {
 
     const processedClassName = [styles.Button].concat(classNames).join(' ');
 
-    return <button className={processedClassName} {...props}>{children}</button>;
+    const onClickProp = onClick ? { onClick: this.onClickHandler } : {};
+
+    return <button className={processedClassName} {...onClickProp} {...props}>{children}</button>;
   }
 }

@@ -77,7 +77,7 @@ export default class SheetBlock extends Component {
     const stressBlock = stress ? <div>
       <h3>Stress</h3>
       { template.get('stress').map( (stressLane, stressLaneIndex)=>(
-        console.log('stressLaneIndex', stressLaneIndex), <div className={styles['SheetBlock-stressLane']} key={stressLaneIndex} >
+        <div className={styles['SheetBlock-stressLane']} key={stressLaneIndex} >
           <strong>{stressLane.get('label')}: </strong>
           { (sheet.getIn(['stress', stressLaneIndex.toString()]) || []).map( (isUsed, boxIndex)=>(
             <Input type="checkbox" className={styles['SheetBlock-stressBox']} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
@@ -103,7 +103,6 @@ export default class SheetBlock extends Component {
         {extrasBlock}
         {stressBlock}
         {consequencesBlock}
-
         {children}
       </div>
     );

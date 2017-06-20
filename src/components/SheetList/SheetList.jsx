@@ -6,15 +6,15 @@ import { Button, Input } from 'components';
 import {toggleSheetSelection} from 'redux/modules/firebase';
 
 @connect(
-    state => ({
-      sheets: state.firebase.getIn(['sheets', 'list']),
-      selection: state.firebase.getIn(['sheets', 'selected']),
-    }),
+  state => ({
+    sheets: state.firebase.getIn(['sheets', 'list']),
+    selection: state.firebase.getIn(['sheets', 'selected']),
+  }),
 
-    dispatch => bindActionCreators({
-      toggleSheetSelection,
-      pushState: push,
-    }, dispatch)
+  dispatch => bindActionCreators({
+    toggleSheetSelection,
+    pushState: push,
+  }, dispatch)
 )
 export default class InfoBar extends Component {
 
