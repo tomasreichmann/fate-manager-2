@@ -3,6 +3,7 @@ import React, { Component, PropTypes } from 'react';
 export default class FormGroup extends Component {
   static propTypes = {
     className: PropTypes.string,
+    childTypes: PropTypes.array,
     children: PropTypes.any,
   };
 
@@ -15,6 +16,7 @@ export default class FormGroup extends Component {
     const {
       children,
       className,
+      childTypes = [],
       ...props
     } = this.props;
 
@@ -23,7 +25,12 @@ export default class FormGroup extends Component {
     console.log('processedClassName', processedClassName);
 
     return (<div className={styles.FormGroup} {...props}>{
-      children.map( (child)=>( <div className={styles['FormGroup-item']} >{child}</div> ) )
+      children.map( (child, childIndex)=>( <div className={
+          (childTypes[childIndex] ? childTypes[childIndex].split(' ') : [])
+          .map( (type)=>( styles['FormGroup-item--' + type] ) )
+          .concat([styles['FormGroup-item']])
+          .join(' ')
+      } >{child}</div> ) )
     }</div>);
   }
 }

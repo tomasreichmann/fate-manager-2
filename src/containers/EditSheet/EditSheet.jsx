@@ -148,7 +148,7 @@ export default class EditSheet extends Component {
       <h2>Aspects</h2>
       {sheet.get('aspects').map( (aspect, aspectKey)=>(
         console.log('aspect', aspect),
-        <FormGroup key={'aspect-' + aspectKey} childrenTypes={[null, 'flexible', null]}>
+        <FormGroup key={'aspect-' + aspectKey} childTypes={[null, 'flexible', null]}>
           <Input type="select" options={ template.getIn(['aspects', 'types']).toJS() } value={aspect.get('type')} handleChange={this.handleChange} handleChangeParams={{path: 'aspects/' + aspectKey + '/type'}} />
           <Input value={aspect.get('title')} handleChange={this.handleChange} handleChangeParams={{path: 'aspects/' + aspectKey + '/title'}} />
           <Button danger onClick={this.removeItem} onClickParams={{path: 'aspects/' + aspectKey}} >delete</Button>
@@ -166,14 +166,20 @@ export default class EditSheet extends Component {
     const skillsBlock = (<div className={styles['EditSheet-skillsBlock']} >
       <h2>Skills</h2>
       { sheet.get('skills').sort().reverse().reduce( ( elements, level, skillSlug ) => (
-        level > 0 ? elements.concat([<FormGroup className={styles['EditSheet-skill']} ><strong>{template.getIn(['skills', skillSlug, 'name'])} {level}</strong> <Button danger clipBottomLeft onClick={this.changeSkill.bind(this, skillSlug, level - 1)} >&ndash;</Button><Button success onClick={this.changeSkill.bind(this, skillSlug, level + 1)} >+</Button> </FormGroup>]) : elements
+        level > 0 ? elements.concat([<FormGroup className={styles['EditSheet-skill']} childTypes={['flexible', null]} >
+          <strong>{template.getIn(['skills', skillSlug, 'name'])} {level}</strong>
+          <div>
+            <Button danger clipBottomLeft onClick={this.changeSkill.bind(this, skillSlug, level - 1)} >&ndash;</Button>
+            <Button success onClick={this.changeSkill.bind(this, skillSlug, level + 1)} >+</Button>
+          </div>
+        </FormGroup>]) : elements
       ), [] ) }
     </div>);
 
     const extrasBlock = (<div className={styles['EditSheet-extrasBlock']} >
       <h2>Extras</h2>
       {sheet.get('extras') && sheet.get('extras').size && sheet.get('extras').map( (extra, extraKey) =>{
-        return (<FormGroup key={'extra-' + extraKey} childrenTypes={['flexible', null]}>
+        return (<FormGroup key={'extra-' + extraKey} childTypes={['flexible', null]}>
           <Input type="text" value={extra} handleChange={this.handleChange} handleChangeParams={{path: 'extras/' + extraKey}} />
           <Button danger onClick={this.removeItem} onClickParams={{path: 'extras/' + extraKey}} >delete</Button>
         </FormGroup>);
@@ -184,7 +190,7 @@ export default class EditSheet extends Component {
     const stuntsBlock = (<div className={styles['EditSheet-stuntsBlock']} >
       <h2>Stunts</h2>
       {sheet.get('stunts') && sheet.get('stunts').size && sheet.get('stunts').map( (stunt, stuntKey) =>{
-        return (<FormGroup key={'stunt-' + stuntKey} childrenTypes={['flexible', null]}>
+        return (<FormGroup key={'stunt-' + stuntKey} childTypes={['flexible', null]}>
           <Input type="text" value={stunt} handleChange={this.handleChange} handleChangeParams={{path: 'stunts/' + stuntKey}} />
           <Button danger onClick={this.removeItem} onClickParams={{path: 'stunts/' + stuntKey}} >delete</Button>
         </FormGroup>);
@@ -195,7 +201,7 @@ export default class EditSheet extends Component {
     const stressBlock = (<div className={styles['EditSheet-stressBlock']} >
       <h2>Stress</h2>
       { template.get('stress').map( (stressLane, stressLaneIndex)=>(
-        <FormGroup className={styles['EditSheet-stressLane']} key={stressLaneIndex} childrenTypes={['full', 'flexible', null]}>
+        <FormGroup className={styles['EditSheet-stressLane']} key={stressLaneIndex} childTypes={['full', 'flexible', null]}>
           <strong>{stressLane.get('label')}: </strong>
           <div className={styles['EditSheet-stressBlock-boxes']}>
             { (sheet.getIn(['stress', stressLaneIndex.toString()]) || []).map( (isUsed, boxIndex)=>(
@@ -203,7 +209,7 @@ export default class EditSheet extends Component {
             ) ) }
           </div>
           <div>
-            <Button danger clipBottomLeft onClick={this.removeStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}>-</Button>
+            <Button danger clipBottomLeft onClick={this.removeStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}>&ndash;</Button>
             <Button success onClick={this.addStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}>+</Button>
           </div>
         </FormGroup>
