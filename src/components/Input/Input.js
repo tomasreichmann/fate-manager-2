@@ -52,6 +52,22 @@ export default class Input extends Component {
         checked={!!value}
         onChange={this.handleChange}
       />
+    ),
+    select: ({path, options = [], inputRef, value, styles, ...props})=>(
+      <select
+        {...props}
+        ref={inputRef}
+        className={[styles.Input, styles['Input--select']].join(' ')}
+        type="select"
+        key={path}
+        data-model={path}
+        value={value}
+        onChange={this.handleChange}
+      >
+        { options.map( (option, optionIndex) => (
+          <option key={optionIndex} value={ option.value } >{option.label || option.value}</option>
+        ) ) }
+      </select>
     )
   }
 
