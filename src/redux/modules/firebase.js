@@ -45,19 +45,22 @@ const initialState = Map({
     list: List([fromJS({
       name: 'Vesmírná Sága',
       key: -1,
-      aspects: [
-        {
-          type: 'main',
-          required: true,
-        },
-        {
-          type: 'trouble',
-          required: true,
-        },
-        { type: 'other' },
-        { type: 'other' },
-        { type: 'other' },
-      ],
+      aspects: {
+        types: [
+          {
+            label: 'Main',
+            value: 'main',
+          },
+          {
+            label: 'Trouble',
+            value: 'trouble',
+          },
+          {
+            label: 'Other',
+            value: 'other',
+          },
+        ]
+      },
       skills: {
         atletika: {
           key: 'atletika',

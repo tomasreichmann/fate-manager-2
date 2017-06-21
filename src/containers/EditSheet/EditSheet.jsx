@@ -81,10 +81,10 @@ export default class EditSheet extends Component {
     this.props.updateSession(sessionPath, value);
   }
 
-  addItem({path}, event) {
+  addItem({path, newItem = ''}, event) {
     event.preventDefault();
     const sessionPath = 'editedSheets/' + this.props.params.key + '/' + path;
-    this.props.pushToSession(sessionPath, '');
+    this.props.pushToSession(sessionPath, newItem);
   }
 
   removeItem({path}, event) {
@@ -146,9 +146,21 @@ export default class EditSheet extends Component {
 
     const aspectsBlock = (<div className={styles['EditSheet-aspectsBlock']} >
       <h2>Aspects</h2>
-      {template.get('aspects').map( (aspect, index)=>(
-        <Input key={'aspect-' + index} label={aspect.get('type')} value={sheet.getIn(['aspects', index])} handleChange={this.handleChange} handleChangeParams={{path: 'aspects/' + index}} />
+      {sheet.get('aspects').map( (aspect, aspectKey)=>(
+        console.log('aspect', aspect),
+        <FormGroup key={'aspect-' + aspectKey} childrenTypes={[null, 'flexible', null]}>
+          <Input type="select" options={ template.getIn(['aspects', 'types']).toJS() } value={aspect.get('type')} handleChange={this.handleChange} handleChangeParams={{path: 'aspects/' + aspectKey + '/type'}} />
+          <Input value={aspect.get('title')} handleChange={this.handleChange} handleChangeParams={{path: 'aspects/' + aspectKey + '/title'}} />
+          <Button danger onClick={this.removeItem} onClickParams={{path: 'aspects/' + aspectKey}} >delete</Button>
+        </FormGroup>
       ) )}
+      <Button primary onClick={this.addItem} onClickParams={{
+        path: 'aspects',
+        newItem: {
+          type: template.getIn(['aspects', 'types']).first().get('value'),
+          title: '',
+        }
+      }}>add</Button>
     </div>);
 
     const skillsBlock = (<div className={styles['EditSheet-skillsBlock']} >
@@ -161,18 +173,18 @@ export default class EditSheet extends Component {
     const extrasBlock = (<div className={styles['EditSheet-extrasBlock']} >
       <h2>Extras</h2>
       {sheet.get('extras') && sheet.get('extras').size && sheet.get('extras').map( (extra, extraKey) =>{
-        return (<FormGroup key={'extra-' + extraKey} >
+        return (<FormGroup key={'extra-' + extraKey} childrenTypes={['flexible', null]}>
           <Input type="text" value={extra} handleChange={this.handleChange} handleChangeParams={{path: 'extras/' + extraKey}} />
           <Button danger onClick={this.removeItem} onClickParams={{path: 'extras/' + extraKey}} >delete</Button>
         </FormGroup>);
       }) || null }
-      <Button primary onClick={this.addItem} onClickParams={{ path: 'extras/' }}>add</Button>
+      <Button primary onClick={this.addItem} onClickParams={{ path: 'extras' }}>add</Button>
     </div>);
 
     const stuntsBlock = (<div className={styles['EditSheet-stuntsBlock']} >
       <h2>Stunts</h2>
       {sheet.get('stunts') && sheet.get('stunts').size && sheet.get('stunts').map( (stunt, stuntKey) =>{
-        return (<FormGroup key={'stunt-' + stuntKey} >
+        return (<FormGroup key={'stunt-' + stuntKey} childrenTypes={['flexible', null]}>
           <Input type="text" value={stunt} handleChange={this.handleChange} handleChangeParams={{path: 'stunts/' + stuntKey}} />
           <Button danger onClick={this.removeItem} onClickParams={{path: 'stunts/' + stuntKey}} >delete</Button>
         </FormGroup>);
@@ -183,15 +195,17 @@ export default class EditSheet extends Component {
     const stressBlock = (<div className={styles['EditSheet-stressBlock']} >
       <h2>Stress</h2>
       { template.get('stress').map( (stressLane, stressLaneIndex)=>(
-        <FormGroup className={styles['EditSheet-stressLane']} key={stressLaneIndex} >
+        <FormGroup className={styles['EditSheet-stressLane']} key={stressLaneIndex} childrenTypes={['full', 'flexible', null]}>
           <strong>{stressLane.get('label')}: </strong>
           <div className={styles['EditSheet-stressBlock-boxes']}>
             { (sheet.getIn(['stress', stressLaneIndex.toString()]) || []).map( (isUsed, boxIndex)=>(
               <Input type="checkbox" className={styles['EditSheet-stressBox']} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
             ) ) }
           </div>
-          <Button danger clipBottomLeft onClick={this.removeStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}>-</Button>
-          <Button success onClick={this.addStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}>+</Button>
+          <div>
+            <Button danger clipBottomLeft onClick={this.removeStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}>-</Button>
+            <Button success onClick={this.addStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}>+</Button>
+          </div>
         </FormGroup>
       ) ) }
     </div>);

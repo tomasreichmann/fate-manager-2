@@ -42,19 +42,18 @@ export default class SheetBlock extends Component {
       trouble: troubleAspect,
       ...otherAspects
     } = aspects ? aspects.toObject() : {};
-    const aspectClassNameMap = { 0: 'Aspect-main', 1: 'Aspect-trouble' };
-    const aspectElements = intersperse(
-      [ mainAspect, troubleAspect, ...otherAspects ]
-        .reduce( (output, aspect, index)=>{
-          const classNames = [
-            styles.Aspect,
-            styles[aspectClassNameMap[index] || 'Aspect-other']
-          ].join(' ');
-          return aspect ? output.concat([<span className={classNames} key={'aspect-' + index} >{aspect}</span>]) : output;
-        }, [] ),
-      ', ')
+
+    const aspectElements = aspects ? intersperse(
+      aspects.toArray().map( (aspect, aspectKey)=>{
+        const classNames = [
+          styles.Aspect,
+          styles[aspect.get('type') || 'Aspect-other']
+        ].join(' ');
+        return <span className={classNames} key={'aspect-' + aspectKey} >{aspect.get('title')}</span>;
+      }),
+      ', ') : null
     ;
-    const aspectBlock = aspectElements.length ? <p className={styles['SheetBlock-aspects']}>{aspectElements}</p> : null;
+    const aspectBlock = aspectElements ? <p className={styles['SheetBlock-aspects']}>{aspectElements}</p> : null;
 
 
     // skills ---

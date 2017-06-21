@@ -16,7 +16,7 @@ import {toggleSheetSelection} from 'redux/modules/firebase';
     pushState: push,
   }, dispatch)
 )
-export default class InfoBar extends Component {
+export default class SheetList extends Component {
 
   static propTypes = {
     sheets: PropTypes.object,
