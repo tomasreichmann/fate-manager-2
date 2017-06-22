@@ -14,7 +14,7 @@ export default class FormGroup extends Component {
   render() {
     const styles = require('./FormGroup.scss');
     const {
-      children,
+      children = [],
       className,
       childTypes = [],
       ...props
@@ -25,7 +25,7 @@ export default class FormGroup extends Component {
     console.log('processedClassName', processedClassName);
 
     return (<div className={styles.FormGroup} {...props}>{
-      children.map( (child, childIndex)=>( <div className={
+      ((typeof children.map === 'function') ? children : [children]).map( (child, childIndex)=>( <div className={
           (childTypes[childIndex] ? childTypes[childIndex].split(' ') : [])
           .map( (type)=>( styles['FormGroup-item--' + type] ) )
           .concat([styles['FormGroup-item']])

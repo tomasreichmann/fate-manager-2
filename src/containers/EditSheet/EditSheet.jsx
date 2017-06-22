@@ -120,12 +120,11 @@ export default class EditSheet extends Component {
   render() {
     const {params, editedSheets, templates} = this.props;
     const styles = require('./EditSheet.scss');
-    console.log('this.props', this.props, editedSheets);
     const key = params.key;
     const sheet = editedSheets.get(key);
     const template = templates.get( editedSheets.get('template') || -1 );
-    console.log('sheet', sheet.toJS());
-    console.log('template', template.toJS());
+    // console.log('sheet', sheet.toJS());
+    // console.log('template', template.toJS());
 
     console.log('description', sheet.get('description'));
     console.log('aspects', sheet.get('aspects'));
@@ -218,9 +217,20 @@ export default class EditSheet extends Component {
 
     const consequencesBlock = (<div className={styles['EditSheet-consequencesBlock']} >
       <h2>Consequences</h2>
-      {template.get('consequences').map( (consequence, index)=>(
-      <Input key={'consequence-' + index} label={consequence.get('label')} value={sheet.getIn(['consequences', index])} handleChange={this.handleChange} handleChangeParams={{path: 'consequences/' + index}} superscriptAfter={consequence.get('value')} />
-    ) )}</div>);
+      {sheet.get('consequences') ? sheet.get('consequences').map( (consequence, index)=>(
+        <FormGroup key={'consequence-' + index} childTypes={['flexible', null]}>
+          <Input
+            label={template.getIn(['consequences', index, 'label']) || template.get('consequences').last().get('label') }
+            value={sheet.getIn(['consequences', index])}
+            handleChange={this.handleChange}
+            handleChangeParams={{path: 'consequences/' + index}}
+            superscriptAfter={template.getIn(['consequences', index, 'value']) || template.get('consequences').last().get('value')}
+          />
+          <Button danger onClick={this.removeItem} onClickParams={{path: 'consequences/' + index}} >delete</Button>
+        </FormGroup>
+      ) ) : null}
+      <Button primary onClick={this.addItem} onClickParams={{ path: 'consequences' }}>add</Button>
+    </div>);
 
     return (
       <div className={styles.EditSheet + ' container'} >

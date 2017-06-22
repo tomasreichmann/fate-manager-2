@@ -41,6 +41,10 @@
     }
   }
 
+  &-stressBox + &-stressBox {
+    margin-left: 1rem;
+  }
+
   &-superscript {
     position: absolute;
     font-size: 1.8rem;

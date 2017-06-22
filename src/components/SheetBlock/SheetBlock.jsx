@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Input } from 'components';
+import { Input, FormGroup } from 'components';
 import { intersperse } from '../../utils/utils';
 
 export default class SheetBlock extends Component {
@@ -73,24 +73,36 @@ export default class SheetBlock extends Component {
       ) )}</div>) : null;
 
     // stress ---
-    const stressBlock = stress ? <div>
-      <h3>Stress</h3>
+    const stressBlock = stress ? (<div className={styles['SheetBlock-stressBlock']} >
+      <h2>Stress</h2>
       { template.get('stress').map( (stressLane, stressLaneIndex)=>(
-        <div className={styles['SheetBlock-stressLane']} key={stressLaneIndex} >
+        <FormGroup className={styles['SheetBlock-stressLane']} key={stressLaneIndex} childTypes={['full', 'flexible', null]}>
           <strong>{stressLane.get('label')}: </strong>
-          { (sheet.getIn(['stress', stressLaneIndex.toString()]) || []).map( (isUsed, boxIndex)=>(
-            <Input type="checkbox" className={styles['SheetBlock-stressBox']} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
-          ) ) }
-        </div>
+          <div className={styles['SheetBlock-stressBlock-boxes']}>
+            { (stress.get(stressLaneIndex.toString()) || []).map( (isUsed, boxIndex)=>(
+              <Input type="checkbox" className={styles['SheetBlock-stressBox']} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
+            ) ) }
+          </div>
+        </FormGroup>
       ) ) }
-    </div> : null;
+    </div>) : null;
 
     // consequences ---
-    const consequenceElements = (consequences && consequences.size) ? intersperse([ 'minor', 'moderate', 'severe' ].reduce( (elements, level ) => (
-      consequences.get(level) ? elements.concat([<span className={styles['SheetBlock-consequence']} >{ consequences.get(level) + ' (' + level + ')' }</span>]) : elements
-    ), [] ), ', ') : null;
 
-    const consequencesBlock = consequenceElements && consequenceElements.length ? (<div className={styles['SheetBlock-consequences']} ><strong>Consequences: </strong>{consequenceElements}</div>) : null;
+    const consequencesBlock = consequences ? (<div className={styles['SheetBlock-consequencesBlock']} >
+      <h2>Consequences</h2>
+      { consequences.map( (consequence, index)=>(
+        <FormGroup key={'consequence-' + index} childTypes={['flexible', null]}>
+          <Input
+            label={template.getIn(['consequences', index, 'label']) || template.get('consequences').last().get('label') }
+            value={consequences.get(index)}
+            handleChange={this.handleChange}
+            handleChangeParams={{path: 'consequences/' + index}}
+            superscriptAfter={template.getIn(['consequences', index, 'value']) || template.get('consequences').last().get('value')}
+          />
+        </FormGroup>
+      ) )}
+    </div>) : null;
 
     return (
       <div className={styles.SheetBlock} key={key} >
