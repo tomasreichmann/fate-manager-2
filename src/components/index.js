@@ -13,3 +13,4 @@ export Button from './Button/Button';
 export SheetBlock from './SheetBlock/SheetBlock';
 export Alert from './Alert/Alert';
 export FormGroup from './FormGroup/FormGroup';
+export Modal from './Modal/Modal';

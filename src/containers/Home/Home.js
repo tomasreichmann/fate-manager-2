@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import { Map } from 'immutable';
 import { SheetList, Button } from 'components';
+import { openModal, closeModal } from 'redux/modules/modal';
 
 @connect(
   state => ({
@@ -12,12 +13,18 @@ import { SheetList, Button } from 'components';
     sheets: state.firebase.getIn(['sheets', 'list']),
     selection: state.firebase.getIn(['sheets', 'selected']),
   }),
+  {
+    openModal,
+    closeModal,
+  }
 )
 export default class Home extends Component {
   static propTypes = {
     fullState: PropTypes.object,
     sheets: PropTypes.object,
     templates: PropTypes.object,
+    openModal: PropTypes.func,
+    closeModal: PropTypes.func,
   };
   static contextTypes = {
     store: PropTypes.object.isRequired
@@ -26,6 +33,15 @@ export default class Home extends Component {
   constructor(props) {
     super(props);
     this.migrateSheetAspects = this.migrateSheetAspects.bind(this);
+    this.newSheetDialog = this.newSheetDialog.bind(this);
+  }
+
+  newSheetDialog() {
+    console.log('newSheetDialog');
+    this.props.openModal({
+      children: <div>XXX</div>,
+      closeModal: this.props.closeModal
+    });
   }
 
   migrateSheetAspects() {
@@ -70,8 +86,8 @@ export default class Home extends Component {
 
           <hr />
 
-          <p><Button block danger onClick={this.migrateSheetAspects} >DANGEROUS: migrateSheetAspects!</Button></p>
-          <p><Button block success >New sheet</Button></p>
+          {false && <p><Button block danger onClick={this.migrateSheetAspects} >DANGEROUS: migrateSheetAspects!</Button></p>}
+          <p><Button block success onClick={this.newSheetDialog}>New sheet!</Button></p>
 
         </div>
 

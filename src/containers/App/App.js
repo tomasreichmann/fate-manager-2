@@ -8,11 +8,13 @@ import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
 import { connectSheets, logout, connectSession, saveRoute } from 'redux/modules/firebase';
 import { push } from 'react-router-redux';
+import { Modal } from 'components';
 import config from '../../config';
 
 @connect(
   state => ({
     user: state.firebase.get('user'),
+    modal: state.modal,
     routeBeforeLogin: state.firebase.get('routeBeforeLogin'),
     session: state.firebase.get('session'),
   }),
@@ -22,6 +24,7 @@ export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
     user: PropTypes.object,
+    modal: PropTypes.object,
     session: PropTypes.object,
     logout: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
@@ -64,8 +67,8 @@ export default class App extends Component {
   };
 
   render() {
-    const {user} = this.props;
     const styles = require('./App.scss');
+    const {user, modal} = this.props;
 
     return (
       <div className={styles.app}>
@@ -83,24 +86,21 @@ export default class App extends Component {
 
           <Navbar.Collapse eventKey={0}>
             <Nav navbar>
-              {user && <LinkContainer to="/chat">
-                <NavItem eventKey={1}>Chat</NavItem>
-              </LinkContainer>}
-
               <LinkContainer to="/about">
                 <NavItem eventKey={5}>About Us</NavItem>
               </LinkContainer>
 
-              {!user &&
-              <LinkContainer to="/login">
-                <NavItem eventKey={6}>Login</NavItem>
-              </LinkContainer>}
-              {user &&
-              <LinkContainer to="/logout">
-                <NavItem eventKey={7} className="logout-link" onClick={this.handleLogout}>
-                  Logout
-                </NavItem>
-              </LinkContainer>}
+              {user ?
+                <LinkContainer to="/logout">
+                  <NavItem eventKey={7} className="logout-link" onClick={this.handleLogout}>
+                    Logout
+                  </NavItem>
+                </LinkContainer>
+                :
+                <LinkContainer to="/login">
+                  <NavItem eventKey={6}>Login</NavItem>
+                </LinkContainer>
+              }
             </Nav>
             {user &&
             <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.get('displayName') || user.get('email')}</strong>.</p>}
@@ -116,6 +116,8 @@ export default class App extends Component {
         <footer className="text-center">
           created by <a href="https://tomasreichmann.cz" target="_blank" >Tomáš Reichmann</a> 2017
         </footer>
+
+        {modal && modal.isOpen ? <Modal {...modal} /> : null }
       </div>
     );
   }

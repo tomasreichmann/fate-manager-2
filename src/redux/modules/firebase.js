@@ -43,7 +43,7 @@ const initialState = Map({
   }),
   templates: Map({
     list: List([fromJS({
-      name: 'Vesmírná Sága',
+      name: 'Vesmírná Sága - postava',
       key: -1,
       aspects: {
         types: [
