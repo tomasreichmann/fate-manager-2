@@ -45,6 +45,7 @@ export default class EditSheet extends Component {
     this.discard = this.discard.bind(this);
     this.save = this.save.bind(this);
     this.viewAsBlock = this.viewAsBlock.bind(this);
+    this.addSkill = this.addSkill.bind(this);
   }
 
   redirect(to) {
@@ -80,6 +81,14 @@ export default class EditSheet extends Component {
   handleChange(value, {path}) {
     const sessionPath = 'editedSheets/' + this.props.params.key + '/' + path;
     this.props.updateSession(sessionPath, value);
+  }
+
+  addSkill(event) {
+    event.preventDefault();
+    const skillKey = this.newSkillSelect.value;
+    console.log('addSkill');
+    const sessionPath = 'editedSheets/' + this.props.params.key + '/skills/' + skillKey;
+    this.props.updateSession(sessionPath, 1);
   }
 
   addItem({path, newItem = ''}, event) {
@@ -121,8 +130,10 @@ export default class EditSheet extends Component {
   render() {
     const {params, editedSheets, templates} = this.props;
     const styles = require('./EditSheet.scss');
+    // const EditSheetInstance = this;
     const key = params.key;
-    const template = templates.get( editedSheets.get('template') || -1 );
+    console.log('templates', templates);
+    const template = templates.get( editedSheets.get('template') || 'VS-P' );
     const sheet = Map({
       description: '',
       aspects: List(),
@@ -183,6 +194,17 @@ export default class EditSheet extends Component {
           </div>
         </FormGroup>]) : elements
       ), [] ) }
+      <FormGroup>
+        <Input
+          type="select"
+          options={ template.get('skills')
+            .filter( (skill)=>(
+              !sheet.getIn(['skills', skill.get('key')])
+            ) )
+            .map( (skill) => ( { label: skill.get('skill'), value: skill.get('key') } ) ) }
+          inputRef={ (select)=>( this.newSkillSelect = select ) } />
+        <Button primary onClick={this.addSkill} >Add</Button>
+      </FormGroup>
     </div>);
 
     const extrasBlock = (<div className={styles['EditSheet-extrasBlock']} >
@@ -258,7 +280,7 @@ export default class EditSheet extends Component {
           {consequencesBlock}
           <hr />
           <div className={styles['EditSheet-actions']} >
-            <Button danger onClick={this.discard} >Discard updates</Button>
+            <Button danger onClick={this.discard} confirmMessage="Really discard all updates?" >Discard updates</Button>
             <Button primary onClick={this.viewAsBlock} >Leave unsaved and view as Block</Button>
             <Button success onClick={this.save} >Save</Button>
           </div>

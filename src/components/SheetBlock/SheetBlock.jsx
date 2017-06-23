@@ -26,7 +26,9 @@ export default class SheetBlock extends Component {
   render() {
     const { sheet, template, children } = this.props;
     const { name, key, refresh, description, aspects, skills = Map(), consequences, stress, stunts, extras } = sheet.toObject();
-    console.log('sheet', sheet);
+    console.log('sheet', sheet.toJS());
+    console.log('template', template);
+    console.log('template', template.toJS());
     console.log('name', name, 'key', key, 'refresh', refresh, 'aspects', aspects, 'skills', skills, 'consequences', consequences, 'stress', stress, 'stunts', stunts, 'extras', extras);
     const styles = require('./SheetBlock.scss');
 

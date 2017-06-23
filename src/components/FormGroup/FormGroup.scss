@@ -7,6 +7,7 @@
   align-items: flex-end;
 
   &-item {
+    min-width: 1px;
 
     &--flexible {
       flex: 1 1 auto;

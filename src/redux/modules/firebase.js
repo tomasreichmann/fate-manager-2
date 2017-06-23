@@ -1,6 +1,6 @@
 import firebaseConfig from '../../../firebase-config';
 import * as firebase from 'firebase';
-import { Map, List, fromJS } from 'immutable';
+import { Map, fromJS } from 'immutable';
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const firebaseDb = firebaseApp.database();
@@ -42,9 +42,9 @@ const initialState = Map({
     selected: Map(),
   }),
   templates: Map({
-    list: List([fromJS({
+    list: Map(fromJS({ 'VS-P': {
       name: 'Vesmírná Sága - postava',
-      key: -1,
+      key: 'VS-P',
       aspects: {
         types: [
           {
@@ -228,7 +228,7 @@ const initialState = Map({
           ]
         }
       ]
-    })])
+    }}))
   }),
   routeBeforeLogin: null,
   user: initialUser ? processUser(initialUser) : null,

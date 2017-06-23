@@ -38,8 +38,8 @@ export default class Block extends Component {
     };
   }
 
-  displayDeleteSheetConfirmation(item) {
-    console.log('displayDeleteSheetConfirmation', item.toJS() );
+  deleteSheet(item) {
+    console.log('deleteSheet', item.toJS() );
   }
 
   render() {
@@ -48,14 +48,19 @@ export default class Block extends Component {
     const keys = params.keys.split(';');
     const styles = require('./Block.scss');
     const selectedSheets = sheets.filter( (sheet)=>( keys.indexOf( sheet.get('key') ) > -1 ) );
+    console.log('selectedSheets', selectedSheets);
+    console.log('selectedSheets.first()', selectedSheets.first().toJS());
+    console.log('templateKey', selectedSheets.first().get('template') );
+    console.log('template', templates.get( selectedSheets.first().get('template') || 'VS-P' ) );
+
 
     return (
       <div className={styles.Blocks + ' container'} >
         { selectedSheets.map( (sheet)=>( <div className={styles['Blocks-item']} key={sheet.get('key')} >
-          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') || -1 )} updateSheet={updateSheet} >
+          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') || 'VS-P' )} updateSheet={updateSheet} >
             <div className={styles['Blocks-actions']} >
               <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(sheet.get('key')) )} >Edit</Button>
-              <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, sheet) } >Delete</Button>
+              <Button danger onClick={ updateSheet.bind(this, sheet.get('key'), null) } confirmMessage="Really delete forever?" >Delete</Button>
             </div>
           </SheetBlock>
         </div> ) ) }

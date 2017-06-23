@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import { Map } from 'immutable';
 import { SheetList, Button, FormGroup, Input } from 'components';
-import { createNewSheet } from 'redux/modules/firebase';
 import { push } from 'react-router-redux';
 
 
@@ -17,7 +16,6 @@ import { push } from 'react-router-redux';
   }),
   {
     pushState: push,
-    createNewSheet,
   }
 )
 export default class Home extends Component {
@@ -26,7 +24,7 @@ export default class Home extends Component {
     sheets: PropTypes.object,
     templates: PropTypes.object,
     pushState: PropTypes.func.isRequired,
-    createNewSheet: PropTypes.func.isRequired,
+    updateSheet: PropTypes.func.isRequired,
   };
   static contextTypes = {
     store: PropTypes.object.isRequired
@@ -48,7 +46,7 @@ export default class Home extends Component {
     console.log('sheets', this.props.sheets );
     console.log('templates', this.props.templates );
     const newSheets = this.props.sheets.map( (sheet)=>{
-      const template = this.props.templates.get( sheet.get('template') || -1 );
+      const template = this.props.templates.get( sheet.get('template') || '-1' );
       return sheet.update('aspects', (aspects)=>{
         return aspects.map( (aspect, aspectIndex)=>{
           if (typeof aspect === 'string') {

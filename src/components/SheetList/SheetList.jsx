@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import { Button, Input } from 'components';
 import {toggleSheetSelection} from 'redux/modules/firebase';
-
+import { updateSheet } from 'redux/modules/firebase';
 @connect(
   state => ({
     sheets: state.firebase.getIn(['sheets', 'list']),
@@ -34,8 +34,9 @@ export default class SheetList extends Component {
     this.select = this.select.bind(this);
   }
 
-  deleteSheet(item) {
-    console.log('deleteSheet', item.toJS() );
+  deleteSheet(key) {
+    console.log('deleteSheet', key );
+    updateSheet(key, null);
   }
 
   select(value, key) {
@@ -62,7 +63,7 @@ export default class SheetList extends Component {
         </div>
         <div className={styles['SheetList-item-actions']} >
           <Button warning onClick={pushState.bind(this, '/edit/' + encodeURIComponent(item.get('key')) )} >Edit</Button>
-          <Button danger onClick={ this.deleteSheet.bind(this, item) } confirmMessage="Really delete?" >Delete</Button>
+          <Button danger onClick={ this.deleteSheet.bind(this, item.get('key')) } confirmMessage="Really delete?" >Delete</Button>
         </div>
       </div> ) ) }
       { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Button link onClick={pushState.bind(this, '/block/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';') )} >Open: { filteredSelection.join(', ') }</Button></div> : null }
