@@ -5,6 +5,7 @@ export default class Input extends Component {
     type: PropTypes.string,
     label: PropTypes.any,
     inline: PropTypes.bool,
+    inputRef: PropTypes.func,
     className: PropTypes.string,
     handleChange: PropTypes.func,
     handleChangeParams: PropTypes.any,

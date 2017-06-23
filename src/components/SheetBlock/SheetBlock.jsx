@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Input, FormGroup } from 'components';
+import { Map } from 'immutable';
 import { intersperse } from '../../utils/utils';
 
 export default class SheetBlock extends Component {
@@ -24,7 +25,7 @@ export default class SheetBlock extends Component {
 
   render() {
     const { sheet, template, children } = this.props;
-    const { name, key, refresh, description, aspects, skills, consequences, stress, stunts, extras } = sheet.toObject();
+    const { name, key, refresh, description, aspects, skills = Map(), consequences, stress, stunts, extras } = sheet.toObject();
     console.log('sheet', sheet);
     console.log('name', name, 'key', key, 'refresh', refresh, 'aspects', aspects, 'skills', skills, 'consequences', consequences, 'stress', stress, 'stunts', stunts, 'extras', extras);
     const styles = require('./SheetBlock.scss');

@@ -424,6 +424,20 @@ export function connectSession() {
   };
 }
 
+export function createNewSheet(state, templateKey) {
+  console.log('createNewSheet', state, templateKey);
+  const user = state.firebase.get('user');
+  console.log('createNewSheet user', user);
+  const ref = firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/');
+  const key = ref.push().key;
+  const newSheet = Map({
+    template: templateKey,
+    key,
+  });
+  ref.child(key).set(newSheet.toJSON());
+  return key;
+}
+
 export function startEditingSheet(state, key) {
   const sheetSession = state.firebase.getIn(['session', 'editedSheets', key]);
   console.log('startEditingSheet', state, key, sheetSession);

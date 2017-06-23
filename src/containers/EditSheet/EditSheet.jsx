@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
 import { connect } from 'react-redux';
 import { Input, Button, FormGroup } from 'components';
+import { Map, List } from 'immutable';
 import { updateSession, pushToSession, updateSheet, discardSheetUpdates } from 'redux/modules/firebase';
 
 @connect(
@@ -121,9 +122,18 @@ export default class EditSheet extends Component {
     const {params, editedSheets, templates} = this.props;
     const styles = require('./EditSheet.scss');
     const key = params.key;
-    const sheet = editedSheets.get(key);
     const template = templates.get( editedSheets.get('template') || -1 );
-    // console.log('sheet', sheet.toJS());
+    const sheet = Map({
+      description: '',
+      aspects: List(),
+      skills: Map(),
+      extras: List(),
+      stunts: List(),
+      stress: template.get('stress').map( ()=>( Map() ) ),
+      consequences: List(),
+      template: template.get('key'),
+    }).merge( editedSheets.get(key) );
+    console.log('sheet', sheet.toJS());
     // console.log('template', template.toJS());
 
     console.log('description', sheet.get('description'));

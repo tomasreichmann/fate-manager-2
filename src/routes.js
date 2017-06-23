@@ -1,6 +1,6 @@
 import React from 'react';
 import {IndexRoute, Route} from 'react-router';
-import { startEditingSheet } from 'redux/modules/firebase';
+import { startEditingSheet, createNewSheet } from 'redux/modules/firebase';
 import {
     App,
     Home,
@@ -23,8 +23,15 @@ export default (store) => {
     cb();
   };
 
-  const initEdit = (nextState, replace, cb) => {
+  const initEditSheet = (nextState, replace, cb) => {
     startEditingSheet(store.getState(), nextState.params.key);
+    cb();
+  };
+
+  const initNewSheet = (nextState, replace, cb) => {
+    console.log('initNewSheet');
+    const key = createNewSheet(store.getState(), nextState.params.template);
+    replace(null, '/edit/' + key);
     cb();
   };
 
@@ -43,7 +50,8 @@ export default (store) => {
         <Route path="/loginSuccess" component={LoginSuccess} />
         <Route path="/registrationSuccess" component={LoginSuccess} isNewUser />
         <Route path="/block/:keys" component={Block} />
-        <Route path="/edit/:key" onEnter={initEdit} component={EditSheet}/>
+        <Route path="/edit/:key" onEnter={initEditSheet} component={EditSheet}/>
+        <Route path="/new/:template" onEnter={initNewSheet} component={EditSheet}/>
       </Route>
 
       <Route path="*" component={NotFound} status={404} />

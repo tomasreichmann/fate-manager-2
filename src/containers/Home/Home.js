@@ -3,8 +3,10 @@ import { connect } from 'react-redux';
 // import { Link } from 'react-router';
 import Helmet from 'react-helmet';
 import { Map } from 'immutable';
-import { SheetList, Button } from 'components';
-import { openModal, closeModal } from 'redux/modules/modal';
+import { SheetList, Button, FormGroup, Input } from 'components';
+import { createNewSheet } from 'redux/modules/firebase';
+import { push } from 'react-router-redux';
+
 
 @connect(
   state => ({
@@ -14,8 +16,8 @@ import { openModal, closeModal } from 'redux/modules/modal';
     selection: state.firebase.getIn(['sheets', 'selected']),
   }),
   {
-    openModal,
-    closeModal,
+    pushState: push,
+    createNewSheet,
   }
 )
 export default class Home extends Component {
@@ -23,8 +25,8 @@ export default class Home extends Component {
     fullState: PropTypes.object,
     sheets: PropTypes.object,
     templates: PropTypes.object,
-    openModal: PropTypes.func,
-    closeModal: PropTypes.func,
+    pushState: PropTypes.func.isRequired,
+    createNewSheet: PropTypes.func.isRequired,
   };
   static contextTypes = {
     store: PropTypes.object.isRequired
@@ -33,15 +35,13 @@ export default class Home extends Component {
   constructor(props) {
     super(props);
     this.migrateSheetAspects = this.migrateSheetAspects.bind(this);
-    this.newSheetDialog = this.newSheetDialog.bind(this);
+    this.newSheet = this.newSheet.bind(this);
   }
 
-  newSheetDialog() {
-    console.log('newSheetDialog');
-    this.props.openModal({
-      children: <div>XXX</div>,
-      closeModal: this.props.closeModal
-    });
+  newSheet() {
+    console.log('newSheet');
+    const templateKey = this.newSheetTemplateSelect.value;
+    this.props.pushState('/new/' + templateKey);
   }
 
   migrateSheetAspects() {
@@ -71,10 +71,13 @@ export default class Home extends Component {
 
   render() {
     const styles = require('./Home.scss');
-    const {sheets} = this.props;
+    const {sheets, templates} = this.props;
     // require the logo image both from client and server
 
     console.log('render sheets', sheets );
+    console.log(Input, templates );
+
+    const HomeInstance = this;
 
     return (
       <div className={styles.home}>
@@ -87,7 +90,15 @@ export default class Home extends Component {
           <hr />
 
           {false && <p><Button block danger onClick={this.migrateSheetAspects} >DANGEROUS: migrateSheetAspects!</Button></p>}
-          <p><Button block success onClick={this.newSheetDialog}>New sheet!</Button></p>
+          <FormGroup childTypes={[null, 'flexible']}>
+            <Input
+              type="select"
+              options={templates.map( (template)=>( { label: template.get('name'), value: template.get('key') } ) )}
+              label="template"
+              inputRef={ (select)=>(HomeInstance.newSheetTemplateSelect = select) }
+            />
+            <Button block success onClick={this.newSheet}>New sheet</Button>
+          </FormGroup>
 
         </div>
 

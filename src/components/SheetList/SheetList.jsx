@@ -31,19 +31,11 @@ export default class SheetList extends Component {
 
   constructor(props) {
     super(props);
-    this.redirect = this.redirect.bind(this);
     this.select = this.select.bind(this);
   }
 
-  displayDeleteSheetConfirmation(item) {
-    console.log('displayDeleteSheetConfirmation', item.toJS() );
-  }
-
-  redirect(to) {
-    return ()=>{
-      console.log('redirect', to );
-      this.props.pushState(to);
-    };
+  deleteSheet(item) {
+    console.log('deleteSheet', item.toJS() );
   }
 
   select(value, key) {
@@ -52,7 +44,7 @@ export default class SheetList extends Component {
 
   render() {
     // const {info, load} = this.props; // eslint-disable-line no-shadow
-    const {sheets, selection} = this.props;
+    const {sheets, selection, pushState} = this.props;
     const styles = require('./SheetList.scss');
     const filteredSelection = selection
       .filter( (isSelected)=>(isSelected) )
@@ -66,14 +58,14 @@ export default class SheetList extends Component {
           <Input type="checkbox" handleChange={this.select} handleChangeParams={item.get('key')} value={!!selection.get(item.get('key'))}/>
         </div>
         <div className={styles['SheetList-item-title']} >
-          <Button link className="text-left" block onClick={this.redirect('/block/' + encodeURIComponent(item.get('key')) )} >{item.get('name')}</Button>
+          <Button link className="text-left" block onClick={pushState.bind(this, '/block/' + encodeURIComponent(item.get('key')) )} >{item.get('name')}</Button>
         </div>
         <div className={styles['SheetList-item-actions']} >
-          <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(item.get('key')) )} >Edit</Button>
-          <Button danger onClick={ this.displayDeleteSheetConfirmation.bind(this, item) } >Delete</Button>
+          <Button warning onClick={pushState.bind(this, '/edit/' + encodeURIComponent(item.get('key')) )} >Edit</Button>
+          <Button danger onClick={ this.deleteSheet.bind(this, item) } confirmMessage="Really delete?" >Delete</Button>
         </div>
       </div> ) ) }
-      { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Button link onClick={this.redirect('/block/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';') )} >Open: { filteredSelection.join(', ') }</Button></div> : null }
+      { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Button link onClick={pushState.bind(this, '/block/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';') )} >Open: { filteredSelection.join(', ') }</Button></div> : null }
     </div>);
   }
 }
