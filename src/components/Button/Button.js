@@ -14,6 +14,11 @@ export default class Button extends Component {
     link: PropTypes.bool,
     block: PropTypes.bool,
     disabled: PropTypes.bool,
+    confirmMessage: PropTypes.any,
+    confirmPositionTop: PropTypes.bool,
+    confirmPositionRight: PropTypes.bool,
+    confirmPositionBottom: PropTypes.bool,
+    confirmPositionLeft: PropTypes.bool,
     clipBottomLeft: PropTypes.bool,
     children: PropTypes.any,
   };
@@ -26,6 +31,11 @@ export default class Button extends Component {
   onClickHandler(event) {
     const args = this.props.onClickParams ? [this.props.onClickParams, event] : [event];
     this.props.onClick(...args);
+    this.button.blur();
+  }
+
+  onClickConfirm(event) {
+    event.preventDefault();
   }
 
   render() {
@@ -43,6 +53,11 @@ export default class Button extends Component {
       disabled,
       onClick,
       onClickParams,
+      confirmMessage,
+      confirmPositionTop,
+      confirmPositionRight,
+      confirmPositionBottom,
+      confirmPositionLeft,
       clipBottomLeft,
       ...props
     } = this.props;
@@ -56,6 +71,11 @@ export default class Button extends Component {
       link,
       block,
       disabled,
+      confirm: confirmMessage,
+      confirmPositionTop,
+      confirmPositionRight,
+      confirmPositionBottom,
+      confirmPositionLeft,
       clipBottomLeft,
     }).reduce( (output, value, key)=>(
       value ? output.concat([ styles['Button--' + key] ]) : output
@@ -63,8 +83,18 @@ export default class Button extends Component {
 
     const processedClassName = [styles.Button].concat(classNames).join(' ');
 
-    const onClickProp = onClick ? { onClick: this.onClickHandler } : {};
+    const onClickProp = {};
+    if ( onClick ) {
+      if ( confirmMessage ) {
+        onClickProp.onClick = this.onClickConfirm;
+      } else {
+        onClickProp.onClick = this.onClickHandler;
+      }
+    }
 
-    return <button className={processedClassName} {...onClickProp} {...props}>{children}</button>;
+    return (<button className={processedClassName} {...onClickProp} {...props} ref={ (button)=>( this.button = button ) }>
+      {confirmMessage ? <div className={styles['Button-confirmMessage']} onClick={this.onClickHandler} >{confirmMessage}</div> : null}
+      {children}
+    </button>);
   }
 }

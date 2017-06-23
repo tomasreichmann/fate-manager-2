@@ -1,6 +1,7 @@
 @import "../../theme/variables.scss";
 
 .Button {
+  position: relative;
   clip-path: $clip-top-right;
   text-transform: uppercase;
   background: $btn-default-bg;
@@ -60,7 +61,6 @@
     &.Button--disabled{
       background-color: desaturate($brand-primary, 50%);
     }
-
   }
 
   &--secondary {
@@ -74,7 +74,6 @@
     &.Button--disabled{
       background-color: desaturate($brand-secondary, 50%);
     }
-
   }
 
   &--success {
@@ -88,7 +87,6 @@
     &.Button--disabled{
       background-color: desaturate($brand-success, 50%);
     }
-
   }
 
   &--warning {
@@ -102,7 +100,6 @@
     &.Button--disabled{
       background-color: desaturate($brand-warning, 50%);
     }
-
   }
 
   &--danger {
@@ -116,6 +113,29 @@
     &.Button--disabled{
       background-color: desaturate($brand-danger, 50%);
     }
+  }
 
+  &--confirm {
+    &:active, &:focus {
+      clip-path: none
+    }
+  }
+
+  &-confirmMessage {
+    display: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+    z-index: 2000;
+    padding: $padding-base-vertical ($btn-clipping-size + $padding-base-horizontal) $padding-base-vertical $padding-base-horizontal;
+    background-color: inherit;
+    color: inherit;
+  }
+
+  &:focus &-confirmMessage,
+  &:active &-confirmMessage {
+    display: block;
   }
 }
