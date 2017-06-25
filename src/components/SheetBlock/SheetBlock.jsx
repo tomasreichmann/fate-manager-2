@@ -83,7 +83,7 @@ export default class SheetBlock extends Component {
           <strong>{stressLane.get('label')}: </strong>
           <div className={styles['SheetBlock-stressBlock-boxes']}>
             { (stress.get(stressLaneIndex.toString()) || []).map( (isUsed, boxIndex)=>(
-              <Input type="checkbox" className={styles['SheetBlock-stressBox']} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
+              <span key={'stressBox-' + boxIndex} className={styles['SheetBlock-stressBox']}><Input type="checkbox" value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}} /></span>
             ) ) }
           </div>
         </FormGroup>

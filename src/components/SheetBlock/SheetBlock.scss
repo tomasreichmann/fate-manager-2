@@ -35,12 +35,6 @@
     line-height: inherit;
   }
 
-  &-stressLane {
-    label + label {
-      margin-left: $padding-base-horizontal*2;
-    }
-  }
-
   &-stressBox + &-stressBox {
     margin-left: 1rem;
   }
