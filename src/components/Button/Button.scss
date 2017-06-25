@@ -13,7 +13,9 @@
   outline: none;
   font-size: 1.5rem;
   line-height: 1.5;
-
+  font-weight: normal;
+  margin: 0;
+  cursor: pointer;
 
   &--noClip,
   &--link {
@@ -122,7 +124,6 @@
   }
 
   &-confirmMessage {
-    display: none;
     position: absolute;
     bottom: 0;
     right: 0;
@@ -131,10 +132,25 @@
     padding: $padding-base-vertical ($btn-clipping-size + $padding-base-horizontal) $padding-base-vertical $padding-base-horizontal;
     background-color: inherit;
     color: inherit;
+    opacity: 0;
+    visibility: hidden;
   }
 
-  &:focus &-confirmMessage,
-  &:active &-confirmMessage {
-    display: block;
+  &:active &-confirmMessage,
+  &:focus &-confirmMessage {
+    animation: delayedReveal 1s;
+    animation-fill-mode: forwards;
+    animation-delay: 0.5s;
+  }
+}
+
+@keyframes delayedReveal {
+  0% {
+    opacity: 0;
+    visibility: visible;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
   }
 }

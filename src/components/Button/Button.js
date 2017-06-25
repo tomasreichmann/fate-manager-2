@@ -26,16 +26,17 @@ export default class Button extends Component {
   constructor(props) {
     super(props);
     this.onClickHandler = this.onClickHandler.bind(this);
+    this.onClickConfirm = this.onClickConfirm.bind(this);
   }
 
   onClickHandler(event) {
     const args = this.props.onClickParams ? [this.props.onClickParams, event] : [event];
     this.props.onClick(...args);
-    this.button.blur();
   }
 
   onClickConfirm(event) {
     event.preventDefault();
+    this.buttonElement.focus();
   }
 
   render() {
@@ -92,8 +93,8 @@ export default class Button extends Component {
       }
     }
 
-    return (<button className={processedClassName} {...onClickProp} {...props} ref={ (button)=>( this.button = button ) }>
-      {confirmMessage ? <div className={styles['Button-confirmMessage']} onClick={this.onClickHandler} >{confirmMessage}</div> : null}
+    return (<button className={processedClassName} {...onClickProp} {...props} ref={ (buttonElement)=>( this.buttonElement = buttonElement ) }>
+      {confirmMessage ? <div className={styles['Button-confirmMessage']} ref={ (confirmButtonElement)=>( this.confirmButtonElement = confirmButtonElement )} onClick={this.onClickHandler} >{confirmMessage}</div> : null}
       {children}
     </button>);
   }
