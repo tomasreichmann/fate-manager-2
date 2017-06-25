@@ -133,7 +133,7 @@ export default class EditSheet extends Component {
     // const EditSheetInstance = this;
     const key = params.key;
     console.log('templates', templates);
-    const template = templates.get( editedSheets.get('template') || 'VS-P' );
+    const template = templates.get( editedSheets.getIn([key, 'template']) || 'VS-P' );
     const sheet = Map({
       description: '',
       aspects: List(),
@@ -141,7 +141,7 @@ export default class EditSheet extends Component {
       extras: List(),
       stunts: List(),
       stress: template.get('stress').map( ()=>( Map() ) ),
-      consequences: List(),
+      consequences: Map(),
       template: template.get('key'),
     }).merge( editedSheets.get(key) );
     console.log('sheet', sheet.toJS());
@@ -201,7 +201,8 @@ export default class EditSheet extends Component {
             .filter( (skill)=>(
               !sheet.getIn(['skills', skill.get('key')])
             ) )
-            .map( (skill) => ( { label: skill.get('skill'), value: skill.get('key') } ) ) }
+            .sort()
+            .map( (skill) => ( { label: skill.get('name'), value: skill.get('key') } ) ) }
           inputRef={ (select)=>( this.newSkillSelect = select ) } />
         <Button primary onClick={this.addSkill} >Add</Button>
       </FormGroup>
@@ -249,18 +250,21 @@ export default class EditSheet extends Component {
 
     const consequencesBlock = (<div className={styles['EditSheet-consequencesBlock']} >
       <h2>Consequences</h2>
-      {sheet.get('consequences') ? sheet.get('consequences').map( (consequence, index)=>(
-        <FormGroup key={'consequence-' + index} childTypes={['flexible', null]}>
+      {sheet.get('consequences') ? sheet.get('consequences').mapEntries( (consequenceEntry, consequenceIndex)=>{
+        const consequenceKey = consequenceEntry[0];
+        const consequence = consequenceEntry[1];
+        console.log('consequence index', consequenceIndex);
+        return [consequenceIndex, (<FormGroup key={'consequence-' + consequenceKey} childTypes={['flexible', null]}>
           <Input
-            label={template.getIn(['consequences', index, 'label']) || template.get('consequences').last().get('label') }
-            value={sheet.getIn(['consequences', index])}
+            label={template.getIn(['consequences', consequenceIndex, 'label']) || template.get('consequences').last().get('label') }
+            value={consequence}
             handleChange={this.handleChange}
-            handleChangeParams={{path: 'consequences/' + index}}
-            superscriptAfter={template.getIn(['consequences', index, 'value']) || template.get('consequences').last().get('value')}
+            handleChangeParams={{path: 'consequences/' + consequenceKey}}
+            superscriptAfter={template.getIn(['consequences', consequenceIndex, 'value']) || template.get('consequences').last().get('value')}
           />
-          <Button danger onClick={this.removeItem} onClickParams={{path: 'consequences/' + index}} >delete</Button>
-        </FormGroup>
-      ) ) : null}
+          <Button danger onClick={this.removeItem} onClickParams={{path: 'consequences/' + consequenceKey}} >delete</Button>
+        </FormGroup>)];
+      } ) : null}
       <Button primary onClick={this.addItem} onClickParams={{ path: 'consequences' }}>add</Button>
     </div>);
 

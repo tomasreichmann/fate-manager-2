@@ -3,6 +3,7 @@ import { push } from 'react-router-redux';
 import { updateSheet } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
 import { Button, SheetBlock } from 'components';
+import { List } from 'immutable';
 
 @connect(
   state => ({
@@ -47,12 +48,7 @@ export default class Block extends Component {
     console.log('this.props', this.props);
     const keys = params.keys.split(';');
     const styles = require('./Block.scss');
-    const selectedSheets = sheets.filter( (sheet)=>( keys.indexOf( sheet.get('key') ) > -1 ) );
-    console.log('selectedSheets', selectedSheets);
-    console.log('selectedSheets.first()', selectedSheets.first().toJS());
-    console.log('templateKey', selectedSheets.first().get('template') );
-    console.log('template', templates.get( selectedSheets.first().get('template') || 'VS-P' ) );
-
+    const selectedSheets = sheets ? sheets.filter( (sheet)=>( keys.indexOf( sheet.get('key') ) > -1 ) ) : List();
 
     return (
       <div className={styles.Blocks + ' container'} >
