@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import { Button, Input } from 'components';
 import {toggleSheetSelection} from 'redux/modules/firebase';
 import { updateSheet } from 'redux/modules/firebase';
+import { Map } from 'immutable';
 @connect(
   state => ({
     sheets: state.firebase.getIn(['sheets', 'list']),
@@ -45,7 +46,7 @@ export default class SheetList extends Component {
 
   render() {
     // const {info, load} = this.props; // eslint-disable-line no-shadow
-    const {sheets, selection, pushState} = this.props;
+    const {sheets = Map(), selection, pushState} = this.props;
     const styles = require('./SheetList.scss');
     const filteredSelection = selection
       .filter( (isSelected)=>(isSelected) )
@@ -54,7 +55,9 @@ export default class SheetList extends Component {
       ) )
     ;
     return (<div className={styles.SheetList} >
-      { sheets.map( (item)=>( <div className={styles['SheetList-item']} key={item.get('key')} >
+      { sheets
+          .sort( (sheetA, sheetB)=>( sheetA.get('name') > sheetB.get('name') ) )
+          .map( (item)=>( <div className={styles['SheetList-item']} key={item.get('key')} >
         <div className={styles['SheetList-item-select']} >
           <Input type="checkbox" handleChange={this.select} handleChangeParams={item.get('key')} value={!!selection.get(item.get('key'))}/>
         </div>

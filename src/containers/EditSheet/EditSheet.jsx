@@ -132,7 +132,7 @@ export default class EditSheet extends Component {
     const styles = require('./EditSheet.scss');
     // const EditSheetInstance = this;
     const key = params.key;
-    console.log('templates', templates);
+    // console.log('templates', templates);
     const template = templates.get( editedSheets.getIn([key, 'template']) || 'VS-P' );
     const sheet = Map({
       description: '',
@@ -144,16 +144,15 @@ export default class EditSheet extends Component {
       consequences: Map(),
       template: template.get('key'),
     }).merge( editedSheets.get(key) );
-    console.log('sheet', sheet.toJS());
+    // console.log('sheet', sheet.toJS());
     // console.log('template', template.toJS());
-
-    console.log('description', sheet.get('description'));
-    console.log('aspects', sheet.get('aspects'));
-    console.log('skills', sheet.get('skills'));
-    console.log('extras', sheet.get('extras'));
-    console.log('stunts', sheet.get('stunts'));
-    console.log('stress', sheet.get('stress'));
-    console.log('consequences', sheet.get('consequences'));
+    // console.log('description', sheet.get('description'));
+    // console.log('aspects', sheet.get('aspects'));
+    // console.log('skills', sheet.get('skills'));
+    // console.log('extras', sheet.get('extras'));
+    // console.log('stunts', sheet.get('stunts'));
+    // console.log('stress', sheet.get('stress'));
+    // console.log('consequences', sheet.get('consequences'));
 
     if (!template || !sheet) {
       return <div className={styles.EditSheet + ' container'} ><p className="alert alert-warning" >Sheet or template not found</p></div>;
@@ -167,7 +166,6 @@ export default class EditSheet extends Component {
     const aspectsBlock = (<div className={styles['EditSheet-aspectsBlock']} >
       <h2>Aspects</h2>
       {sheet.get('aspects').map( (aspect, aspectKey)=>(
-        console.log('aspect', aspect),
         <FormGroup key={'aspect-' + aspectKey} childTypes={[null, 'flexible', null]}>
           <Input type="select" options={ template.getIn(['aspects', 'types']).toJS() } value={aspect.get('type')} handleChange={this.handleChange} handleChangeParams={{path: 'aspects/' + aspectKey + '/type'}} />
           <Input value={aspect.get('title')} handleChange={this.handleChange} handleChangeParams={{path: 'aspects/' + aspectKey + '/title'}} />
@@ -250,10 +248,9 @@ export default class EditSheet extends Component {
 
     const consequencesBlock = (<div className={styles['EditSheet-consequencesBlock']} >
       <h2>Consequences</h2>
-      {sheet.get('consequences') ? sheet.get('consequences').mapEntries( (consequenceEntry, consequenceIndex)=>{
+      {sheet.get('consequences') ? sheet.get('consequences').toMap().mapEntries( (consequenceEntry, consequenceIndex)=>{
         const consequenceKey = consequenceEntry[0];
         const consequence = consequenceEntry[1];
-        console.log('consequence index', consequenceIndex);
         return [consequenceIndex, (<FormGroup key={'consequence-' + consequenceKey} childTypes={['flexible', null]}>
           <Input
             label={template.getIn(['consequences', consequenceIndex, 'label']) || template.get('consequences').last().get('label') }

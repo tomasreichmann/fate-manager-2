@@ -30,6 +30,7 @@ export default class Block extends Component {
   constructor(props) {
     super(props);
     this.redirect = this.redirect.bind(this);
+    this.deleteSheet = this.deleteSheet.bind(this);
   }
 
   redirect(to) {
@@ -39,8 +40,10 @@ export default class Block extends Component {
     };
   }
 
-  deleteSheet(item) {
-    console.log('deleteSheet', item.toJS() );
+  deleteSheet(key) {
+    console.log('deleteSheet');
+    updateSheet(key, null);
+    this.props.pushState('/');
   }
 
   render() {
@@ -56,7 +59,7 @@ export default class Block extends Component {
           <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') || 'VS-P' )} updateSheet={updateSheet} >
             <div className={styles['Blocks-actions']} >
               <Button warning onClick={this.redirect( '/edit/' + encodeURIComponent(sheet.get('key')) )} >Edit</Button>
-              <Button danger onClick={ updateSheet.bind(this, sheet.get('key'), null) } confirmMessage="Really delete forever?" >Delete</Button>
+              <Button danger onClick={ this.deleteSheet.bind(this, sheet.get('key')) } confirmMessage="Really delete forever?" >Delete</Button>
             </div>
           </SheetBlock>
         </div> ) ) }

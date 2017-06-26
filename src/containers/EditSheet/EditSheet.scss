@@ -4,8 +4,33 @@
   padding-left: $padding-base-horizontal;
   padding-right: $padding-base-horizontal;
 
+  &-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    align-contents: stretch;
+    margin: $padding-large-vertical ($padding-base-horizontal * -1);
+  }
+
+  &-descriptionBlock,
+  &-aspectsBlock,
+  &-skillsBlock,
+  &-extrasBlock,
+  &-stuntsBlock,
+  &-stressBlock,
+  &-consequencesBlock {
+    width: 100%;
+    padding: $padding-large-vertical $padding-base-horizontal;
+
+    h2 {
+      margin-top: 0;
+    }
+  }
+
   &-heading {
     display: flex;
+    width: 100%;
+    margin: 0 $padding-base-horizontal;
 
     > div {
       flex: 1 1 auto;
@@ -42,6 +67,20 @@
 
     button {
       margin-left: $padding-base-horizontal;
+    }
+  }
+}
+
+@media screen and (min-width: $tabletPortrait) {
+
+  .EditSheet {
+    &-aspectsBlock,
+    &-skillsBlock,
+    &-extrasBlock,
+    &-stuntsBlock,
+    &-stressBlock,
+    &-consequencesBlock {
+      width: 50%;
     }
   }
 }

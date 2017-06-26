@@ -94,17 +94,19 @@ export default class SheetBlock extends Component {
 
     const consequencesBlock = consequences ? (<div className={styles['SheetBlock-consequencesBlock']} >
       <h2>Consequences</h2>
-      { consequences.map( (consequence, index)=>(
-        <FormGroup key={'consequence-' + index} childTypes={['flexible', null]}>
+      { consequences.toMap().mapEntries( (consequenceEntry, consequenceIndex)=>{
+        const consequenceKey = consequenceEntry[0];
+        const consequence = consequenceEntry[1];
+        return [consequenceKey, (<FormGroup key={'consequence-' + consequenceKey} childTypes={['flexible', null]}>
           <Input
-            label={template.getIn(['consequences', index, 'label']) || template.get('consequences').last().get('label') }
-            value={consequences.get(index)}
+            label={template.getIn(['consequences', consequenceIndex, 'label']) || template.get('consequences').last().get('label') }
+            value={consequence}
             handleChange={this.handleChange}
-            handleChangeParams={{path: 'consequences/' + index}}
-            superscriptAfter={template.getIn(['consequences', index, 'value']) || template.get('consequences').last().get('value')}
+            handleChangeParams={{key, path: 'consequences/' + consequenceKey}}
+            superscriptAfter={template.getIn(['consequences', consequenceIndex, 'value']) || template.get('consequences').last().get('value')}
           />
-        </FormGroup>
-      ) )}
+        </FormGroup>)];
+      } )}
     </div>) : null;
 
     return (

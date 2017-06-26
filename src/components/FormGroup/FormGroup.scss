@@ -3,23 +3,20 @@
 .FormGroup {
   display: flex;
   flex-wrap: wrap;
-  margin: 1rem 0;
   align-items: flex-end;
+  margin: $padding-large-vertical ($padding-base-horizontal * -1);
 
   &-item {
     min-width: 1px;
+    padding: $padding-base-vertical $padding-base-horizontal;
 
     &--flexible {
-      flex: 1 1 auto;
+      flex: 1 1 100px;
     }
     &--full {
       width: 100%;
       margin-bottom: 1rem;
     }
-  }
-
-  &-item + &-item {
-    margin-left: 1rem;
   }
 
   &-item--full + &-item {
