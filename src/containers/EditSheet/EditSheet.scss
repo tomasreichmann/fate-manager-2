@@ -63,7 +63,9 @@
   }
 
   &-actions {
+    width: 100%;
     text-align: right;
+    margin-top: $padding-large-vertical;
 
     button {
       margin-left: $padding-base-horizontal;

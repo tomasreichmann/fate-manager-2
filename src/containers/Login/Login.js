@@ -34,7 +34,7 @@ export default class Login extends Component {
 
   goRegister = (event) => {
     event.preventDefault();
-    this.props.pushState('/register/' + (this.props.params.routeBeforeLogin || ''));
+    this.props.pushState('/register/' + (encodeURIComponent(this.props.params.routeBeforeLogin) || ''));
   }
 
   render() {

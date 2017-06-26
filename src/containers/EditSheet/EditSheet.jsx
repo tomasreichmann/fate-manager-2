@@ -10,6 +10,7 @@ import { updateSession, pushToSession, updateSheet, discardSheetUpdates } from '
     sheets: state.firebase.getIn(['sheets', 'list']),
     templates: state.firebase.getIn(['templates', 'list']),
     editedSheets: state.firebase.getIn(['session', 'editedSheets']),
+    session: state.firebase.get('session'),
   }),
   {
     pushState: push,
@@ -22,6 +23,7 @@ export default class EditSheet extends Component {
 
   static propTypes = {
     editedSheets: PropTypes.object,
+    session: PropTypes.object,
     pushState: PropTypes.func.isRequired,
     updateSession: PropTypes.func.isRequired,
     pushToSession: PropTypes.func.isRequired,
@@ -64,8 +66,8 @@ export default class EditSheet extends Component {
 
   save(event) {
     event.preventDefault();
-    console.log('save');
     const key = this.props.params.key;
+    console.log('save', key, this.props.editedSheets.get(key) );
     updateSheet(key, this.props.editedSheets.get(key).toJSON() );
     this.props.pushState('/block/' + key);
     this.props.discardSheetUpdates(this.props.params.key);
@@ -128,11 +130,22 @@ export default class EditSheet extends Component {
   }
 
   render() {
-    const {params, editedSheets, templates} = this.props;
+    const {params, editedSheets, session, templates} = this.props;
     const styles = require('./EditSheet.scss');
     // const EditSheetInstance = this;
     const key = params.key;
     // console.log('templates', templates);
+
+    console.log('EditSheet | session', session && session.toJS());
+    console.log('EditSheet | editedSheets', editedSheets && editedSheets.toJS());
+    console.log('EditSheet | editedSheet', editedSheets && editedSheets.get(key) && editedSheets.get(key).toJS());
+    console.log('EditSheet | template', editedSheets && editedSheets.getIn([key, 'template']));
+
+    if ( !editedSheets.getIn([key, 'template']) ) {
+      console.log('EditSheet | NOT FOUND', key, editedSheets && editedSheets.toJS(), editedSheets && editedSheets.get(key), editedSheets && editedSheets.getIn([key, 'template']) );
+      return <div className={styles.EditSheet + ' container'} ><p className="alert alert-warning" >Sheet or template not found</p></div>;
+    }
+
     const template = templates.get( editedSheets.getIn([key, 'template']) || 'VS-P' );
     const sheet = Map({
       description: '',
@@ -153,10 +166,6 @@ export default class EditSheet extends Component {
     // console.log('stunts', sheet.get('stunts'));
     // console.log('stress', sheet.get('stress'));
     // console.log('consequences', sheet.get('consequences'));
-
-    if (!template || !sheet) {
-      return <div className={styles.EditSheet + ' container'} ><p className="alert alert-warning" >Sheet or template not found</p></div>;
-    }
 
     const descriptionBlock = (<div className={styles['EditSheet-descriptionBlock']} >
       <Input label="Description" type="textarea" value={sheet.get('description')} handleChange={this.handleChange} handleChangeParams={{path: 'description'}} />

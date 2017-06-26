@@ -460,7 +460,12 @@ export function saveRoute(route) {
 }
 
 export function updateSheet(key, sheet) {
-  updateDb('sheets/' + key, sheet);
+  const newSheet = sheet ? {
+    ...sheet,
+    lastEdited: Date.now(),
+    lastEditedBy: getUser().get('uid'),
+  } : null;
+  updateDb('sheets/' + key, newSheet);
 }
 
 export function discardSheetUpdates(key) {
@@ -493,6 +498,10 @@ export function createNewSheet(state, templateKey) {
   const key = ref.push().key;
   const newSheet = Map({
     template: templateKey,
+    created: Date.now(),
+    createdBy: user.get('uid'),
+    lastEdited: Date.now(),
+    lastEditedBy: user.get('uid'),
     key,
   });
   ref.child(key).set(newSheet.toJSON());
@@ -554,7 +563,7 @@ export function getSheets() {
 }
 
 export function connectSheets() {
-  console.log('connectSession');
+  console.log('connectSheets');
   return function dispatchOnSheetsValue(dispatch) {
     firebaseDb.ref('sheets/').orderByChild('name').on('value', (snapshot)=>{
       dispatch({
