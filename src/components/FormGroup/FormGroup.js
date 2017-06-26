@@ -20,12 +20,8 @@ export default class FormGroup extends Component {
       ...props
     } = this.props;
 
-    const processedClassName = [styles.FormGroup].concat( className ? [className] : [] ).join(' ');
-
-    console.log('processedClassName', processedClassName);
-
     return (<div className={styles.FormGroup} {...props}>{
-      ((typeof children.map === 'function') ? children : [children]).map( (child, childIndex)=>( <div className={
+      ((typeof children.map === 'function') ? children : [children]).map( (child, childIndex)=>( <div key={'item-' + childIndex} className={
           (childTypes[childIndex] ? childTypes[childIndex].split(' ') : [])
           .map( (type)=>( styles['FormGroup-item--' + type] ) )
           .concat([styles['FormGroup-item']])
