@@ -506,7 +506,11 @@ export function startEditingSheet(state, key) {
     const user = state.firebase.get('user');
     const originalSheet = state.firebase.getIn(['sheets', 'list', key]);
     console.log('no sheet session. Original sheet', originalSheet);
-    firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/' + key ).set(originalSheet.toJSON());
+    if (originalSheet) {
+      firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/' + key ).set(originalSheet.toJSON());
+    } else {
+      console.log('Original sheet not found!');
+    }
   }
 }
 
