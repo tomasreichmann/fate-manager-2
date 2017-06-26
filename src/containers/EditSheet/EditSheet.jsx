@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
 import { connect } from 'react-redux';
 import { Input, Button, FormGroup } from 'components';
-import { Map, List } from 'immutable';
+import { Map } from 'immutable';
 import { updateSession, pushToSession, updateSheet, discardSheetUpdates } from 'redux/modules/firebase';
 
 @connect(
@@ -136,10 +136,10 @@ export default class EditSheet extends Component {
     const template = templates.get( editedSheets.getIn([key, 'template']) || 'VS-P' );
     const sheet = Map({
       description: '',
-      aspects: List(),
+      aspects: Map(),
       skills: Map(),
-      extras: List(),
-      stunts: List(),
+      extras: Map(),
+      stunts: Map(),
       stress: template.get('stress').map( ()=>( Map() ) ),
       consequences: Map(),
       template: template.get('key'),
@@ -158,19 +158,18 @@ export default class EditSheet extends Component {
       return <div className={styles.EditSheet + ' container'} ><p className="alert alert-warning" >Sheet or template not found</p></div>;
     }
 
-
     const descriptionBlock = (<div className={styles['EditSheet-descriptionBlock']} >
       <Input label="Description" type="textarea" value={sheet.get('description')} handleChange={this.handleChange} handleChangeParams={{path: 'description'}} />
     </div>);
 
     const aspectsBlock = (<div className={styles['EditSheet-aspectsBlock']} >
       <h2>Aspects</h2>
-      {sheet.get('aspects').map( (aspect, aspectKey)=>(
-        <FormGroup key={'aspect-' + aspectKey} childTypes={[null, 'flexible', null]}>
+      {sheet.get('aspects').toOrderedMap().map( (aspect, aspectKey)=>(
+        aspect ? (<FormGroup key={'aspect-' + aspectKey} childTypes={[null, 'flexible', null]}>
           <Input type="select" options={ template.getIn(['aspects', 'types']).toJS() } value={aspect.get('type')} handleChange={this.handleChange} handleChangeParams={{path: 'aspects/' + aspectKey + '/type'}} />
           <Input value={aspect.get('title')} handleChange={this.handleChange} handleChangeParams={{path: 'aspects/' + aspectKey + '/title'}} />
           <Button danger onClick={this.removeItem} onClickParams={{path: 'aspects/' + aspectKey}} >delete</Button>
-        </FormGroup>
+        </FormGroup>) : null
       ) )}
       <Button primary onClick={this.addItem} onClickParams={{
         path: 'aspects',
