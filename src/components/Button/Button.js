@@ -19,24 +19,46 @@ export default class Button extends Component {
     confirmPositionRight: PropTypes.bool,
     confirmPositionBottom: PropTypes.bool,
     confirmPositionLeft: PropTypes.bool,
+    confirmAutocloseDelay: PropTypes.number,
     clipBottomLeft: PropTypes.bool,
+    noClip: PropTypes.bool,
     children: PropTypes.any,
+  };
+
+  static defaultProps = {
+    confirmAutocloseDelay: 4000,
   };
 
   constructor(props) {
     super(props);
+    this.state = {
+      confirmIsShown: false,
+      timeout: -1,
+    };
     this.onClickHandler = this.onClickHandler.bind(this);
     this.onClickConfirm = this.onClickConfirm.bind(this);
+    this.hideConfirm = this.hideConfirm.bind(this);
   }
 
   onClickHandler(event) {
+    clearTimeout(this.state.timeout);
     const args = this.props.onClickParams ? [this.props.onClickParams, event] : [event];
     this.props.onClick(...args);
   }
 
   onClickConfirm(event) {
     event.preventDefault();
-    this.buttonElement.focus();
+    clearTimeout(this.state.timeout);
+    this.setState({
+      confirmIsShown: true,
+      timeout: setTimeout(this.hideConfirm, this.props.confirmAutocloseDelay),
+    });
+  }
+
+  hideConfirm() {
+    this.setState({
+      confirmIsShown: false,
+    });
   }
 
   render() {
@@ -60,6 +82,7 @@ export default class Button extends Component {
       confirmPositionBottom,
       confirmPositionLeft,
       clipBottomLeft,
+      noClip,
       ...props
     } = this.props;
 
@@ -78,6 +101,7 @@ export default class Button extends Component {
       confirmPositionBottom,
       confirmPositionLeft,
       clipBottomLeft,
+      noClip: noClip || this.state.confirmIsShown,
     }).reduce( (output, value, key)=>(
       value ? output.concat([ styles['Button--' + key] ]) : output
     ), className.split(' ') );
@@ -86,7 +110,7 @@ export default class Button extends Component {
 
     const onClickProp = {};
     if ( onClick ) {
-      if ( confirmMessage ) {
+      if ( confirmMessage && !this.state.confirmIsShown ) {
         onClickProp.onClick = this.onClickConfirm;
       } else {
         onClickProp.onClick = this.onClickHandler;
@@ -94,7 +118,7 @@ export default class Button extends Component {
     }
 
     return (<button className={processedClassName} {...onClickProp} {...props} ref={ (buttonElement)=>( this.buttonElement = buttonElement ) }>
-      {confirmMessage ? <div className={styles['Button-confirmMessage']} ref={ (confirmButtonElement)=>( this.confirmButtonElement = confirmButtonElement )} onClick={this.onClickHandler} >{confirmMessage}</div> : null}
+      {(confirmMessage && this.state.confirmIsShown) ? <div className={styles['Button-confirmMessage']} >{confirmMessage}</div> : null}
       {children}
     </button>);
   }

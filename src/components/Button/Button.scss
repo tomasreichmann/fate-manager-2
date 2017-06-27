@@ -117,10 +117,8 @@
     }
   }
 
-  &--confirm {
-    &:active, &:focus {
-      clip-path: none
-    }
+  &--noClip {
+    clip-path: none
   }
 
   &-confirmMessage {
@@ -134,11 +132,7 @@
     color: inherit;
     opacity: 0;
     visibility: hidden;
-  }
-
-  &:active &-confirmMessage,
-  &:focus &-confirmMessage {
-    animation: delayedReveal 1s;
+    animation: delayedReveal 0.25s;
     animation-fill-mode: forwards;
     animation-delay: 0.5s;
   }
