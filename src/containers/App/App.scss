@@ -51,3 +51,10 @@ h3 {
     border-right: $btn-clipping-size solid transparent;
   }
 }
+
+.loggedInMessage {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

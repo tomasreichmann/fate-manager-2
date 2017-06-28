@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Map } from 'immutable';
+import { killEvent } from 'relpers';
 
 export default class Button extends Component {
   static propTypes = {
@@ -46,8 +47,8 @@ export default class Button extends Component {
     this.props.onClick(...args);
   }
 
-  onClickConfirm(event) {
-    event.preventDefault();
+  @killEvent
+  onClickConfirm() {
     clearTimeout(this.state.timeout);
     this.setState({
       confirmIsShown: true,

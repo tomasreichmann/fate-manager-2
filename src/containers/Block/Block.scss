@@ -4,6 +4,12 @@
   position: relative;
   display: flex;
   flex-wrap: wrap;
+  padding-top: 1rem;
+
+  &-notLoggedIn {
+    margin: $padding-large-vertical $padding-large-horizontal;
+    width: 100%;
+  }
 
   &-item {
     flex: 1 0 400px;

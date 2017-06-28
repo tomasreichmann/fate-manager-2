@@ -1,9 +1,94 @@
+import React, { Component } from 'react';
 import firebaseConfig from '../../../firebase-config';
 import * as firebase from 'firebase';
 import { Map, fromJS } from 'immutable';
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-const firebaseDb = firebaseApp.database();
+export const firebaseApp = firebase.initializeApp(firebaseConfig);
+export const firebaseDb = firebaseApp.database();
+
+export function firebaseConnect(db, initialDefinitions) {
+  const defs = (Array.isArray(initialDefinitions) ? initialDefinitions : [initialDefinitions]).map( (def) => (
+    {
+      once: false,
+      event: 'value',
+      adapter: (snapshot) => ( { [def.prop]: snapshot.val() } ),
+      ...def,
+    }
+  ) );
+
+  return (WrappedComponent) => {
+    return class extends Component {
+      constructor(props) {
+        super(props);
+        // console.log('firebaseConnect', WrappedComponent, path, prop, events);
+
+        this.listeners = defs.reduce( (propStatuses, def) => ( {
+          [def.path]: {
+            ...def,
+            connected: false
+          }
+        }), {} );
+
+        this.dbRefs = {};
+
+        this.state = {
+          done: !defs.lenght,
+          props: {},
+        };
+      }
+
+      componentDidMount() {
+        // subscribe
+        const promises = [];
+        Object.keys(this.listeners).map( (listenerKey)=>{
+          const listener = this.listeners[listenerKey];
+          const { path, once, event } = listener;
+          console.log('didMount', listener, this.dbRefs, this.dbRefs[path]);
+          this.dbRefs[path] = this.dbRefs[path] || db.ref(path);
+          listener.ref = this.dbRefs[path];
+          listener.callback = this.onUpdate.bind(this, listener);
+          const method = once ? 'once' : 'on';
+          listener.promise = listener.ref[method](event, listener.callback);
+          promises.push(listener.promise);
+        } );
+
+        // track all done
+        this.donePromise = Promise.all( promises );
+        this.donePromise.then( ()=>(
+          this.setState({
+            done: true
+          })
+        ) );
+      }
+
+      onUpdate(listener, snapshot) {
+        console.log('onUpdate', event, snapshot);
+
+        this.setState({
+          props: {
+            ...this.state.props,
+            ...listener.adapter(snapshot),
+          }
+        });
+      }
+
+      componentWillUnmount() {
+        // unsubscribe
+        Object.keys(this.listeners).map( (key)=>{
+          const {ref, event, callback, once} = this.listeners[key];
+          if (!once) {
+            ref.off(event, callback);
+          }
+        });
+      }
+
+      render() {
+        return <WrappedComponent firebaseConnectDone={this.state.done} {...this.props} {...this.state.props} />;
+      }
+    };
+  };
+}
+export const myFirebaseConnect = firebaseConnect.bind(this, firebaseDb);
 
 const SHEETS = 'fate-manager/firebase/SHEETS';
 const SHEETS_SUCCESS = 'fate-manager/firebase/SHEETS_SUCCESS';

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Input, Button, FormGroup } from 'components';
 import { Map } from 'immutable';
 import { updateSession, pushToSession, updateSheet, discardSheetUpdates } from 'redux/modules/firebase';
+import autobind from 'autobind-decorator';
 
 @connect(
   state => ({
@@ -19,6 +20,7 @@ import { updateSession, pushToSession, updateSheet, discardSheetUpdates } from '
     discardSheetUpdates,
   }
 )
+@autobind
 export default class EditSheet extends Component {
 
   static propTypes = {
@@ -38,16 +40,6 @@ export default class EditSheet extends Component {
 
   constructor(props) {
     super(props);
-    this.redirect = this.redirect.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.addItem = this.addItem.bind(this);
-    this.removeItem = this.removeItem.bind(this);
-    this.addStressBox = this.addStressBox.bind(this);
-    this.removeStressBox = this.removeStressBox.bind(this);
-    this.discard = this.discard.bind(this);
-    this.save = this.save.bind(this);
-    this.viewAsBlock = this.viewAsBlock.bind(this);
-    this.addSkill = this.addSkill.bind(this);
   }
 
   redirect(to) {
@@ -61,7 +53,7 @@ export default class EditSheet extends Component {
     event.preventDefault();
     console.log('discard');
     this.props.discardSheetUpdates(this.props.params.key);
-    this.props.pushState('/');
+    this.props.pushState('/sheets');
   }
 
   save(event) {
@@ -69,7 +61,7 @@ export default class EditSheet extends Component {
     const key = this.props.params.key;
     console.log('save', key, this.props.editedSheets.get(key) );
     updateSheet(key, this.props.editedSheets.get(key).toJSON() );
-    this.props.pushState('/block/' + key);
+    this.props.pushState('/sheet/' + key);
     this.props.discardSheetUpdates(this.props.params.key);
   }
 
@@ -77,7 +69,7 @@ export default class EditSheet extends Component {
     event.preventDefault();
     console.log('viewAsBlock');
     const key = this.props.params.key;
-    this.props.pushState('/block/' + key);
+    this.props.pushState('/sheet/' + key);
   }
 
   handleChange(value, {path}) {

@@ -4,6 +4,7 @@ import { startEditingSheet, createNewSheet } from 'redux/modules/firebase';
 import {
     App,
     Home,
+    Sheets,
     Block,
     EditSheet,
     Login,
@@ -31,7 +32,7 @@ export default (store) => {
   const initNewSheet = (nextState, replace, cb) => {
     console.log('initNewSheet');
     const key = createNewSheet(store.getState(), nextState.params.template);
-    replace(null, '/edit/' + key);
+    replace(null, '/sheet/' + key + '/edit');
     cb();
   };
 
@@ -46,12 +47,14 @@ export default (store) => {
       <Route path="/login" component={Login}/>
       <Route path="/register/:routeBeforeLogin" component={Register}/>
       <Route path="/register" component={Register}/>
+
+      <Route path="/sheets" component={Sheets}/>
+      <Route path="/sheet/:keys" component={Block} />
       <Route onEnter={requireLogin}>
         <Route path="/loginSuccess" component={LoginSuccess} />
         <Route path="/registrationSuccess" component={LoginSuccess} isNewUser />
-        <Route path="/block/:keys" component={Block} />
-        <Route path="/edit/:key" onEnter={initEditSheet} component={EditSheet}/>
-        <Route path="/new/:template" onEnter={initNewSheet} component={EditSheet}/>
+        <Route path="/sheet/new/:template" onEnter={initNewSheet} component={EditSheet}/>
+        <Route path="/sheet/:key/edit" onEnter={initEditSheet} component={EditSheet}/>
       </Route>
 
       <Route path="*" component={NotFound} status={404} />
