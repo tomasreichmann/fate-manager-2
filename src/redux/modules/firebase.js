@@ -544,13 +544,8 @@ export function saveRoute(route) {
   updateDb('users/' + user.get('uid') + '/route', route);
 }
 
-export function updateSheet(key, sheet) {
-  const newSheet = sheet ? {
-    ...sheet,
-    lastEdited: Date.now(),
-    lastEditedBy: getUser().get('uid'),
-  } : null;
-  updateDb('sheets/' + key, newSheet);
+export function updateSheet(path, data) {
+  updateDb('sheets/' + path, data || null);
 }
 
 export function discardSheetUpdates(key) {

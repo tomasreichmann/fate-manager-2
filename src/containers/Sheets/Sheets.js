@@ -23,7 +23,6 @@ import { myFirebaseConnect, toggleSheetSelection } from '../../redux/modules/fir
   {
     path: '/sheets',
     adapter: (snapshot)=>(
-      console.log('adapter', snapshot.val()),
       { sheets: fromJS(snapshot.val()) }
     ),
   }
@@ -86,8 +85,6 @@ export default class Sheets extends Component {
     // require the logo image both from client and server
 
     console.log('render sheets', sheets, sheets && sheets.toJS() );
-    console.log('user', user );
-    console.log(Input, templates );
 
     const SheetsInstance = this;
 
@@ -97,7 +94,7 @@ export default class Sheets extends Component {
 
         <div className="container">
 
-          { user ? null : <Alert>To use all features, you must <Link to="/login" ><Button primary >log in.</Button></Link></Alert> }
+          { user ? null : <Alert>To use all features, you must <Link to={"/login/sheets" } ><Button primary >log in.</Button></Link></Alert> }
 
           <SheetList sheets={sheets} selection={selection} toggleSheetSelection={toggleSelection} pushState={pushState} user={user} />
 

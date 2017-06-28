@@ -65,7 +65,7 @@ export default class Block extends Component {
 
     return (
       <div className={styles.Blocks + ' container'} >
-        { user ? null : <Alert className={styles['Blocks-notLoggedIn']} >To use all features, you must <Link to={"/login/" } ><Button primary >log in.</Button></Link></Alert> }
+        { user ? null : <Alert className={styles['Blocks-notLoggedIn']} >To use all features, you must <Link to={ '/login/' + encodeURIComponent(params.keys) } ><Button primary >log in.</Button></Link></Alert> }
         { selectedSheets.map( (sheet)=>( <div className={styles['Blocks-item']} key={sheet.get('key')} >
           <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') || 'VS-P' )} updateSheet={updateSheet} >
             <div className={styles['Blocks-actions']} >
