@@ -567,7 +567,9 @@ export function pushToSession(path, value) {
 
 export function saveRoute(route) {
   const user = getUser();
-  updateDb('users/' + user.get('uid') + '/route', route);
+  if (user) {
+    updateDb('users/' + user.get('uid') + '/route', route);
+  }
 }
 
 export function updateSheet(path, data) {
