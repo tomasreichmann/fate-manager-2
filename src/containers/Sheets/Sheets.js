@@ -34,7 +34,6 @@ export default class Sheets extends Component {
     templates: PropTypes.object,
     pushState: PropTypes.func.isRequired,
     selection: PropTypes.object,
-    updateSheet: PropTypes.func.isRequired,
     toggleSelection: PropTypes.func.isRequired,
   };
   static contextTypes = {

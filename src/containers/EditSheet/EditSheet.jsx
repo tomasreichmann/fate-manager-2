@@ -3,7 +3,7 @@ import { push } from 'react-router-redux';
 import { connect } from 'react-redux';
 import { Input, Button, FormGroup } from 'components';
 import { Map } from 'immutable';
-import { updateSession, pushToSession, updateSheet, discardSheetUpdates } from 'redux/modules/firebase';
+import { updateSession, pushToSession, updateDb, discardSheetUpdates } from 'redux/modules/firebase';
 import autobind from 'autobind-decorator';
 
 @connect(
@@ -60,7 +60,7 @@ export default class EditSheet extends Component {
     event.preventDefault();
     const key = this.props.params.key;
     console.log('save', key, this.props.editedSheets.get(key) );
-    updateSheet(key, this.props.editedSheets.get(key).toJSON() );
+    updateDb('/sheets/' + key, this.props.editedSheets.get(key).toJSON() );
     this.props.pushState('/sheet/' + key);
     this.props.discardSheetUpdates(this.props.params.key);
   }

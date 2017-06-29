@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
-import { updateSheet, myFirebaseConnect } from 'redux/modules/firebase';
+import { updateDb, myFirebaseConnect } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
 import { Button, SheetBlock, Alert } from 'components';
 import { List, fromJS } from 'immutable';
@@ -52,7 +52,7 @@ export default class Block extends Component {
 
   deleteSheet(key) {
     console.log('deleteSheet');
-    updateSheet(key, null);
+    updateDb('/sheets/' + key, null);
     this.props.pushState('/sheets');
   }
 
@@ -67,7 +67,7 @@ export default class Block extends Component {
       <div className={styles.Blocks + ' container'} >
         { user ? null : <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Link to={ '/login/' + encodeURIComponent(params.keys) } ><Button primary >log in.</Button></Link></Alert> }
         { selectedSheets.map( (sheet)=>( <div className={styles['Blocks-item']} key={sheet.get('key')} >
-          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') || 'VS-P' )} updateSheet={updateSheet} >
+          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') || 'VS-P' )} updateDb={updateDb} >
             <div className={styles['Blocks-actions']} >
               <Button warning onClick={this.redirect( '/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit' )} >Edit</Button>
               <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, sheet.get('key')) } confirmMessage="Really delete forever?" >Delete</Button>

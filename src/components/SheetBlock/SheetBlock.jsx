@@ -7,7 +7,7 @@ export default class SheetBlock extends Component {
 
   static propTypes = {
     sheet: PropTypes.object,
-    updateSheet: PropTypes.func.isRequired,
+    updateDb: PropTypes.func.isRequired,
     template: PropTypes.object,
     children: PropTypes.any,
   };
@@ -20,7 +20,7 @@ export default class SheetBlock extends Component {
   handleChange(value, {key, path}) {
     console.log('handleChange', value, path);
     const sessionPath = key + '/' + path;
-    this.props.updateSheet(sessionPath, value);
+    this.props.updateDb('/sheets/' + sessionPath, value);
   }
 
   render() {

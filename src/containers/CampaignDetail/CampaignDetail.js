@@ -3,9 +3,10 @@ import Helmet from 'react-helmet';
 import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import { myFirebaseConnect } from 'redux/modules/firebase';
+import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
-import { Button, Alert } from 'components';
+import autobind from 'autobind-decorator';
+import { Button, Alert, Editable } from 'components';
 
 @connect(
   () => ({
@@ -36,6 +37,13 @@ export default class CampaignDetail extends Component {
     params: PropTypes.object.isRequired,
   };
 
+  @autobind
+  handleChange({ path }, value) {
+    const { campaign } = this.props;
+    console.log('handleChange', path, value);
+    updateDb('/campaigns/' + campaign.get('key') + '/' + path, value);
+  }
+
   @injectProps
   render({campaign, pushState, params = {}}) {
     const styles = require('./CampaignDetail.scss');
@@ -45,7 +53,7 @@ export default class CampaignDetail extends Component {
         <Helmet title="CampaignDetail"/>
         { campaign ?
           (<div className={ styles.CampaignDetail + '-content' }>
-            <h1>Campaign: { campaign.get('name') }</h1>
+            <h1>Campaign: <Editable type="text" onSubmit={this.handleChange} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>
           </div>)
          : <Alert className={styles['CampaignDetail-notFoung']} warning >Campaign { params.key } not found. Back to <Button primary onClick={pushState} onClickParams="/campaigns" >Campaign Overview</Button></Alert> }
       </div>

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Button, Input } from 'components';
-import { updateSheet } from 'redux/modules/firebase';
+import { updateDb } from 'redux/modules/firebase';
 import { Map } from 'immutable';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
@@ -24,7 +24,7 @@ export default class SheetList extends Component {
 
   deleteSheet(key) {
     console.log('deleteSheet', key );
-    updateSheet(key, null);
+    updateDb('/sheets/' + key, null);
   }
 
   @autobind

@@ -545,7 +545,7 @@ export function register(email, password, routeBeforeLogin) {
   };
 }
 
-export function updateDb(path, value, method = 'set') {
+export function updateDb(path, value = null, method = 'set') {
   const params = method !== 'remove' ? [value] : [];
   console.log('updateDb', path, value, method, params);
   firebaseDb.ref(path)[method](...params);
@@ -570,10 +570,6 @@ export function saveRoute(route) {
   if (user) {
     updateDb('users/' + user.get('uid') + '/route', route);
   }
-}
-
-export function updateSheet(path, data) {
-  updateDb('sheets/' + path, data || null);
 }
 
 export function discardSheetUpdates(key) {
