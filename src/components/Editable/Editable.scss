@@ -1,0 +1,11 @@
+@import "../../theme/variables.scss";
+
+.Editable {
+  display: inline-block;
+  position: relative;
+
+  &-form {
+    display: inline-flex;
+    margin: 0;
+  }
+}

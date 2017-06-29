@@ -14,3 +14,4 @@ export SheetBlock from './SheetBlock/SheetBlock';
 export Alert from './Alert/Alert';
 export FormGroup from './FormGroup/FormGroup';
 export Modal from './Modal/Modal';
+export Editable from './Editable/Editable';
