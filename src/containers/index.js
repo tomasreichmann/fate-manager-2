@@ -8,3 +8,5 @@ export Register from './Register/Register';
 export NotFound from './NotFound/NotFound';
 export Block from './Block/Block';
 export EditSheet from './EditSheet/EditSheet';
+export CampaignOverview from './CampaignOverview/CampaignOverview';
+export CampaignDetail from './CampaignDetail/CampaignDetail';

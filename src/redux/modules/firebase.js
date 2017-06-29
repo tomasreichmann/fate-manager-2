@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import firebaseConfig from '../../../firebase-config';
 import * as firebase from 'firebase';
 import { Map, fromJS } from 'immutable';
+import autobind from 'autobind-decorator';
 
 export const firebaseApp = firebase.initializeApp(firebaseConfig);
 export const firebaseDb = firebaseApp.database();
@@ -37,38 +38,63 @@ export function firebaseConnect(db, initialDefinitions) {
         };
       }
 
-      componentDidMount() {
-        // subscribe
-        const promises = [];
-        Object.keys(this.listeners).map( (listenerKey)=>{
+      componentWillReceiveProps(nextProps) {
+        Object.keys(this.listeners).map( (listenerKey) => {
           const listener = this.listeners[listenerKey];
-          const { path, once, event } = listener;
-          console.log('didMount', listener, this.dbRefs, this.dbRefs[path]);
-          this.dbRefs[path] = this.dbRefs[path] || db.ref(path);
-          listener.ref = this.dbRefs[path];
-          listener.callback = this.onUpdate.bind(this, listener);
-          const method = once ? 'once' : 'on';
-          listener.promise = listener.ref[method](event, listener.callback);
-          promises.push(listener.promise);
+          const { path, pathResolver = (passPath) => (passPath), event } = listener;
+          const newResolvedPath = pathResolver(path, nextProps);
+          if ( newResolvedPath !== listener.resolvedPath ) {
+            // unsubscribe previous connection
+            listener.ref.off(event, listener.callback);
+            // subscribe new connection
+            this.subscribeListener(listener, newResolvedPath);
+          }
         } );
-
-        // track all done
-        this.donePromise = Promise.all( promises );
-        this.donePromise.then( ()=>(
-          this.setState({
-            done: true
-          })
-        ) );
       }
 
+      componentWillMount() {
+        // subscribe
+        Object.keys(this.listeners).map( (listenerKey) => {
+          const listener = this.listeners[listenerKey];
+          const { path, pathResolver = (passPath) => (passPath) } = listener;
+          const resolvedPath = pathResolver(path, this.props);
+          this.subscribeListener(listener, resolvedPath);
+        } );
+      }
+
+      @autobind
+      subscribeListener(listener, resolvedPath) {
+        const { once, event } = listener;
+        listener.updated = false;
+        listener.resolvedPath = resolvedPath;
+        this.dbRefs[listener.resolvedPath] = this.dbRefs[listener.resolvedPath] || db.ref(listener.resolvedPath);
+        listener.ref = this.dbRefs[listener.resolvedPath];
+        listener.callback = this.onUpdate.bind(this, listener);
+        const method = once ? 'once' : 'on';
+        listener.ref[method](event, listener.callback);
+      }
+
+      @autobind
+      checkDone() {
+        let allDone = true;
+        Object.keys(this.listeners).map( (listenerKey) => {
+          const listener = this.listeners[listenerKey];
+          allDone = allDone && listener.updated;
+        });
+        return allDone;
+      }
+
+      @autobind
       onUpdate(listener, snapshot) {
         console.log('onUpdate', event, snapshot);
+        listener.updated = true;
 
         this.setState({
+          done: this.checkDone(),
           props: {
             ...this.state.props,
             ...listener.adapter(snapshot),
-          }
+          },
         });
       }
 
@@ -585,6 +611,23 @@ export function createNewSheet(state, templateKey) {
     key,
   });
   ref.child(key).set(newSheet.toJSON());
+  return key;
+}
+
+export function createNewCampaign(state) {
+  console.log('createNewCampaign', state);
+  const user = state.firebase.get('user');
+  console.log('createNewCampaign user', user);
+  const ref = firebaseDb.ref('campaigns');
+  const key = ref.push().key;
+  const newCampaign = Map({
+    created: Date.now(),
+    createdBy: user.get('uid'),
+    lastEdited: Date.now(),
+    lastEditedBy: user.get('uid'),
+    key,
+  });
+  ref.child(key).set(newCampaign.toJSON());
   return key;
 }
 

@@ -97,6 +97,11 @@ export default class App extends Component {
                   Sheets
                 </NavItem>
               </LinkContainer>
+              <LinkContainer to="/campaigns">
+                <NavItem eventKey={2} className="logout-link" >
+                  Campaigns
+                </NavItem>
+              </LinkContainer>
               {user ?
                 <LinkContainer to="/logout">
                   <NavItem eventKey={3} className="logout-link" onClick={this.handleLogout}>

@@ -94,7 +94,7 @@ export default class Sheets extends Component {
 
         <div className="container">
 
-          { user ? null : <Alert>To use all features, you must <Link to={"/login/sheets" } ><Button primary >log in.</Button></Link></Alert> }
+          { user ? null : <Alert warning>To use all features, you must <Link to={"/login/sheets" } ><Button primary >log in.</Button></Link></Alert> }
 
           <SheetList sheets={sheets} selection={selection} toggleSheetSelection={toggleSelection} pushState={pushState} user={user} />
 

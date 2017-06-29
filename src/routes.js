@@ -1,10 +1,12 @@
 import React from 'react';
 import {IndexRoute, Route} from 'react-router';
-import { startEditingSheet, createNewSheet } from 'redux/modules/firebase';
+import { startEditingSheet, createNewSheet, createNewCampaign } from 'redux/modules/firebase';
 import {
     App,
     Home,
     Sheets,
+    CampaignOverview,
+    CampaignDetail,
     Block,
     EditSheet,
     Login,
@@ -36,18 +38,26 @@ export default (store) => {
     cb();
   };
 
+  const initNewCampaign = (nextState, replace, cb) => {
+    console.log('initNewSheet');
+    const key = createNewCampaign(store.getState());
+    replace(null, '/campaign/' + key);
+    cb();
+  };
+
   /**
    * Please keep routes in alphabetical order
    */
   return (
     <Route path="/" component={App}>
-      <IndexRoute component={Home} onEnter={requireLogin} />
+      <IndexRoute component={Home} />
 
       <Route path="/login/:routeBeforeLogin" component={Login}/>
       <Route path="/login" component={Login}/>
       <Route path="/register/:routeBeforeLogin" component={Register}/>
       <Route path="/register" component={Register}/>
 
+      <Route path="/campaigns" component={CampaignOverview}/>
       <Route path="/sheets" component={Sheets}/>
       <Route path="/sheet/:keys" component={Block} />
       <Route onEnter={requireLogin}>
@@ -55,6 +65,8 @@ export default (store) => {
         <Route path="/registrationSuccess" component={LoginSuccess} isNewUser />
         <Route path="/sheet/new/:template" onEnter={initNewSheet} component={EditSheet}/>
         <Route path="/sheet/:key/edit" onEnter={initEditSheet} component={EditSheet}/>
+        <Route path="/campaign/new" onEnter={initNewCampaign} component={CampaignDetail}/>
+        <Route path="/campaign/:key" component={CampaignDetail}/>
       </Route>
 
       <Route path="*" component={NotFound} status={404} />
