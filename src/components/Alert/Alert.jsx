@@ -1,8 +1,32 @@
 import React from 'react';
+import { Map } from 'immutable';
 
-const Alert = ({ message, children, className = '' }) => {
-  const cls = className.split(' ').concat( 'Alert alert alert-danger'.split(' ') ).join(' ');
-  return <div className={cls} role="alert">{message || children}</div>;
+const Alert = ({
+  message,
+  children,
+  className = '',
+  warning,
+  primary,
+  secondary,
+  success,
+  info,
+}) => {
+  const style = require('./Alert.scss');
+  const classString = [style.Alert].concat(
+    Map({
+      warning,
+      primary,
+      secondary,
+      success,
+      info,
+    })
+    .reduce( (classList, cls, key) => (
+      cls ? classList.concat(style['Alert--' + key]) : classList
+    ), [] )
+  )
+  .concat( className.split(' ') )
+  .join(' ');
+  return <div className={classString} role="alert">{message || children}</div>;
 };
 
 export default Alert;

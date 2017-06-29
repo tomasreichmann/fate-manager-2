@@ -1,0 +1,36 @@
+@import "../../theme/variables.scss";
+
+.Alert {
+  padding: $padding-large-vertical $padding-large-horizontal;
+  margin: $padding-large-vertical*2 0;
+  clip-path: $clip-top-right;
+  background-color: #EEE;
+
+  &--primary {
+    background: lighten($brand-primary, 20%);
+  }
+
+  &--secondary {
+    background: lighten($brand-secondary, 20%);
+  }
+
+  &--success {
+    background: lighten($brand-success, 20%);
+  }
+
+  &--warning {
+    background: lighten($brand-warning, 20%);
+  }
+
+  &--danger {
+    background: lighten($brand-danger, 20%);
+  }
+
+  &--info {
+    background: lighten($brand-info, 20%);
+  }
+
+  &--noClip {
+    clip-path: none
+  }
+}
