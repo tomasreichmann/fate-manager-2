@@ -3,9 +3,20 @@
 .Editable {
   display: inline-block;
   position: relative;
+  vertical-align: text-bottom;
 
-  &-form {
+  &-content {
+    display: inline-block;
+    border-bottom: $inputBorder;
+    border-bottom-style: dashed;
+    border-bottom-color: $brand-primary;
+  }
+
+  &-form.Editable-form {
     display: inline-flex;
-    margin: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    align-items: baseline;
+    vertical-align: text-top;
   }
 }

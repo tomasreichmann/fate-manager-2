@@ -69,7 +69,7 @@ export default class Editable extends Component {
     return (<span className={processedClassName} {...props} >
       { this.state.editing ?
         <FormGroup className={styles['Editable-form' ]} childTypes={['flexible', null, null]} >
-          <Input defaultValue={ inputProps.value || children } {...inputProps} inputRef={ (input)=>(this.inputElement = input) } />
+          <Input inherit defaultValue={ inputProps.value || children } {...inputProps} inputRef={ (input)=>(this.inputElement = input) } />
           <Button block danger clip-bottom-left onClick={this.onCancel} >Cancel</Button>
           <Button block success onClick={this.onSubmit} >OK</Button>
         </FormGroup>
