@@ -15,12 +15,14 @@ export default class FormGroup extends Component {
     const styles = require('./FormGroup.scss');
     const {
       children = [],
-      className,
+      className = '',
       childTypes = [],
       ...props
     } = this.props;
 
-    return (<div className={styles.FormGroup} {...props}>{
+    const processedClassName = [styles.FormGroup].concat(className.slice(' ')).join(' ');
+
+    return (<div className={processedClassName} {...props}>{
       ((typeof children.map === 'function') ? children : [children]).map( (child, childIndex)=>( <div key={'item-' + childIndex} className={
           (childTypes[childIndex] ? childTypes[childIndex].split(' ') : [])
           .map( (type)=>( styles['FormGroup-item--' + type] ) )
