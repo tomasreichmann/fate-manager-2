@@ -80,7 +80,7 @@ export default class Sheets extends Component {
 
   render() {
     const styles = require('./Sheets.scss');
-    const {sheets, selection, templates, toggleSelection, pushState, user} = this.props;
+    const {sheets, selection, templates, toggleSelection, user} = this.props;
     // require the logo image both from client and server
 
     console.log('render sheets', sheets, sheets && sheets.toJS() );
@@ -95,7 +95,7 @@ export default class Sheets extends Component {
 
           { user ? null : <Alert warning>To use all features, you must <Link to={"/login/sheets" } ><Button primary >log in.</Button></Link></Alert> }
 
-          <SheetList sheets={sheets} selection={selection} toggleSheetSelection={toggleSelection} pushState={pushState} user={user} />
+          <SheetList sheets={sheets} selection={selection} toggleSheetSelection={toggleSelection} user={user} />
 
           <hr />
 

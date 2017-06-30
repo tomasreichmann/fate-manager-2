@@ -99,7 +99,7 @@ export function firebaseConnect(db, initialDefinitions) {
           done: this.checkDone(),
           props: {
             ...this.state.props,
-            ...listener.adapter(snapshot),
+            ...listener.adapter(snapshot, this.props),
           },
         });
       }
@@ -107,10 +107,8 @@ export function firebaseConnect(db, initialDefinitions) {
       componentWillUnmount() {
         // unsubscribe
         Object.keys(this.listeners).map( (key)=>{
-          const {ref, event, callback, once} = this.listeners[key];
-          if (!once) {
-            ref.off(event, callback);
-          }
+          const {ref, event, callback} = this.listeners[key];
+          ref.off(event, callback);
         });
       }
 
@@ -635,6 +633,23 @@ export function createNewCampaign(state) {
     key,
   });
   ref.child(key).set(newCampaign.toJSON());
+  return key;
+}
+
+export function createNewDocument(state, campaignKey) {
+  console.log('createNewDocument', state);
+  const user = state.firebase.get('user');
+  console.log('createNewDocument user', user, 'campaignKey', campaignKey);
+  const ref = firebaseDb.ref('campaigns/' + campaignKey + '/documents');
+  const key = ref.push().key;
+  const newDocument = Map({
+    created: Date.now(),
+    createdBy: user.get('uid'),
+    lastEdited: Date.now(),
+    lastEditedBy: user.get('uid'),
+    key,
+  });
+  ref.child(key).set(newDocument.toJSON());
   return key;
 }
 

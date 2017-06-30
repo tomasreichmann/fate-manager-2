@@ -12,7 +12,6 @@ export default class SheetList extends Component {
     sheets: PropTypes.object,
     selection: PropTypes.object,
     actions: PropTypes.array,
-    pushState: PropTypes.func.isRequired,
     toggleSheetSelection: PropTypes.func.isRequired,
   };
 
@@ -35,7 +34,7 @@ export default class SheetList extends Component {
   }
 
   @injectProps
-  render({sheets = Map(), actions = [], selection, pushState, user}) {
+  render({sheets = Map(), actions = [], selection, user}) {
     // const {info, load} = this.props; // eslint-disable-line no-shadow
     console.log('SheetList sheets', sheets.toJS());
     console.log('SheetList ', sheets.toJS());
@@ -55,7 +54,7 @@ export default class SheetList extends Component {
           <Input type="checkbox" handleChange={this.select} handleChangeParams={item.get('key')} value={!!selection.get(item.get('key'))}/>
         </div>
         <div className={styles['SheetList-item-title']} >
-          <Button link className="text-left" block onClick={pushState} onClickParams={'/sheet/' + encodeURIComponent(item.get('key'))} >{item.get('name')}</Button>
+          <Link to={'/sheet/' + encodeURIComponent(item.get('key'))} ><Button link className="text-left" block >{item.get('name')}</Button></Link>
         </div>
         <div className={styles['SheetList-item-actions']} >
           <Link to={'/sheet/' + encodeURIComponent(item.get('key')) + '/edit'} ><Button warning >Edit</Button></Link>

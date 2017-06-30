@@ -3,7 +3,6 @@ import Helmet from 'react-helmet';
 import { Map, fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { push } from 'react-router-redux';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
@@ -12,10 +11,7 @@ import { Button, Alert, Editable, SheetList, FormGroup, Input } from 'components
 @connect(
   (state) => ({
     user: state.firebase.get('user')
-  }),
-  {
-    pushState: push
-  }
+  })
 )
 @myFirebaseConnect([
   {
@@ -68,16 +64,30 @@ export default class CampaignDetail extends Component {
   }
 
   @autobind
-  handleChange({ path }, value) {
+  deleteDocument(docKey) {
+    console.log('deleteDocument', docKey);
+    if (docKey) {
+      updateDb('/campaigns/' + this.props.campaign.get('key') + '/documents/' + docKey, null);
+    }
+  }
+
+  @autobind
+  updateCampaign({ path }, value) {
     const { campaign } = this.props;
-    console.log('handleChange', path, value);
+    console.log('updateCampaign', path, value);
     updateDb('/campaigns/' + campaign.get('key') + '/' + path, value);
   }
 
   @injectProps
-  render({campaign, availableSheets = Map(), selection = Map(), pushState, params = {}, user}) {
+  render({
+    campaign,
+    availableSheets = Map(),
+    selection = Map(),
+    params = {},
+    user
+  }) {
     const styles = require('./CampaignDetail.scss');
-    const { sheetKeys = Map(), key: campaignKey } = (campaign ? campaign.toObject() : {});
+    const { sheetKeys = Map(), key: campaignKey, documents = Map() } = (campaign ? campaign.toObject() : {});
     const sheets = availableSheets.filter((sheet = Map())=>( sheetKeys.includes(sheet.get('key')) ));
     console.log('CampaignDetail sheets', sheetKeys.toJS(), sheets.toJS() );
     console.log('CampaignDetail prop keys, props', Object.keys(this.props), this.props);
@@ -94,7 +104,6 @@ export default class CampaignDetail extends Component {
         sheets={sheets}
         selection={selection}
         toggleSheetSelection={this.toggleSheetSelection}
-        pushState={pushState}
         user={user}
         actions={[<Button onClick={this.removeSheetFromCampaign} warning >Unassign</Button>]}
       />
@@ -110,15 +119,32 @@ export default class CampaignDetail extends Component {
       </FormGroup>
     </div>);
 
+    const documentsBlock = (<div className={styles.CampaignDetail_documents} >
+      <h2>Documents</h2>
+      <div className={styles.CampaignDetail_documents_list} >
+      { documents.size ? documents.map( (doc, docKey) => (
+        <FormGroup key={docKey} childTypes={['flexible', null]} >
+          <Link to={'/campaign/' + campaignKey + '/document/' + docKey} ><Button link >{doc.get('name')}</Button></Link>
+          <Button danger onClick={ this.deleteDocument } onClickParams={docKey} confirmMessage="Really delete?" >Delete</Button>
+        </FormGroup>
+      ) )
+      : <Alert warning >No documents yet</Alert>}
+      </div>
+      <FormGroup>
+        <Link to={'/campaign/' + campaignKey + '/new-document'} ><Button primary >Create new document</Button></Link>
+      </FormGroup>
+    </div>);
+
     return (
       <div className={ styles.CampaignDetail + ' container' }>
         <Helmet title="CampaignDetail"/>
         { campaign ?
           (<div className={ styles.CampaignDetail + '-content' }>
-            <h1>Campaign: <Editable type="text" onSubmit={this.handleChange} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>
+            <h1>Campaign: <Editable type="text" onSubmit={this.updateCampaign} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>
             { sheetsBlock }
+            { documentsBlock }
           </div>)
-         : <Alert className={styles['CampaignDetail-notFoung']} warning >Campaign { params.key } not found. Back to <Button primary onClick={pushState} onClickParams="/campaigns" >Campaign Overview</Button></Alert> }
+         : <Alert className={styles['CampaignDetail-notFoung']} warning >Campaign { params.key } not found. Back to <Link to="/campaigns" ><Button primary >Campaign Overview</Button></Link></Alert> }
 
       </div>
     );

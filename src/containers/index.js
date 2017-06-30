@@ -10,3 +10,4 @@ export Block from './Block/Block';
 export EditSheet from './EditSheet/EditSheet';
 export CampaignOverview from './CampaignOverview/CampaignOverview';
 export CampaignDetail from './CampaignDetail/CampaignDetail';
+export DocumentDetail from './DocumentDetail/DocumentDetail';
