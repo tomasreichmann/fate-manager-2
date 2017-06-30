@@ -52,10 +52,6 @@ $inputBorder: 2px solid $inverse-bg;
 
   &--inline {
     display: inline-block;
-
-    input {
-
-    }
   }
 
   &-inputWrap {
@@ -76,6 +72,25 @@ $inputBorder: 2px solid $inverse-bg;
 
     &--after {
       left: 100%;
+    }
+  }
+
+  &--inherit {
+    display: block;
+    font-size: inherit;
+    font-weight: inherit;
+
+    input {
+      line-height: inherit;
+      font-weight: inherit;
+      border: 0;
+      border-bottom: $inputBorder;
+      padding: 0;
+      color: inherit;
+      background-color: transparent;
+      display: inline-block;
+      font-size: inherit;
+      line-height: inherit;
     }
   }
 }

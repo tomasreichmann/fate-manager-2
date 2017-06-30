@@ -5,6 +5,7 @@ export default class Input extends Component {
     type: PropTypes.string,
     label: PropTypes.any,
     inline: PropTypes.bool,
+    inherit: PropTypes.bool,
     inputRef: PropTypes.func,
     className: PropTypes.string,
     handleChange: PropTypes.func,
@@ -89,6 +90,7 @@ export default class Input extends Component {
       superscriptBefore,
       superscriptAfter,
       inline,
+      inherit,
       ...props,
     } = this.props;
 
@@ -96,6 +98,9 @@ export default class Input extends Component {
     const classNames = [styles.Label, styles['Label--' + type]].concat(className.split(' '));
     if (inline) {
       classNames.push(styles['Label--inline']);
+    }
+    if (inherit) {
+      classNames.push(styles['Label--inherit']);
     }
 
     return (<label className={classNames.join(' ')}>
