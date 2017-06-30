@@ -54,7 +54,17 @@ export default class CampaignDetail extends Component {
   addExistingSheet() {
     console.log('addExistingSheet');
     const sheetKey = this.addExistingSheetSelect.value;
-    updateDb('/campaigns/' + this.props.campaign.get('key') + '/sheetKeys', sheetKey, 'push');
+    if (sheetKey) {
+      updateDb('/campaigns/' + this.props.campaign.get('key') + '/sheetKeys/' + sheetKey, sheetKey, 'set');
+    }
+  }
+
+  @autobind
+  removeSheetFromCampaign(sheetKey) {
+    console.log('removeSheetFromCampaign', sheetKey);
+    if (sheetKey) {
+      updateDb('/campaigns/' + this.props.campaign.get('key') + '/sheetKeys/' + sheetKey, null);
+    }
   }
 
   @autobind
@@ -73,18 +83,30 @@ export default class CampaignDetail extends Component {
     console.log('CampaignDetail prop keys, props', Object.keys(this.props), this.props);
     console.log('CampaignDetail campaign', campaign && campaign.toJS() );
 
+    const addExistingSheetOptions = availableSheets
+      .filter( (availableSheet)=>( !sheets.includes(availableSheet) ) )
+      .map( (availableSheet)=>({ label: availableSheet.get('name'), value: availableSheet.get('key') } ) )
+    ;
+
     const sheetsBlock = (<div className={styles.CampaignDetail_sheets} >
       <h2>Sheets</h2>
-      { sheets.size ? <SheetList sheets={sheets} selection={selection} toggleSheetSelection={this.toggleSheetSelection} pushState={pushState} user={user} />
+      { sheets.size ? <SheetList
+        sheets={sheets}
+        selection={selection}
+        toggleSheetSelection={this.toggleSheetSelection}
+        pushState={pushState}
+        user={user}
+        actions={[<Button onClick={this.removeSheetFromCampaign} warning >Unassign</Button>]}
+      />
       : <Alert warning >No sheets assigned to campaign yet</Alert>}
       <FormGroup>
         <Input
           type="select"
           inputRef={(addExistingSheetSelect)=>(this.addExistingSheetSelect = addExistingSheetSelect)}
-          options={availableSheets.map( (availableSheet)=>({ label: availableSheet.get('name'), value: availableSheet.get('key') } ) )}
+          options={addExistingSheetOptions}
         />
-        <Button success onClick={this.addExistingSheet} >Add existing sheet</Button>
-        <Link to={'/campaign/' + campaignKey + '/new-sheet'} ><Button primary >Add new sheet</Button></Link>
+        <Button disabled={!addExistingSheetOptions.size} success onClick={this.addExistingSheet} >Assign sheet</Button>
+        <Link to={'/campaign/' + campaignKey + '/new-sheet'} ><Button primary >Assign new sheet</Button></Link>
       </FormGroup>
     </div>);
 

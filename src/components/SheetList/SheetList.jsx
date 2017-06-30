@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes, cloneElement } from 'react';
 import { Link } from 'react-router';
 import { Button, Input } from 'components';
 import { updateDb } from 'redux/modules/firebase';
@@ -11,6 +11,7 @@ export default class SheetList extends Component {
   static propTypes = {
     sheets: PropTypes.object,
     selection: PropTypes.object,
+    actions: PropTypes.array,
     pushState: PropTypes.func.isRequired,
     toggleSheetSelection: PropTypes.func.isRequired,
   };
@@ -34,7 +35,7 @@ export default class SheetList extends Component {
   }
 
   @injectProps
-  render({sheets = Map(), selection, pushState, user}) {
+  render({sheets = Map(), actions = [], selection, pushState, user}) {
     // const {info, load} = this.props; // eslint-disable-line no-shadow
     console.log('SheetList sheets', sheets.toJS());
     console.log('SheetList ', sheets.toJS());
@@ -59,6 +60,7 @@ export default class SheetList extends Component {
         <div className={styles['SheetList-item-actions']} >
           <Link to={'/sheet/' + encodeURIComponent(item.get('key')) + '/edit'} ><Button warning >Edit</Button></Link>
           <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, item.get('key')) } confirmMessage="Really delete?" >Delete</Button>
+          { actions.map( (ActionComponent)=>( cloneElement(ActionComponent, { onClickParams: item.get('key') }) ) ) }
         </div>
       </div> ) ) }
       { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Link to={'/sheet/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';')} ><Button link>Open: { filteredSelection.join(', ') }</Button></Link></div> : null }
