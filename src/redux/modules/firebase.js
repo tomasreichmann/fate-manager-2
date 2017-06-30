@@ -19,23 +19,29 @@ export function firebaseConnect(db, initialDefinitions) {
 
   return (WrappedComponent) => {
     return class extends Component {
+
       constructor(props) {
         super(props);
-        // console.log('firebaseConnect', WrappedComponent, path, prop, events);
+        console.log('firebaseConnect', defs, defs.length);
 
-        this.listeners = defs.reduce( (propStatuses, def) => ( {
-          [def.path]: {
+        this.listeners = defs.reduce( (listenerMap, def, index) => ( {
+          ...listenerMap,
+          [index + '__' + def.path]: {
             ...def,
             connected: false
           }
         }), {} );
 
+
         this.dbRefs = {};
 
         this.state = {
-          done: !defs.lenght,
+          done: !defs.length,
           props: {},
         };
+
+        console.log('WrappedComponent constructor this.listeners', this.listeners);
+        console.log('WrappedComponent constructor this.checkDone()', this.checkDone());
       }
 
       componentWillReceiveProps(nextProps) {
@@ -79,14 +85,14 @@ export function firebaseConnect(db, initialDefinitions) {
         let allDone = true;
         Object.keys(this.listeners).map( (listenerKey) => {
           const listener = this.listeners[listenerKey];
-          allDone = allDone && listener.updated;
+          allDone = allDone ? !!listener.updated : false;
         });
         return allDone;
       }
 
       @autobind
       onUpdate(listener, snapshot) {
-        console.log('onUpdate', event, snapshot);
+        console.log('onUpdate', listener.resolvedPath, listener, snapshot);
         listener.updated = true;
 
         this.setState({
@@ -109,7 +115,10 @@ export function firebaseConnect(db, initialDefinitions) {
       }
 
       render() {
-        return <WrappedComponent firebaseConnectDone={this.state.done} {...this.props} {...this.state.props} />;
+        const { ...props } = this.props;
+        console.log('WrappedComponent render this.state.done', this.state.done);
+        console.log('WrappedComponent render props', props);
+        return <WrappedComponent firebaseConnectDone={this.state.done} {...props} {...this.state.props} />;
       }
     };
   };
