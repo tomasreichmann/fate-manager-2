@@ -64,7 +64,8 @@ export default (store) => {
         <Route path="/loginSuccess" component={LoginSuccess} />
         <Route path="/registrationSuccess" component={LoginSuccess} isNewUser />
         <Route path="/sheet/new/:template" onEnter={initNewSheet} component={EditSheet}/>
-        <Route path="/sheet/:key/edit" onEnter={initEditSheet} component={EditSheet}/>
+        <Route path="/sheet/:key/edit" onEnter={initEditSheet} />
+        <Route path="/campaign/new-sheet" onEnter={initEditSheet} />
         <Route path="/campaign/new" onEnter={initNewCampaign} component={CampaignDetail}/>
         <Route path="/campaign/:key" component={CampaignDetail}/>
       </Route>

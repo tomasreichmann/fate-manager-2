@@ -29,6 +29,7 @@ export default class CampaignOverview extends Component {
   static propTypes = {
     campaigns: PropTypes.object,
     user: PropTypes.object,
+    firebaseConnectDone: PropTypes.bool,
     pushState: PropTypes.func.isRequired,
   };
 
@@ -38,14 +39,17 @@ export default class CampaignOverview extends Component {
   }
 
   @injectProps
-  render({campaigns = Map(), user, pushState}) {
+  render({campaigns = Map(), user, pushState, firebaseConnectDone}) {
     const styles = require('./CampaignOverview.scss');
+
+    console.log('firebaseConnectDone', firebaseConnectDone);
 
     return (
       <div className={ styles.CampaignOverview + ' container' }>
         <Helmet title="CampaignOverview"/>
         <h1>Campaign Overview</h1>
-        { user ? null : <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Button primary onClick={pushState} onClickParams="/login/campaigns" >log in.</Button></Alert> }
+        { !firebaseConnectDone ? <Alert className={styles['Blocks-loading']} info >loading...</Alert> : null }
+        { (!user && firebaseConnectDone) ? <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Button primary onClick={pushState} onClickParams="/login/campaigns" >log in.</Button></Alert> : null }
 
         <div className={ styles['CampaignOverview-list'] }>
           { campaigns.size ? campaigns.map( (campaign)=>(
