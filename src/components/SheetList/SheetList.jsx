@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import { Button, Input } from 'components';
 import { updateDb } from 'redux/modules/firebase';
 import { Map } from 'immutable';
@@ -53,14 +54,14 @@ export default class SheetList extends Component {
           <Input type="checkbox" handleChange={this.select} handleChangeParams={item.get('key')} value={!!selection.get(item.get('key'))}/>
         </div>
         <div className={styles['SheetList-item-title']} >
-          <Button link className="text-left" block onClick={pushState.bind(this, '/sheet/' + encodeURIComponent(item.get('key')) )} >{item.get('name')}</Button>
+          <Button link className="text-left" block onClick={pushState} onClickParams={'/sheet/' + encodeURIComponent(item.get('key'))} >{item.get('name')}</Button>
         </div>
         <div className={styles['SheetList-item-actions']} >
-          <Button warning onClick={pushState.bind(this, '/sheet/' + encodeURIComponent(item.get('key')) + '/edit' )} >Edit</Button>
+          <Link to={'/sheet/' + encodeURIComponent(item.get('key')) + '/edit'} ><Button warning >Edit</Button></Link>
           <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, item.get('key')) } confirmMessage="Really delete?" >Delete</Button>
         </div>
       </div> ) ) }
-      { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Button link onClick={pushState.bind(this, '/sheet/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';') )} >Open: { filteredSelection.join(', ') }</Button></div> : null }
+      { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Link to={'/sheet/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';')} ><Button link>Open: { filteredSelection.join(', ') }</Button></Link></div> : null }
     </div>);
   }
 }
