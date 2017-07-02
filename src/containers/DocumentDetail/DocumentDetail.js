@@ -107,7 +107,6 @@ export default class DocumentDetail extends Component {
     console.log('DocumentDetail contentElements', contentElements && contentElements.toJS() );
 
     const contentBlock = (<div className={ styles.DocumentDetail_contentBlock } >
-      <h2>Content</h2>
       { contentElements.size ? contentElements.map( (componentElement, key)=>{
         const {component, componentProps = {}, preview} = componentElement ? componentElement.toJS() : {};
         const ContentElement = this.contentElementMap[component];

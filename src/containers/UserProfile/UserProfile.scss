@@ -1,0 +1,10 @@
+@import "../../theme/variables.scss";
+
+.UserProfile {
+  padding-top: 1rem;
+
+  &_photo_img {
+    width: 10rem;
+    max-width: 100%;
+  }
+}

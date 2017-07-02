@@ -13,6 +13,7 @@ import {
     Login,
     Register,
     LoginSuccess,
+    UserProfile,
     NotFound,
   } from 'containers';
 
@@ -53,6 +54,16 @@ export default (store) => {
     cb();
   };
 
+  const resolveUserId = (nextState, replace, cb) => {
+    const uid = store.getState().firebase.getIn(['user', 'uid']);
+    if (uid) {
+      replace(null, '/user/' + uid);
+    } else {
+      replace(null, '/user-not-found');
+    }
+    cb();
+  };
+
   /**
    * Please keep routes in alphabetical order
    */
@@ -78,6 +89,8 @@ export default (store) => {
         <Route path="/campaign/:campaignKey/new-document" onEnter={initNewDocument} />
         <Route path="/campaign/:campaignKey/document/:docKey" component={DocumentDetail} />
         <Route path="/campaign/:key" component={CampaignDetail}/>
+        <Route path="/user" onEnter={resolveUserId} />
+        <Route path="/user/:key" component={UserProfile}/>
       </Route>
 
       <Route path="*" component={NotFound} status={404} />

@@ -147,7 +147,7 @@ export function processUser(user) {
     email: user.email,
     emailVerified: user.emailVerified,
     isAnonymous: user.isAnonymous,
-    photoUrl: user.photoUrl,
+    photoURL: user.photoURL,
     refreshToken: user.refreshToken,
     uid: user.uid
   }) : null;
@@ -505,6 +505,10 @@ export default function reducer(state = initialState, action = {}) {
     default:
       return state;
   }
+}
+
+export function getUserInterface() {
+  return firebase.auth().currentUser;
 }
 
 export function getUser() {

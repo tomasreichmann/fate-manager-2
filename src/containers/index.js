@@ -11,3 +11,4 @@ export EditSheet from './EditSheet/EditSheet';
 export CampaignOverview from './CampaignOverview/CampaignOverview';
 export CampaignDetail from './CampaignDetail/CampaignDetail';
 export DocumentDetail from './DocumentDetail/DocumentDetail';
+export UserProfile from './UserProfile/UserProfile';

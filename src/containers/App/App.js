@@ -93,18 +93,18 @@ export default class App extends Component {
           <Navbar.Collapse eventKey={0}>
             <Nav navbar>
               <LinkContainer to="/sheets">
-                <NavItem eventKey={1} className="logout-link" >
+                <NavItem eventKey={1} >
                   Sheets
                 </NavItem>
               </LinkContainer>
               <LinkContainer to="/campaigns">
-                <NavItem eventKey={2} className="logout-link" >
+                <NavItem eventKey={2} >
                   Campaigns
                 </NavItem>
               </LinkContainer>
               {user ?
                 <LinkContainer to="/logout">
-                  <NavItem eventKey={3} className="logout-link" onClick={this.handleLogout}>
+                  <NavItem eventKey={3} onClick={this.handleLogout}>
                     Logout
                   </NavItem>
                 </LinkContainer>
@@ -113,9 +113,12 @@ export default class App extends Component {
                   <NavItem eventKey={3}>Login</NavItem>
                 </LinkContainer>
               }
+              {user ? <LinkContainer to={'/user'}>
+                <NavItem eventKey={9} >
+                  Profile: {user.get('displayName') || user.get('email')}
+                </NavItem>
+              </LinkContainer> : null }
             </Nav>
-            {user &&
-            <p className={styles.loggedInMessage + ' navbar-text'}>Logged in as <strong>{user.get('displayName') || user.get('email')}</strong>.</p>}
           </Navbar.Collapse>
         </Navbar>
 
