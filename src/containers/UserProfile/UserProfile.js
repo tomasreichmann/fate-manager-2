@@ -4,15 +4,15 @@ import Helmet from 'react-helmet';
 import { fromJS, Map } from 'immutable';
 // import { Button, FormGroup, Input, Alert } from 'components';
 import { Editable, FormGroup } from 'components';
-import { myFirebaseConnect, getUser, getUserInterface } from '../../redux/modules/firebase';
+import { myFirebaseConnect, getUser, getUserInterface, updateDb } from '../../redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
 
 @myFirebaseConnect([
   {
     path: '/users/',
-    pathResolver: (path)=>(
-      path + getUserInterface().uid
+    pathResolver: (path, props)=>(
+      path + props.params.key
     ),
     adapter: (snapshot)=>(
       console.log('snapshot user', snapshot.val()),
@@ -23,6 +23,8 @@ import autobind from 'autobind-decorator';
 export default class UserProfile extends Component {
   static propTypes = {
     user: PropTypes.object,
+    params: PropTypes.object,
+    userData: PropTypes.object,
   };
   static contextTypes = {
     store: PropTypes.object.isRequired
@@ -32,9 +34,17 @@ export default class UserProfile extends Component {
     super(props);
 
     this.userInterface = getUserInterface();
-    this.state = {
-      userInfo: getUser()
-    };
+
+    if (this.userInterface.uid === props.params.key) {
+      this.state = {
+        currentUser: true,
+        userInfo: getUser()
+      };
+    } else {
+      this.state = {
+        currentUser: false,
+      };
+    }
   }
 
   @autobind
@@ -45,11 +55,12 @@ export default class UserProfile extends Component {
         .updateProfile({
           [prop]: value
         })
-        .then( ()=>(
+        .then( ()=>{
           this.setState({
             userInfo: getUser()
-          })
-        ), (error)=>(
+          });
+          updateDb('/users/' + this.userInterface.uid + '/' + prop, value);
+        }, (error)=>(
           console.log('update failed', error)
         ) )
       ;
@@ -58,8 +69,9 @@ export default class UserProfile extends Component {
 
   @injectProps
   render() {
-    const user = this.state.userInfo || Map();
-    console.log('user', user.toJS());
+    const user = this.state.userInfo || this.props.userData || Map();
+    const isCurrentUser = this.state.currentUser;
+    console.log('user', user.toJS(), 'isCurrentUser', isCurrentUser);
     const styles = require('./UserProfile.scss');
     const name = (user.get('displayName') || user.get('uid'));
 
@@ -69,11 +81,11 @@ export default class UserProfile extends Component {
 
         <div className="container">
 
-          <h1>User profile: <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'displayName'} >{ name || ' ' }</Editable></h1>
+          <h1>User profile: { isCurrentUser ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'displayName'} >{ name || ' ' }</Editable> : name }</h1>
 
           <FormGroup className={ styles.UserProfile_photo } >
             <img src={user.get('photoURL')} className={ styles.UserProfile_photo_img } />
-            <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'photoURL'} >{ user.get('photoURL') || '-none-'}</Editable>
+            {isCurrentUser ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'photoURL'} >{ user.get('photoURL') || '-none-'}</Editable> : null }
           </FormGroup>
 
         </div>

@@ -31,6 +31,13 @@ import { Button, Alert, Editable, SheetList, FormGroup, Input } from 'components
       console.log('snapshot campaign', snapshot, snapshot.val()),
       { availableSheets: fromJS(snapshot.val()) || undefined }
     ),
+  },
+  {
+    path: '/users',
+    adapter: (snapshot)=>(
+      console.log('snapshot users', snapshot, snapshot.val()),
+      { availablePlayers: fromJS(snapshot.val()) || undefined }
+    ),
   }
 ])
 export default class CampaignDetail extends Component {
@@ -52,6 +59,23 @@ export default class CampaignDetail extends Component {
     const sheetKey = this.addExistingSheetSelect.value;
     if (sheetKey) {
       updateDb('/campaigns/' + this.props.campaign.get('key') + '/sheetKeys/' + sheetKey, sheetKey, 'set');
+    }
+  }
+
+  @autobind
+  assignPlayer() {
+    console.log('assignPlayer');
+    const playerKey = this.assignPlayerSelect.value;
+    if (playerKey) {
+      updateDb('/campaigns/' + this.props.campaign.get('key') + '/playerKeys/' + playerKey, playerKey, 'set');
+    }
+  }
+
+  @autobind
+  unassignPlayer(playerKey) {
+    console.log('unassignPlayer', playerKey);
+    if (playerKey) {
+      updateDb('/campaigns/' + this.props.campaign.get('key') + '/playerKeys/' + playerKey, null);
     }
   }
 
@@ -82,16 +106,44 @@ export default class CampaignDetail extends Component {
   render({
     campaign,
     availableSheets = Map(),
+    availablePlayers = Map(),
     selection = Map(),
     params = {},
     user
   }) {
     const styles = require('./CampaignDetail.scss');
-    const { sheetKeys = Map(), key: campaignKey, documents = Map() } = (campaign ? campaign.toObject() : {});
+    const { sheetKeys = Map(), playerKeys = Map(), key: campaignKey, documents = Map() } = (campaign ? campaign.toObject() : {});
     const sheets = availableSheets.filter((sheet = Map())=>( sheetKeys.includes(sheet.get('key')) ));
+    const players = availablePlayers.filter((player = Map())=>( playerKeys.includes(player.get('uid')) ));
     console.log('CampaignDetail sheets', sheetKeys.toJS(), sheets.toJS() );
     console.log('CampaignDetail prop keys, props', Object.keys(this.props), this.props);
     console.log('CampaignDetail campaign', campaign && campaign.toJS() );
+
+    const assignPlayerOptions = availablePlayers
+      .filter( (availablePlayer)=>( !players.includes(availablePlayer) ) )
+      .map( (availablePlayer)=>({ label: availablePlayer.get('displayName'), value: availablePlayer.get('uid') } ) )
+    ;
+
+    const playersBlock = (<div className={styles.CampaignDetail_players} >
+      <h2>Players</h2>
+      <div className={styles.CampaignDetail_documents_list} >
+      { players.size ? players.map( (player, playerKey) => (
+        <FormGroup key={playerKey} childTypes={['flexible', null]} >
+          <Link to={'/user/' + playerKey} ><Button link >{availablePlayers.getIn([playerKey, 'displayName']) || availablePlayers.getIn([playerKey, 'uid'])}</Button></Link>
+          <Button warning onClick={ this.unassignPlayer } onClickParams={playerKey} confirmMessage="Really unassign?" >Unassign</Button>
+        </FormGroup>
+      ) )
+      : <Alert warning >No players yet</Alert>}
+      </div>
+      <FormGroup>
+        <Input
+          type="select"
+          inputRef={(assignPlayerSelect)=>(this.assignPlayerSelect = assignPlayerSelect)}
+          options={assignPlayerOptions}
+        />
+        <Button disabled={!assignPlayerOptions.size} success onClick={this.assignPlayer} >Assign player</Button>
+      </FormGroup>
+    </div>);
 
     const addExistingSheetOptions = availableSheets
       .filter( (availableSheet)=>( !sheets.includes(availableSheet) ) )
@@ -141,6 +193,7 @@ export default class CampaignDetail extends Component {
         { campaign ?
           (<div className={ styles.CampaignDetail + '-content' }>
             <h1>Campaign: <Editable type="text" onSubmit={this.updateCampaign} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>
+            { playersBlock }
             { sheetsBlock }
             { documentsBlock }
           </div>)

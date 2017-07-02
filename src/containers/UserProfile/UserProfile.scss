@@ -6,5 +6,8 @@
   &_photo_img {
     width: 10rem;
     max-width: 100%;
+    min-height: 5rem;
+    background-color: $brand-warning;
+    border: 0;
   }
 }
