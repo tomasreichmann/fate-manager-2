@@ -43,18 +43,21 @@ export default class Input extends Component {
         onChange={this.handleChange}
       ></textarea>
     ),
-    checkbox: ({path, inputRef, value, styles, ...props})=>(
-      <input
-        {...props}
-        ref={inputRef}
-        className={[styles.Input, styles['Input--checkbox']].join(' ')}
-        type="checkbox"
-        key={path}
-        data-model={path}
-        checked={!!value}
-        onChange={this.handleChange}
-      />
-    ),
+    checkbox: ({path, inputRef, value, styles, ...props})=>{
+      const checkedProperty = value !== undefined ? { checked: !!value } : { defaultChecked: false };
+      // console.log('path', path, 'inputRef', inputRef, 'value', value, 'styles', styles, '...props', props );
+      // console.log('checkedProperty', checkedProperty);
+      return (<input
+              {...props}
+              ref={inputRef}
+              className={[styles.Input, styles['Input--checkbox']].join(' ')}
+              type="checkbox"
+              key={path}
+              data-model={path}
+              {...checkedProperty}
+              onChange={this.handleChange}
+            />);
+    },
     select: ({path, options = [], inputRef, value, styles, ...props})=>(
       <select
         {...props}
@@ -105,7 +108,7 @@ export default class Input extends Component {
 
     return (<label className={classNames.join(' ')}>
       {superscriptBefore ? <span className={[styles['Label-superscript'], styles['Label-superscript--before']].join(' ')} >{superscriptBefore}</span> : null}
-      {label ? <span className={styles.Label} >{label}</span> : null}
+      {label ? <span className={styles['Label-text']} >{label}</span> : null}
       <div className={styles['Label-inputWrap']} >
       {this.inputTemplates[template]({
         ...props,
