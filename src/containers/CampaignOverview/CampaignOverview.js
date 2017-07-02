@@ -6,6 +6,7 @@ import { push } from 'react-router-redux';
 import { myFirebaseConnect } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import { Button, Alert, FormGroup } from 'components';
+import { Link } from 'react-router';
 import autobind from 'autobind-decorator';
 
 @connect(
@@ -49,7 +50,7 @@ export default class CampaignOverview extends Component {
         <Helmet title="CampaignOverview"/>
         <h1>Campaign Overview</h1>
         { !firebaseConnectDone ? <Alert className={styles['Blocks-loading']} info >loading...</Alert> : null }
-        { (!user && firebaseConnectDone) ? <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Button primary onClick={pushState} onClickParams="/login/campaigns" >log in.</Button></Alert> : null }
+        { (!user && firebaseConnectDone) ? <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Link to="/login/campaigns" ><Button link >log in.</Button></Link></Alert> : null }
 
         <div className={ styles['CampaignOverview-list'] }>
           { campaigns.size ? campaigns.map( (campaign)=>(
