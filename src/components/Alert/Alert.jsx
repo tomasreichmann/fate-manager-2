@@ -9,6 +9,7 @@ const Alert = ({
   primary,
   secondary,
   success,
+  danger,
   info,
 }) => {
   const style = require('./Alert.scss');
@@ -18,6 +19,7 @@ const Alert = ({
       primary,
       secondary,
       success,
+      danger,
       info,
     })
     .reduce( (classList, cls, key) => (
