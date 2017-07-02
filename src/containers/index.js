@@ -12,3 +12,6 @@ export CampaignOverview from './CampaignOverview/CampaignOverview';
 export CampaignDetail from './CampaignDetail/CampaignDetail';
 export DocumentDetail from './DocumentDetail/DocumentDetail';
 export UserProfile from './UserProfile/UserProfile';
+export Views from './Views/Views';
+export View from './View/View';
+export ViewEdit from './ViewEdit/ViewEdit';

@@ -12,6 +12,10 @@ $inputBorder: 2px solid $inverse-bg;
   font-size: 1.5rem;
   line-height: 2rem;
 
+  &--textarea {
+    resize: vertical;
+  }
+
   &--select {
     border-radius: 0;
     -webkit-border-radius: 0px;

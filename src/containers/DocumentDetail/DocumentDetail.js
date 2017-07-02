@@ -137,7 +137,13 @@ export default class DocumentDetail extends Component {
         <Helmet title="DocumentDetail"/>
         { doc ?
           (<div className={ styles.DocumentDetail + '-content' }>
-            <h1><Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ doc.get('name') || doc.get('key') }</Editable></h1>
+            <h1>
+              <FormGroup childTypes={['flexible']} >
+                <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ doc.get('name') || doc.get('key') }</Editable>
+                <Input inline type="select" />
+                <Button secondary >Send</Button>
+              </FormGroup>
+            </h1>
             { contentBlock }
           </div>)
          : <Alert className={styles['DocumentDetail-notFoung']} warning >Document { params.key } not found. Back to <Link to="/campaigns" ><Button link>Campaign Overview</Button></Link></Alert> }

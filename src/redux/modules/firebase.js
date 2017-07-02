@@ -548,7 +548,8 @@ export function register(email, password, routeBeforeLogin) {
       firebase.auth().createUserWithEmailAndPassword(email, password).then( ()=>{
         const user = getUser();
         firebaseDb.ref('users/' + user.uid).set({
-          created: Date.now()
+          created: Date.now(),
+          ...user,
         });
         return user;
       } )
@@ -650,7 +651,6 @@ export function createNewCampaign(state) {
 export function createNewDocument(state, campaignKey) {
   console.log('createNewDocument', state);
   const user = state.firebase.get('user');
-  console.log('createNewDocument user', user, 'campaignKey', campaignKey);
   const ref = firebaseDb.ref('campaigns/' + campaignKey + '/documents');
   const key = ref.push().key;
   const newDocument = Map({
@@ -661,6 +661,22 @@ export function createNewDocument(state, campaignKey) {
     key,
   });
   ref.child(key).set(newDocument.toJSON());
+  return key;
+}
+
+export function createNewView(state) {
+  console.log('createNewView', state);
+  const user = state.firebase.get('user');
+  const ref = firebaseDb.ref('views');
+  const key = ref.push().key;
+  const newView = Map({
+    created: Date.now(),
+    createdBy: user.get('uid'),
+    lastEdited: Date.now(),
+    lastEditedBy: user.get('uid'),
+    key,
+  });
+  ref.child(key).set(newView.toJSON());
   return key;
 }
 

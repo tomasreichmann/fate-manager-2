@@ -1,6 +1,6 @@
 import React from 'react';
 import {IndexRoute, Route} from 'react-router';
-import { startEditingSheet, createNewSheet, createNewCampaign, createNewDocument } from 'redux/modules/firebase';
+import { startEditingSheet, createNewSheet, createNewCampaign, createNewDocument, createNewView } from 'redux/modules/firebase';
 import {
     App,
     Home,
@@ -14,6 +14,9 @@ import {
     Register,
     LoginSuccess,
     UserProfile,
+    Views,
+    View,
+    ViewEdit,
     NotFound,
   } from 'containers';
 
@@ -41,16 +44,23 @@ export default (store) => {
   };
 
   const initNewCampaign = (nextState, replace, cb) => {
-    console.log('initNewSheet');
+    console.log('initNewCampaign');
     const key = createNewCampaign(store.getState());
     replace(null, '/campaign/' + key);
     cb();
   };
 
   const initNewDocument = (nextState, replace, cb) => {
-    console.log('initNewSheet');
+    console.log('initNewDocument');
     const docKey = createNewDocument(store.getState(), nextState.params.campaignKey);
     replace(null, '/campaign/' + nextState.params.campaignKey + '/documents/' + docKey);
+    cb();
+  };
+
+  const initNewView = (nextState, replace, cb) => {
+    console.log('initNewView');
+    const viewKey = createNewView(store.getState());
+    replace(null, '/view/' + viewKey + '/edit');
     cb();
   };
 
@@ -79,6 +89,7 @@ export default (store) => {
       <Route path="/campaigns" component={CampaignOverview}/>
       <Route path="/sheets" component={Sheets}/>
       <Route path="/sheet/:keys" component={Block} />
+      <Route path="/views" component={Views}/>
       <Route onEnter={requireLogin}>
         <Route path="/loginSuccess" component={LoginSuccess} />
         <Route path="/registrationSuccess" component={LoginSuccess} isNewUser />
@@ -91,6 +102,9 @@ export default (store) => {
         <Route path="/campaign/:key" component={CampaignDetail}/>
         <Route path="/user" onEnter={resolveUserId} />
         <Route path="/user/:key" component={UserProfile}/>
+        <Route path="/view/new" onEnter={initNewView} />
+        <Route path="/view/:key/edit" component={ViewEdit} />
+        <Route path="/view/:key" component={View} />
       </Route>
 
       <Route path="*" component={NotFound} status={404} />

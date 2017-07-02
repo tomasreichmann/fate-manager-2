@@ -102,15 +102,20 @@ export default class App extends Component {
                   Campaigns
                 </NavItem>
               </LinkContainer>
+              <LinkContainer to="/views">
+                <NavItem eventKey={3} >
+                  Views
+                </NavItem>
+              </LinkContainer>
               {user ?
                 <LinkContainer to="/logout">
-                  <NavItem eventKey={3} onClick={this.handleLogout}>
+                  <NavItem eventKey={8} onClick={this.handleLogout}>
                     Logout
                   </NavItem>
                 </LinkContainer>
                 :
                 <LinkContainer to="/login">
-                  <NavItem eventKey={3}>Login</NavItem>
+                  <NavItem eventKey={8}>Login</NavItem>
                 </LinkContainer>
               }
               {user ? <LinkContainer to={'/user'}>
