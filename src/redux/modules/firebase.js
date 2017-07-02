@@ -555,20 +555,27 @@ export function register(email, password, routeBeforeLogin) {
 export function updateDb(path, value = null, method = 'set') {
   const params = method !== 'remove' ? [value] : [];
   console.log('updateDb', path, value, method, params);
-  firebaseDb.ref(path)[method](...params);
+  return firebaseDb.ref(path)[method](...params);
+}
+
+export function pushToDb(path, setter = ()=>(null) ) {
+  console.log('pushToDb', path, setter);
+  const ref = firebaseDb.ref(path);
+  const key = ref.push().key;
+  return ref.push( setter(key) );
 }
 
 export function updateSession(path, value) {
   return function dispatchOnSessionValue(dispatch, getState) {
     const user = getState().firebase.get('user');
-    updateDb('users/' + user.get('uid') + '/' + path, value);
+    return updateDb('users/' + user.get('uid') + '/' + path, value);
   };
 }
 
 export function pushToSession(path, value) {
   return function dispatchOnSessionValue(dispatch, getState) {
     const user = getState().firebase.get('user');
-    updateDb('users/' + user.get('uid') + '/' + path, value, 'push');
+    return updateDb('users/' + user.get('uid') + '/' + path, value, 'push');
   };
 }
 
@@ -582,7 +589,7 @@ export function saveRoute(route) {
 export function discardSheetUpdates(key) {
   return function dispatchOnSessionValue(dispatch, getState) {
     const user = getState().firebase.get('user');
-    updateDb('users/' + user.get('uid') + '/editedSheets/' + key, null, 'remove');
+    return updateDb('users/' + user.get('uid') + '/editedSheets/' + key, null, 'remove');
   };
 }
 
@@ -590,7 +597,7 @@ export function connectSession() {
   console.log('connectSession');
   return function dispatchOnSessionValue(dispatch, getState) {
     const user = getState().firebase.get('user');
-    firebaseDb.ref('users/' + user.get('uid') ).on('value', (snapshot)=>{
+    return firebaseDb.ref('users/' + user.get('uid') ).on('value', (snapshot)=>{
       dispatch({
         type: SESSION_UPDATE,
         payload: {
