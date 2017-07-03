@@ -32,6 +32,16 @@ import { Button, Alert, AlertContent, Editable, FormGroup, Input } from 'compone
         doc: campaign && campaign.getIn(['documents', params.docKey]) || undefined,
       };
     },
+  },
+  {
+    path: '/views',
+    adapter: (snapshot)=>{
+      console.log('snapshot views', snapshot, snapshot.val());
+      const views = fromJS(snapshot.val()) || undefined;
+      return {
+        views: views,
+      };
+    },
   }
 ])
 export default class DocumentDetail extends Component {
@@ -46,6 +56,7 @@ export default class DocumentDetail extends Component {
   constructor(props) {
     super(props);
     this.addContentSelects = {};
+    this.sendToViewSelects = {};
     this.contentElementSelect = Map({
       AlertContent: {
         label: 'Alert',
@@ -92,10 +103,20 @@ export default class DocumentDetail extends Component {
     updateDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/contentElements/' + key, null);
   }
 
+  @autobind
+  sendToView(selectKey) {
+    console.log('sendToView', selectKey, this.sendToViewSelects, this.sendToViewSelects[selectKey]);
+    const { doc } = this.props;
+    const viewKey = this.sendToViewSelects[selectKey].value;
+    const contentElements = selectKey === 'doc' ? doc.get('contentElements') : doc.getIn(['contentElements', selectKey]);
+    updateDb('/views/' + viewKey + '/contentElements', contentElements.toJSON());
+  }
+
   @injectProps
   render({
     campaign,
     doc,
+    views = Map(),
     params = {},
   }) {
     const styles = require('./DocumentDetail.scss');
@@ -132,6 +153,8 @@ export default class DocumentDetail extends Component {
       </FormGroup>
     </div>);
 
+    const DocumentDetailInstance = this;
+
     return (
       <div className={ styles.DocumentDetail + ' container' }>
         <Helmet title="DocumentDetail"/>
@@ -140,8 +163,13 @@ export default class DocumentDetail extends Component {
             <h1>
               <FormGroup childTypes={['flexible']} >
                 <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ doc.get('name') || doc.get('key') }</Editable>
-                <Input inline type="select" />
-                <Button secondary >Send</Button>
+                <Input inline type="select"
+                inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) }
+                options={ views.map( (view, viewKey)=>({
+                  label: view.get('name') || viewKey,
+                  value: viewKey
+                }) ) } />
+                <Button secondary onClick={this.sendToView} onClickParams="doc" >Send</Button>
               </FormGroup>
             </h1>
             { contentBlock }
