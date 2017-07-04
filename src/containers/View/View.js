@@ -1,12 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
-import { fromJS } from 'immutable';
+import { fromJS, Map } from 'immutable';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
-import { Button, Alert, } from 'components';
+import { Button, Alert } from 'components';
+import contentComponents from '../../contentComponents';
 
 @connect(
   (state) => ({
@@ -47,11 +48,22 @@ export default class View extends Component {
     params = {},
   }) {
     const styles = require('./View.scss');
-    const { key, name } = (view ? view.toObject() : {});
+    const { key, name, contentElements = Map() } = (view ? view.toObject() : {});
     console.log('View view', view && view.toJS() );
     console.log('View key', key, 'name', name );
     console.log('View prop keys, props', Object.keys(this.props), this.props);
 
+    console.log('contentComponents', contentComponents);
+
+    const contentBlock = contentElements.size ?
+      contentElements.map( (contentElement, contentElementKey) => {
+        const ContentComponent = contentComponents[contentElement.get('component')] || contentComponents.AlertContent;
+        const componentProps = (contentElement.get('componentProps') || Map()).toJSON();
+        console.log('componentProps', componentProps, 'ContentComponent', ContentComponent);
+        return <ContentComponent {...componentProps} key={contentElementKey} preview="true" />;
+      } )
+      : <Alert>Empty</Alert>
+    ;
 
     return (
       <div className={ styles.View + ' container' }>
@@ -60,6 +72,7 @@ export default class View extends Component {
         { view ?
           (<div className={ styles.View + '-content' }>
             <h1>{ view.get('name') || view.get('key') }</h1>
+            { contentBlock }
           </div>)
          : <Alert className={styles['View-notFoung']} warning >View { params.key } not found. Back to <Link to="/views" ><Button primary >Views</Button></Link></Alert> }
       </div>

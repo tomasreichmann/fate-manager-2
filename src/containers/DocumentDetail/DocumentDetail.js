@@ -7,7 +7,8 @@ import { push } from 'react-router-redux';
 import { myFirebaseConnect, updateDb, pushToDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
-import { Button, Alert, AlertContent, Editable, FormGroup, Input } from 'components';
+import { Button, Alert, Editable, FormGroup, Input } from 'components';
+import contentComponents from 'contentComponents';
 
 @connect(
   (state) => ({
@@ -63,10 +64,6 @@ export default class DocumentDetail extends Component {
         value: 'AlertContent',
       }
     });
-
-    this.contentElementMap = {
-      AlertContent
-    };
   }
 
   @autobind
@@ -108,7 +105,7 @@ export default class DocumentDetail extends Component {
     console.log('sendToView', selectKey, this.sendToViewSelects, this.sendToViewSelects[selectKey]);
     const { doc } = this.props;
     const viewKey = this.sendToViewSelects[selectKey].value;
-    const contentElements = selectKey === 'doc' ? doc.get('contentElements') : doc.getIn(['contentElements', selectKey]);
+    const contentElements = selectKey === 'doc' ? doc.get('contentElements') : Map({selectKey: doc.getIn(['contentElements', selectKey])});
     updateDb('/views/' + viewKey + '/contentElements', contentElements.toJSON());
   }
 
@@ -123,6 +120,12 @@ export default class DocumentDetail extends Component {
     const {
       contentElements = Map()
     } = (doc ? doc.toObject() : {});
+    const viewOptions = views.map( (view, viewKey)=>({
+      label: view.get('name') || viewKey,
+      value: viewKey
+    }) );
+    const DocumentDetailInstance = this;
+
     console.log('DocumentDetail campaign', campaign && campaign.toJS() );
     console.log('DocumentDetail doc', doc && doc.toJS() );
     console.log('DocumentDetail contentElements', contentElements && contentElements.toJS() );
@@ -130,7 +133,7 @@ export default class DocumentDetail extends Component {
     const contentBlock = (<div className={ styles.DocumentDetail_contentBlock } >
       { contentElements.size ? contentElements.map( (componentElement, key)=>{
         const {component, componentProps = {}, preview} = componentElement ? componentElement.toJS() : {};
-        const ContentElement = this.contentElementMap[component];
+        const ContentElement = contentComponents[component];
         console.log('componentElement', componentElement, component, componentProps, ContentElement);
         if (!ContentElement) {
           return <Alert warning>Malformed component</Alert>;
@@ -142,6 +145,11 @@ export default class DocumentDetail extends Component {
             <Button danger confirmMessage="Really permanently remove?" onClick={this.updateContent} onClick={this.removeContent} onClickParams={key} >Remove</Button>
           </FormGroup>
           <ContentElement {...componentProps} preview={preview} handleChange={this.updateContent} handleChangeParams={{key}} />
+          <FormGroup childTypes={['flexible']}>
+            <div></div>
+            <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects[key] = sendToViewSelect) } />
+            <Button secondary onClick={this.sendToView} onClickParams={key} >Send</Button>
+          </FormGroup>
           <hr />
         </div>);
       } ) :
@@ -153,7 +161,6 @@ export default class DocumentDetail extends Component {
       </FormGroup>
     </div>);
 
-    const DocumentDetailInstance = this;
 
     return (
       <div className={ styles.DocumentDetail + ' container' }>
@@ -163,12 +170,7 @@ export default class DocumentDetail extends Component {
             <h1>
               <FormGroup childTypes={['flexible']} >
                 <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ doc.get('name') || doc.get('key') }</Editable>
-                <Input inline type="select"
-                inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) }
-                options={ views.map( (view, viewKey)=>({
-                  label: view.get('name') || viewKey,
-                  value: viewKey
-                }) ) } />
+                <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) } />
                 <Button secondary onClick={this.sendToView} onClickParams="doc" >Send</Button>
               </FormGroup>
             </h1>

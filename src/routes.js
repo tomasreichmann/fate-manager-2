@@ -53,7 +53,7 @@ export default (store) => {
   const initNewDocument = (nextState, replace, cb) => {
     console.log('initNewDocument');
     const docKey = createNewDocument(store.getState(), nextState.params.campaignKey);
-    replace(null, '/campaign/' + nextState.params.campaignKey + '/documents/' + docKey);
+    replace(null, '/campaign/' + nextState.params.campaignKey + '/document/' + docKey);
     cb();
   };
 

@@ -3,9 +3,10 @@ import { Link } from 'react-router';
 import Helmet from 'react-helmet';
 import { Map, fromJS } from 'immutable';
 import { Button, FormGroup, Alert } from 'components';
-import { myFirebaseConnect } from '../../redux/modules/firebase';
+import { myFirebaseConnect, updateDb } from '../../redux/modules/firebase';
 import { connect } from 'react-redux';
 import { injectProps } from 'relpers';
+import autobind from 'autobind-decorator';
 
 @connect(
   state => ({
@@ -30,6 +31,12 @@ export default class Views extends Component {
     super(props);
   }
 
+  @autobind
+  deleteView(viewKey) {
+    console.log('deleteView', viewKey);
+    updateDb('/views/' + viewKey, null);
+  }
+
   @injectProps
   render({views = Map(), user, firebaseConnectDone}) {
     const styles = require('./Views.scss');
@@ -50,6 +57,7 @@ export default class Views extends Component {
               <FormGroup childTypes={['flexible']} >
                 <Link to={ '/view/' + viewKey } ><Button link>{view.get('name') || viewKey}</Button></Link>
                 <Link to={ '/view/' + viewKey + '/edit' } ><Button warning >Edit</Button></Link>
+                <Button disabled={!user} onClick={this.deleteView} onClickParams={viewKey} danger confirmMessage="Really remove view forever?" >Delete</Button>
               </FormGroup>
             ) ) : <Alert>No views yet</Alert> }
           </div>
