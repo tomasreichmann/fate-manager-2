@@ -1,7 +1,8 @@
-import { AlertContent } from 'components';
+import { AlertContent, ImageContent } from 'components';
 
 const contentComponents = {
-  AlertContent
+  AlertContent,
+  ImageContent,
 };
 
 export default contentComponents;

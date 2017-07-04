@@ -58,12 +58,6 @@ export default class DocumentDetail extends Component {
     super(props);
     this.addContentSelects = {};
     this.sendToViewSelects = {};
-    this.contentElementSelect = Map({
-      AlertContent: {
-        label: 'Alert',
-        value: 'AlertContent',
-      }
-    });
   }
 
   @autobind
@@ -117,13 +111,23 @@ export default class DocumentDetail extends Component {
     params = {},
   }) {
     const styles = require('./DocumentDetail.scss');
+
     const {
       contentElements = Map()
     } = (doc ? doc.toObject() : {});
+
     const viewOptions = views.map( (view, viewKey)=>({
       label: view.get('name') || viewKey,
       value: viewKey
     }) );
+
+    const contentElementOptions = Map(contentComponents).map( (value, label) => ({
+      label,
+      value: label
+    }) ).toList().toJSON();
+    console.log('contentElementOptions', contentElementOptions );
+    console.log('contentComponents', contentComponents );
+
     const DocumentDetailInstance = this;
 
     console.log('DocumentDetail campaign', campaign && campaign.toJS() );
@@ -140,7 +144,7 @@ export default class DocumentDetail extends Component {
         }
         return (<div className={ styles.DocumentDetail_contentElement } key={key}>
           <FormGroup childTypes={['flexible']}>
-            <strong>Alert</strong>
+            <strong>{component}</strong>
             <Input inline type="checkbox" label="Preview" value={preview} handleChange={this.updateContent} handleChangeParams={{key, path: 'preview'}} />
             <Button danger confirmMessage="Really permanently remove?" onClick={this.updateContent} onClick={this.removeContent} onClickParams={key} >Remove</Button>
           </FormGroup>
@@ -156,7 +160,7 @@ export default class DocumentDetail extends Component {
         <Alert warning>No content yet. Add Some</Alert> }
       <hr />
       <FormGroup>
-        <Input type="select" options={ this.contentElementSelect } inputRef={ (addContentSelect)=>(this.addContentSelects.last = addContentSelect) } />
+        <Input type="select" options={ contentElementOptions } inputRef={ (addContentSelect)=>(this.addContentSelects.last = addContentSelect) } />
         <Button primary onClick={this.addContent} onClickParams="last" >Add</Button>
       </FormGroup>
     </div>);

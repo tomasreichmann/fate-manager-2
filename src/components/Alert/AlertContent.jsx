@@ -5,7 +5,6 @@ import { injectProps } from 'relpers';
 export default class AlertContent extends Component {
   static propTypes = {
     preview: PropTypes.bool,
-    formRef: PropTypes.func,
     handleChange: PropTypes.func,
     handleChangeParams: PropTypes.any,
   }

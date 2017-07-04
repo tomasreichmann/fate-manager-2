@@ -1,0 +1,53 @@
+.Image {
+  display: block;
+  background-position: center center;
+  background-repeat: no-repeat;
+  width: 100%;
+  padding-top: 100%;
+
+  &--modeCover{
+    background-size: cover;
+  }
+
+  &--modeContain{
+    background-size: contain;
+  }
+
+  &--mode1to1{
+    background-size: auto;
+  }
+
+  &--rotate90 {
+    transform: rotate(90deg);
+  }
+
+  &--rotate180 {
+    transform: rotate(180deg);
+  }
+
+  &--rotate270 {
+    transform: rotate(270deg);
+  }
+
+  &--fullscreen {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    height: 100vh;
+    width: 100vw;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
+  }
+
+  &--fullscreen.Image--rotate90,
+  &--fullscreen.Image--rotate270 {
+    height: 100vw;
+    width: 100vh;
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  &--fullscreen.Image--rotate180 {
+    transform: translate(-50%, -50%) rotate(180deg);
+  }
+
+}
