@@ -8,7 +8,7 @@
   border: 0;
   color: #fff;
   vertical-align: middle;
-  padding: $padding-base-vertical ($btn-clipping-size + $padding-base-horizontal) $padding-base-vertical $padding-base-horizontal;
+  padding: $padding-small-vertical ($btn-clipping-size + $padding-base-horizontal) $padding-small-vertical $padding-base-horizontal;
   transition: background-color 0.3s;
   outline: none;
   font-size: 1.5rem;
@@ -24,7 +24,7 @@
 
   &--clipBottomLeft {
     clip-path: $clip-bottom-left;
-    padding: $padding-base-vertical $padding-base-horizontal $padding-base-vertical ($btn-clipping-size + $padding-base-horizontal);
+    padding: $padding-small-vertical $padding-base-horizontal $padding-small-vertical ($btn-clipping-size + $padding-base-horizontal);
   }
 
   &--block {
@@ -127,7 +127,7 @@
     right: 0;
     text-align: center;
     z-index: 2000;
-    padding: $padding-base-vertical ($btn-clipping-size + $padding-base-horizontal) $padding-base-vertical $padding-base-horizontal;
+    padding: $padding-small-vertical ($btn-clipping-size + $padding-base-horizontal) $padding-small-vertical $padding-base-horizontal;
     background-color: inherit;
     color: inherit;
     opacity: 0;

@@ -4,18 +4,22 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  margin: $padding-large-vertical ($padding-base-horizontal * -1);
+  margin: $padding-base-vertical ($padding-base-horizontal * -1);
+
+  &--alignRight {
+    justify-content: flex-end;
+  }
 
   &-item {
     min-width: 1px;
     padding: 0 $padding-base-horizontal;
+    margin: $padding-base-vertical 0;
 
     &--flexible {
       flex: 1 1 100px;
     }
     &--full {
       width: 100%;
-      margin-bottom: 1rem;
     }
   }
 
