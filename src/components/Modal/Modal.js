@@ -25,6 +25,7 @@ export default class Modal extends Component {
       danger,
       success,
       primary,
+      children,
     } = this.props;
     const cls = [styles.Modal];
 
@@ -41,9 +42,9 @@ export default class Modal extends Component {
     return (<div className={cls.join(' ')} >
       { noCloseButton ? null : <Button className={styles['Modal-close']} danger onClick={closeModal}>&times;</Button>}
       <div className={styles['Modal-content']} >
-        {this.props.children || 'empty'}
+        {children || 'empty'}
       </div>
-      <FormGroup className={styles['Modal-actions']} >
+      <FormGroup alignRight className={styles['Modal-actions']} >
         { actions ? actions : <Button className={styles['Modal-ok']} primary onClick={closeModal}>OK</Button>}
       </FormGroup>
     </div>);
