@@ -147,7 +147,7 @@ export default class DocumentDetail extends Component {
             <Input inline type="checkbox" label="Preview" value={preview} handleChange={this.updateContent} handleChangeParams={{key, path: 'preview'}} />
             <Button danger confirmMessage="Really permanently remove?" onClick={this.updateContent} onClick={this.removeContent} onClickParams={key} >Remove</Button>
           </FormGroup>
-          <ContentElement {...componentProps} preview={preview} handleChange={this.updateContent} handleChangeParams={{key}} />
+          <ContentElement {...componentProps} preview={preview} handleChange={this.updateContent} handleChangeParams={{key}} admin />
           <FormGroup childTypes={['flexible']}>
             <div></div>
             <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects[key] = sendToViewSelect) } />
