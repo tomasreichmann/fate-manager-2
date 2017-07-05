@@ -3,18 +3,19 @@
   background-position: center center;
   background-repeat: no-repeat;
   width: 100%;
-  padding-top: 100%;
 
-  &--modeCover{
+  &--modeCover {
+    padding-top: 100%;
     background-size: cover;
   }
 
-  &--modeContain{
+  &--modeContain {
+    padding-top: 100%;
     background-size: contain;
   }
 
-  &--mode1to1{
-    background-size: auto;
+  &--mode1to1 {
+    width: auto;
   }
 
   &--rotate90 {

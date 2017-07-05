@@ -47,7 +47,6 @@ export default class RichTextContent extends Component {
   } = {}) {
     const styles = require('./RichTextContent.scss');
     const RTE = preview ? null : this.RichTextEditor.default;
-    console.log('RichTextContent preview', preview, 'RTE', RTE);
     return preview ? <RichText {...props} /> : (<div className={styles.RichTextContent} {...props} >
       <RTE
         value={this.state.value}

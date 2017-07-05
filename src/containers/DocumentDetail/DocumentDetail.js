@@ -68,15 +68,17 @@ export default class DocumentDetail extends Component {
   }
 
   @autobind
-  addContent(position) {
+  addContent(selectKey) {
     const { campaign, doc } = this.props;
-    const selectedElement = this.addContentSelects[position].value;
+    const selectedElement = this.addContentSelects[selectKey].value;
     const data = {
       component: selectedElement,
     };
-    console.log('addContent', selectedElement);
+    const lastOrderNumber = this.maxOrder(doc.get('contentElements') || []) + 1;
+    console.log('addContent', selectedElement, 'lastOrderNumber', lastOrderNumber);
     pushToDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/contentElements', (key) => ( {
       key,
+      order: lastOrderNumber,
       ...data,
     } ) );
   }
@@ -84,8 +86,42 @@ export default class DocumentDetail extends Component {
   @autobind
   updateContent(value, {key, path}) {
     const { campaign, doc } = this.props;
-    console.log('updateContent', key, path, value, 'campaign', campaign, doc);
+    // console.log('updateContent', key, path, value, 'campaign', campaign, doc);
     updateDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/contentElements/' + key + '/' + path, value);
+  }
+
+  maxOrder(contentElements) {
+    return contentElements.reduce( (maxOrder, contentElement)=>(Math.max( maxOrder, contentElement.get('order') || 0 ) ), 0 );
+  }
+
+  sortByOrder(contentElements) {
+    return contentElements.sort( (CEa, CEb)=>{
+      if (CEa.get('order') < CEb.get('order')) { return -1; }
+      if (CEa.get('order') > CEb.get('order')) { return 1; }
+      if (CEa.get('order') === CEb.get('order')) { return 0; }
+    } );
+  }
+
+  @autobind
+  moveContent({key, shift}) {
+    const { campaign, doc } = this.props;
+    const contentElements = doc.get('contentElements') || Map();
+    const sortedContentElements = this.sortByOrder(contentElements).toList();
+    const currentElement = contentElements.get(key);
+    const currentIndex = sortedContentElements.indexOf( currentElement );
+    const targetIndex = currentIndex + shift;
+    const targetElement = sortedContentElements.get(targetIndex);
+    const targetKey = targetElement.get('key');
+    const currentOrder = currentElement.get('order') || this.maxOrder(doc.get('contentElements') || []) + 1;
+    const targetOrder = targetElement.get('order') || this.maxOrder(doc.get('contentElements') || []) + 2;
+    console.log('moveContent shift', shift);
+    console.log('moveContent currentKey', key, 'targetKey', targetKey);
+    console.log('moveContent currentIndex', currentIndex, 'targetIndex', targetIndex);
+    console.log('moveContent currentOrder', currentOrder, 'targetOrder', targetOrder);
+    console.log('moveContent currentElement', currentElement, 'targetElement', targetElement);
+
+    updateDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/contentElements/' + key + '/order', targetOrder );
+    updateDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/contentElements/' + targetKey + '/order', currentOrder );
   }
 
   @autobind
@@ -114,6 +150,7 @@ export default class DocumentDetail extends Component {
     const {
       contentElements = Map()
     } = (doc ? doc.toObject() : {});
+    const docName = doc ? (doc.get('name') || doc.get('key')) : 'not available';
 
     const viewOptions = views.map( (view, viewKey)=>({
       label: view.get('name') || viewKey,
@@ -127,6 +164,8 @@ export default class DocumentDetail extends Component {
     // console.log('contentElementOptions', contentElementOptions );
     // console.log('contentComponents', contentComponents );
 
+    const sortedContentElements = this.sortByOrder(contentElements);
+
     const DocumentDetailInstance = this;
 
     // console.log('DocumentDetail campaign', campaign && campaign.toJS() );
@@ -134,18 +173,20 @@ export default class DocumentDetail extends Component {
     // console.log('DocumentDetail contentElements', contentElements && contentElements.toJS() );
 
     const contentBlock = (<div className={ styles.DocumentDetail_contentBlock } >
-      { contentElements.size ? contentElements.map( (componentElement, key)=>{
+      { sortedContentElements.size ? sortedContentElements.map( (componentElement, key)=>{
         const {component, componentProps = {}, preview} = componentElement ? componentElement.toJS() : {};
         const ContentElement = contentComponents[component];
         // console.log('componentElement', componentElement, component, componentProps, ContentElement);
         if (!ContentElement) {
-          return <Alert warning>Malformed component</Alert>;
+          return <Alert warning>Malformed component - <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} >Remove</Button></Alert>;
         }
         return (<div className={ styles.DocumentDetail_contentElement } key={key}>
           <FormGroup childTypes={['flexible']}>
             <strong>{component}</strong>
+            <Button secondary disabled={componentElement === sortedContentElements.first()} onClick={this.moveContent} onClickParams={{ shift: -1, key}} >Up</Button>
+            <Button secondary disabled={componentElement === sortedContentElements.last()} onClick={this.moveContent} onClickParams={{ shift: 1, key}} >Down</Button>
             <Input inline type="checkbox" label="Preview" value={preview} handleChange={this.updateContent} handleChangeParams={{key, path: 'preview'}} />
-            <Button danger confirmMessage="Really permanently remove?" onClick={this.updateContent} onClick={this.removeContent} onClickParams={key} >Remove</Button>
+            <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} >Remove</Button>
           </FormGroup>
           <ContentElement {...componentProps} preview={preview} handleChange={this.updateContent} handleChangeParams={{key}} admin />
           <FormGroup childTypes={['flexible']}>
@@ -167,12 +208,12 @@ export default class DocumentDetail extends Component {
 
     return (
       <div className={ styles.DocumentDetail + ' container' }>
-        <Helmet title="DocumentDetail"/>
+        <Helmet title={'Document: ' + docName }/>
         { doc ?
           (<div className={ styles.DocumentDetail + '-content' }>
             <h1>
               <FormGroup childTypes={['flexible']} >
-                <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ doc.get('name') || doc.get('key') }</Editable>
+                <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ docName }</Editable>
                 <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) } />
                 <Button secondary onClick={this.sendToView} onClickParams={{ key: 'doc' }} >Send</Button>
                 <Button warning onClick={this.sendToView} onClickParams={{ key: 'doc', clear: true }} >Clear</Button>

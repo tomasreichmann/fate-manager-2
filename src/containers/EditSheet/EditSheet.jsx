@@ -59,8 +59,9 @@ export default class EditSheet extends Component {
   save(event) {
     event.preventDefault();
     const key = this.props.params.key;
-    console.log('save', key, this.props.editedSheets.get(key) );
-    updateDb('/sheets/' + key, this.props.editedSheets.get(key).toJSON() );
+    const sheet = this.props.editedSheets.get(key).update('stress', (stress)=>( stress.map( (stressLane)=>( stressLane || null ) ) ) );
+    console.log('save', key, sheet );
+    updateDb('/sheets/' + key, sheet.toJSON() );
     this.props.pushState('/sheet/' + key);
     this.props.discardSheetUpdates(this.props.params.key);
   }
@@ -145,7 +146,7 @@ export default class EditSheet extends Component {
       skills: Map(),
       extras: Map(),
       stunts: Map(),
-      stress: template.get('stress').map( ()=>( Map() ) ),
+      stress: template.get('stress').map( ()=>( Map() ) ).toOrderedMap(),
       consequences: Map(),
       template: template.get('key'),
     }).merge( editedSheets.get(key) );

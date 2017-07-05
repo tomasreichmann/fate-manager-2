@@ -567,7 +567,7 @@ export function pushToDb(path, setter = ()=>(null) ) {
   console.log('pushToDb', path, setter);
   const ref = firebaseDb.ref(path);
   const key = ref.push().key;
-  return ref.push( setter(key) );
+  return ref.child(key).set( setter(key) );
 }
 
 export function updateSession(path, value) {

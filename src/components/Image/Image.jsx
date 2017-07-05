@@ -13,6 +13,9 @@ export default class Image extends Component {
       clsMap[cls] ? clsList.concat([styles['Image--' + cls]]) : clsList
     ), [] ) ).join(' ');
 
-    return <div className={processedClassNames} style={{ backgroundImage: 'url(' + imageUrl + ')' }} ></div>;
+    return (modeCover || modeContain) ?
+      <div className={processedClassNames} style={{ backgroundImage: 'url(' + imageUrl + ')' }} ></div>
+      : <img className={processedClassNames} src={imageUrl} />
+    ;
   }
 }
