@@ -18,3 +18,5 @@ export ImageContent from './Image/ImageContent';
 export FormGroup from './FormGroup/FormGroup';
 export Modal from './Modal/Modal';
 export Editable from './Editable/Editable';
+export RichText from './RichText/RichText';
+export RichTextContent from './RichText/RichTextContent';

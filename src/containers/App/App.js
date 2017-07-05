@@ -7,6 +7,7 @@ import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
 import { connectSheets, logout, connectSession, saveRoute } from 'redux/modules/firebase';
+import { closeModal } from 'redux/modules/modal';
 import { push } from 'react-router-redux';
 import { Modal } from 'components';
 import config from '../../config';
@@ -19,7 +20,7 @@ import config from '../../config';
     session: state.firebase.get('session'),
     sheetsLoaded: state.firebase.getIn(['sheets', 'loaded']),
   }),
-  {logout, pushState: push, connectSession, connectSheets}
+  {logout, pushState: push, connectSession, connectSheets, closeModal}
 )
 export default class App extends Component {
   static propTypes = {
@@ -33,6 +34,7 @@ export default class App extends Component {
     connectSession: PropTypes.func.isRequired,
     connectSheets: PropTypes.func.isRequired,
     saveRoute: PropTypes.func.isRequired,
+    closeModal: PropTypes.func.isRequired,
     routeBeforeLogin: PropTypes.string,
     location: PropTypes.shape({
       pathname: PropTypes.string
@@ -137,7 +139,7 @@ export default class App extends Component {
           created by <a href="https://tomasreichmann.cz" target="_blank" >Tomáš Reichmann</a> 2017
         </footer>
 
-        {modal && modal.isOpen ? <Modal {...modal} /> : null }
+        {modal && modal.isOpen ? <Modal closeModal={this.props.closeModal} {...modal} /> : null }
       </div>
     );
   }

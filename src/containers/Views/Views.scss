@@ -1,5 +1,10 @@
 @import "../../theme/variables.scss";
 
-.Sheets {
+.Views {
   padding-top: 1rem;
+
+  &_qr.Views_qr {
+    width: 300px;
+    max-width: 80vmin;
+  }
 }

@@ -20,7 +20,6 @@ export default class ImageContent extends Component {
       imageUrl, modeCover, modeContain, mode1to1, rotate90, rotate180, rotate270, fullscreen
     } = props;
     const styles = require('./ImageContent.scss');
-    console.log('preview', preview);
     return preview ? <Image {...props} /> : (<div className={styles.ImageContent} {...props} >
       <FormGroup>
         <Input inline label="URL" type="text" name="imageUrl" value={imageUrl} handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/imageUrl' }} />

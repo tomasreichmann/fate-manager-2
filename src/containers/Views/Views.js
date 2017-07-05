@@ -2,8 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import Helmet from 'react-helmet';
 import { Map, fromJS } from 'immutable';
-import { Button, FormGroup, Alert } from 'components';
+import { Button, FormGroup, Alert, Image } from 'components';
 import { myFirebaseConnect, updateDb } from '../../redux/modules/firebase';
+import { openModal } from '../../redux/modules/modal';
 import { connect } from 'react-redux';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
@@ -11,7 +12,10 @@ import autobind from 'autobind-decorator';
 @connect(
   state => ({
     user: state.firebase.get('user')
-  })
+  }),
+  {
+    openModal
+  }
 )
 @myFirebaseConnect([
   {
@@ -25,6 +29,7 @@ export default class Views extends Component {
   static propTypes = {
     views: PropTypes.object,
     pushState: PropTypes.func,
+    openModal: PropTypes.func,
   };
 
   constructor(props) {
@@ -35,6 +40,14 @@ export default class Views extends Component {
   deleteView(viewKey) {
     console.log('deleteView', viewKey);
     updateDb('/views/' + viewKey, null);
+  }
+
+  @autobind
+  openQrModal(viewKey) {
+    const styles = require('./Views.scss');
+    this.props.openModal({children:
+      <Image className={ styles.Views_qr } modeContain imageUrl={'http://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=' + encodeURIComponent(window.location.origin + '/views/' + viewKey) + '&qzone=1&margin=0&size=800x800&ecc=L'} />
+    });
   }
 
   @injectProps
@@ -56,6 +69,7 @@ export default class Views extends Component {
             { views.size ? views.map( (view, viewKey)=>(
               <FormGroup childTypes={['flexible']} >
                 <Link to={ '/view/' + viewKey } ><Button link>{view.get('name') || viewKey}</Button></Link>
+                <Button info onClick={this.openQrModal} onClickParams={viewKey} >QR code</Button>
                 <Link to={ '/view/' + viewKey + '/edit' } ><Button warning >Edit</Button></Link>
                 <Button disabled={!user} onClick={this.deleteView} onClickParams={viewKey} danger confirmMessage="Really remove view forever?" >Delete</Button>
               </FormGroup>

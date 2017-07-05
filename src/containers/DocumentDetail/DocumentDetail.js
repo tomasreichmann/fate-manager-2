@@ -95,17 +95,16 @@ export default class DocumentDetail extends Component {
   }
 
   @autobind
-  sendToView(selectKey) {
-    console.log('sendToView', selectKey, this.sendToViewSelects, this.sendToViewSelects[selectKey]);
+  sendToView({key, clear}) {
+    console.log('sendToView', key, this.sendToViewSelects, this.sendToViewSelects[key]);
     const { doc } = this.props;
-    const viewKey = this.sendToViewSelects[selectKey].value;
-    const contentElements = selectKey === 'doc' ? doc.get('contentElements') : Map({selectKey: doc.getIn(['contentElements', selectKey])});
-    updateDb('/views/' + viewKey + '/contentElements', contentElements.toJSON());
+    const viewKey = this.sendToViewSelects[key].value;
+    const contentElements = key === 'doc' ? doc.get('contentElements') : Map({key: doc.getIn(['contentElements', key])});
+    updateDb('/views/' + viewKey + '/contentElements', clear ? null : contentElements.toJSON());
   }
 
   @injectProps
   render({
-    campaign,
     doc,
     views = Map(),
     params = {},
@@ -125,20 +124,20 @@ export default class DocumentDetail extends Component {
       label,
       value: label
     }) ).toList().toJSON();
-    console.log('contentElementOptions', contentElementOptions );
-    console.log('contentComponents', contentComponents );
+    // console.log('contentElementOptions', contentElementOptions );
+    // console.log('contentComponents', contentComponents );
 
     const DocumentDetailInstance = this;
 
-    console.log('DocumentDetail campaign', campaign && campaign.toJS() );
-    console.log('DocumentDetail doc', doc && doc.toJS() );
-    console.log('DocumentDetail contentElements', contentElements && contentElements.toJS() );
+    // console.log('DocumentDetail campaign', campaign && campaign.toJS() );
+    // console.log('DocumentDetail doc', doc && doc.toJS() );
+    // console.log('DocumentDetail contentElements', contentElements && contentElements.toJS() );
 
     const contentBlock = (<div className={ styles.DocumentDetail_contentBlock } >
       { contentElements.size ? contentElements.map( (componentElement, key)=>{
         const {component, componentProps = {}, preview} = componentElement ? componentElement.toJS() : {};
         const ContentElement = contentComponents[component];
-        console.log('componentElement', componentElement, component, componentProps, ContentElement);
+        // console.log('componentElement', componentElement, component, componentProps, ContentElement);
         if (!ContentElement) {
           return <Alert warning>Malformed component</Alert>;
         }
@@ -152,7 +151,7 @@ export default class DocumentDetail extends Component {
           <FormGroup childTypes={['flexible']}>
             <div></div>
             <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects[key] = sendToViewSelect) } />
-            <Button secondary onClick={this.sendToView} onClickParams={key} >Send</Button>
+            <Button secondary onClick={this.sendToView} onClickParams={{key}} >Send</Button>
           </FormGroup>
           <hr />
         </div>);
@@ -175,7 +174,8 @@ export default class DocumentDetail extends Component {
               <FormGroup childTypes={['flexible']} >
                 <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ doc.get('name') || doc.get('key') }</Editable>
                 <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) } />
-                <Button secondary onClick={this.sendToView} onClickParams="doc" >Send</Button>
+                <Button secondary onClick={this.sendToView} onClickParams={{ key: 'doc' }} >Send</Button>
+                <Button warning onClick={this.sendToView} onClickParams={{ key: 'doc', clear: true }} >Clear</Button>
               </FormGroup>
             </h1>
             { contentBlock }
