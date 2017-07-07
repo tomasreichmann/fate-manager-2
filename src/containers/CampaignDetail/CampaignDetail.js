@@ -3,6 +3,7 @@ import Helmet from 'react-helmet';
 import { Map, fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import { push } from 'react-router-redux';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
@@ -10,32 +11,34 @@ import { Button, Alert, Editable, SheetList, FormGroup, Input } from 'components
 
 @connect(
   (state) => ({
-    user: state.firebase.get('user')
-  })
+    user: state.firebase.get('user'),
+    templates: state.firebase.getIn(['templates', 'list']),
+  }),
+  {
+    pushState: push,
+  }
 )
 @myFirebaseConnect([
   {
     path: '/campaigns/',
     pathResolver: (path, {params = {}})=>(
-      console.log('pathResolver params', params),
+      console.log('campaign pathResolver params', params),
       path + params.key
     ),
     adapter: (snapshot)=>(
-      console.log('snapshot campaign', snapshot, snapshot.val()),
+      console.log('campaign snapshot', snapshot, snapshot.val()),
       { campaign: fromJS(snapshot.val()) || undefined }
     ),
   },
   {
     path: '/sheets',
     adapter: (snapshot)=>(
-      console.log('snapshot campaign', snapshot, snapshot.val()),
       { availableSheets: fromJS(snapshot.val()) || undefined }
     ),
   },
   {
     path: '/users',
     adapter: (snapshot)=>(
-      console.log('snapshot users', snapshot, snapshot.val()),
       { availablePlayers: fromJS(snapshot.val()) || undefined }
     ),
   }
@@ -48,9 +51,22 @@ export default class CampaignDetail extends Component {
     params: PropTypes.object.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedSheets: {}
+    };
+  }
+
   @autobind
-  toggleSheetSelection(sheet) {
-    console.log('toggleSheetSelection', sheet);
+  toggleSheetSelection(key) {
+    console.log('toggleSheetSelection', key);
+    this.setState({
+      selectedSheets: {
+        ...this.state.selectedSheets,
+        [key]: !this.state.selectedSheets[key]
+      }
+    });
   }
 
   @autobind
@@ -60,6 +76,12 @@ export default class CampaignDetail extends Component {
     if (sheetKey) {
       updateDb('/campaigns/' + this.props.campaign.get('key') + '/sheetKeys/' + sheetKey, sheetKey, 'set');
     }
+  }
+
+  @autobind
+  assignNewSheet() {
+    const templateKey = this.newSheetTemplateSelect.value;
+    this.props.pushState('/campaign/' + this.props.campaign.get('key') + '/new-sheet/' + templateKey);
   }
 
   @autobind
@@ -105,9 +127,9 @@ export default class CampaignDetail extends Component {
   @injectProps
   render({
     campaign,
+    templates,
     availableSheets = Map(),
     availablePlayers = Map(),
-    selection = Map(),
     params = {},
     user
   }) {
@@ -115,6 +137,7 @@ export default class CampaignDetail extends Component {
     const { sheetKeys = Map(), playerKeys = Map(), key: campaignKey, documents = Map() } = (campaign ? campaign.toObject() : {});
     const sheets = availableSheets.filter((sheet = Map())=>( sheetKeys.includes(sheet.get('key')) ));
     const players = availablePlayers.filter((player = Map())=>( playerKeys.includes(player.get('uid')) ));
+    const CampaignDetailInstance = this;
     console.log('CampaignDetail sheets', sheetKeys.toJS(), sheets.toJS() );
     console.log('CampaignDetail prop keys, props', Object.keys(this.props), this.props);
     console.log('CampaignDetail campaign', campaign && campaign.toJS() );
@@ -150,11 +173,13 @@ export default class CampaignDetail extends Component {
       .map( (availableSheet)=>({ label: availableSheet.get('name'), value: availableSheet.get('key') } ) )
     ;
 
+    const selectedSheets = fromJS(this.state.selectedSheets);
+
     const sheetsBlock = (<div className={styles.CampaignDetail_sheets} >
       <h2>Sheets</h2>
       { sheets.size ? <SheetList
         sheets={sheets}
-        selection={selection}
+        selection={selectedSheets}
         toggleSheetSelection={this.toggleSheetSelection}
         user={user}
         actions={[<Button onClick={this.removeSheetFromCampaign} warning >Unassign</Button>]}
@@ -167,7 +192,15 @@ export default class CampaignDetail extends Component {
           options={addExistingSheetOptions}
         />
         <Button disabled={!addExistingSheetOptions.size} success onClick={this.addExistingSheet} >Assign sheet</Button>
-        <Link to={'/campaign/' + campaignKey + '/new-sheet'} ><Button primary >Assign new sheet</Button></Link>
+      </FormGroup>
+      <FormGroup>
+        <Input
+          type="select"
+          options={templates.map( (template)=>( { label: template.get('name'), value: template.get('key') } ) )}
+          label="template"
+          inputRef={ (select)=>(CampaignDetailInstance.newSheetTemplateSelect = select) }
+        />
+        <Button primary onClick={ this.assignNewSheet } >Assign new sheet</Button>
       </FormGroup>
     </div>);
 
@@ -197,7 +230,7 @@ export default class CampaignDetail extends Component {
             { sheetsBlock }
             { documentsBlock }
           </div>)
-         : <Alert className={styles['CampaignDetail-notFoung']} warning >Campaign { params.key } not found. Back to <Link to="/campaigns" ><Button primary >Campaign Overview</Button></Link></Alert> }
+         : <Alert className={styles['CampaignDetail-notFoung']} warning >Campaign { params.key } not found. Try refreshing or back to <Link to="/campaigns" ><Button primary >Campaign Overview</Button></Link></Alert> }
 
       </div>
     );

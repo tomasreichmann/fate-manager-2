@@ -38,7 +38,7 @@ export default (store) => {
 
   const initNewSheet = (nextState, replace, cb) => {
     console.log('initNewSheet');
-    const key = createNewSheet(store.getState(), nextState.params.template);
+    const key = createNewSheet(store.getState(), nextState.params.template, nextState.params.campaignKey);
     replace(null, '/sheet/' + key + '/edit');
     cb();
   };
@@ -97,6 +97,7 @@ export default (store) => {
         <Route path="/sheet/:key/edit" onEnter={initEditSheet} component={EditSheet} />
         <Route path="/campaign/new-sheet" onEnter={initEditSheet} />
         <Route path="/campaign/new" onEnter={initNewCampaign} component={CampaignDetail}/>
+        <Route path="/campaign/:campaignKey/new-sheet/:template" onEnter={initNewSheet} />
         <Route path="/campaign/:campaignKey/new-document" onEnter={initNewDocument} />
         <Route path="/campaign/:campaignKey/document/:docKey" component={DocumentDetail} />
         <Route path="/campaign/:key" component={CampaignDetail}/>

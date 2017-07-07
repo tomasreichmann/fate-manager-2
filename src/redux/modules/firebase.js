@@ -613,8 +613,8 @@ export function connectSession() {
   };
 }
 
-export function createNewSheet(state, templateKey) {
-  console.log('createNewSheet', state, templateKey);
+export function createNewSheet(state, templateKey, campaignKey) {
+  console.log('createNewSheet', state, templateKey, campaignKey);
   const user = state.firebase.get('user');
   console.log('createNewSheet user', user);
   const ref = firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/');
@@ -628,6 +628,9 @@ export function createNewSheet(state, templateKey) {
     key,
   });
   ref.child(key).set(newSheet.toJSON());
+  if (campaignKey) {
+    updateDb('campaigns/' + campaignKey + '/sheetKeys/' + key, key);
+  }
   return key;
 }
 
