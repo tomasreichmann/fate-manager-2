@@ -1,10 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
-import { updateDb, myFirebaseConnect } from 'redux/modules/firebase';
+import { updateDb, pushToDb, myFirebaseConnect } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
 import { Button, SheetBlock, Alert } from 'components';
 import { List, fromJS } from 'immutable';
 import { Link } from 'react-router';
+import autobind from 'autobind-decorator';
 
 @connect(
   state => ({
@@ -39,10 +40,9 @@ export default class Block extends Component {
 
   constructor(props) {
     super(props);
-    this.redirect = this.redirect.bind(this);
-    this.deleteSheet = this.deleteSheet.bind(this);
   }
 
+  @autobind
   redirect(to) {
     return ()=>{
       console.log('redirect', to );
@@ -50,10 +50,28 @@ export default class Block extends Component {
     };
   }
 
+  @autobind
   deleteSheet(key) {
     console.log('deleteSheet');
     updateDb('/sheets/' + key, null);
     this.props.pushState('/sheets');
+  }
+
+  @autobind
+  duplicateSheet(sheet) {
+    const nameSequenceRegex = /\s(\d+)$/;
+    pushToDb('/sheets', (key) => {
+      this.props.pushState('/sheet/' + key);
+      return sheet
+        .set('key', key)
+        .update('name', (name) => {
+          const hasSequence = nameSequenceRegex.test(name);
+          return hasSequence ? name.replace( /\s(\d+)$/, (match, part1) => (
+            ' ' + (parseInt(part1, 10) + 1)
+          )) : name + ' 2';
+        })
+        .toJSON();
+    } );
   }
 
   render() {
@@ -65,10 +83,11 @@ export default class Block extends Component {
 
     return (
       <div className={styles.Blocks + ' container'} >
-        { user ? null : <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Link to={ '/login/' + encodeURIComponent(params.keys) } ><Button primary >log in.</Button></Link></Alert> }
+        { user ? null : <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Link to={ '/login/' + encodeURIComponent('sheet/' + params.keys) } ><Button link >log in</Button></Link>.</Alert> }
         { selectedSheets.map( (sheet)=>( <div className={styles['Blocks-item']} key={sheet.get('key')} >
           <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') || 'VS-P' )} updateDb={updateDb} >
             <div className={styles['Blocks-actions']} >
+              <Button primary disabled={!user} onClick={this.duplicateSheet} onClickParams={sheet} >Duplicate</Button>
               <Button warning onClick={this.redirect( '/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit' )} >Edit</Button>
               <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, sheet.get('key')) } confirmMessage="Really delete forever?" >Delete</Button>
             </div>
