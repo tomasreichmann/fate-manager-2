@@ -93,7 +93,7 @@ export default class Sheets extends Component {
 
         <div className="container">
 
-          { user ? null : <Alert warning>To use all features, you must <Link to={"/login/sheets" } ><Button primary >log in.</Button></Link></Alert> }
+          { user ? null : <Alert warning>To use all features, you must <Link to={"/login/sheets" } ><Button link >log in</Button></Link>.</Alert> }
 
           <SheetList sheets={sheets} selection={selection} toggleSheetSelection={toggleSelection} user={user} />
 
@@ -101,15 +101,15 @@ export default class Sheets extends Component {
 
           {false && <p><Button block danger onClick={this.migrateSheetAspects} >DANGEROUS: migrateSheetAspects!</Button></p>}
 
-          { user ? <FormGroup childTypes={[null, 'flexible']}>
+          { <FormGroup childTypes={[null, 'flexible']}>
             <Input
               type="select"
               options={templates.map( (template)=>( { label: template.get('name'), value: template.get('key') } ) )}
               label="template"
               inputRef={ (select)=>(SheetsInstance.newSheetTemplateSelect = select) }
             />
-            <Button block success onClick={this.newSheet}>New sheet</Button>
-          </FormGroup> : null }
+            <Button disabled={!user} block success onClick={this.newSheet}>New sheet</Button>
+          </FormGroup> }
 
         </div>
 
