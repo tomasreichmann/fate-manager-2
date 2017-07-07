@@ -59,7 +59,7 @@ export default class EditSheet extends Component {
   save(event) {
     event.preventDefault();
     const key = this.props.params.key;
-    const sheet = this.props.editedSheets.get(key).update('stress', (stress)=>( stress.map( (stressLane)=>( stressLane || null ) ) ) );
+    const sheet = this.props.editedSheets.get(key).update('stress', (stress = Map())=>( stress.map( (stressLane)=>( stressLane || null ) ) ) );
     console.log('save', key, sheet );
     updateDb('/sheets/' + key, sheet.toJSON() );
     this.props.pushState('/sheet/' + key);
