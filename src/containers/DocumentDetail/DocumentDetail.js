@@ -7,7 +7,7 @@ import { push } from 'react-router-redux';
 import { myFirebaseConnect, updateDb, pushToDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
-import { Button, Alert, Editable, FormGroup, Input } from 'components';
+import { Loading, Button, Alert, Editable, FormGroup, Input } from 'components';
 import contentComponents from 'contentComponents';
 
 @connect(
@@ -52,6 +52,7 @@ export default class DocumentDetail extends Component {
     user: PropTypes.object,
     pushState: PropTypes.func.isRequired,
     params: PropTypes.object.isRequired,
+    firebaseConnectDone: PropTypes.bool,
   };
 
   constructor(props) {
@@ -144,6 +145,7 @@ export default class DocumentDetail extends Component {
     doc,
     views = Map(),
     params = {},
+    firebaseConnectDone,
   }) {
     const styles = require('./DocumentDetail.scss');
 
@@ -209,6 +211,7 @@ export default class DocumentDetail extends Component {
     return (
       <div className={ styles.DocumentDetail + ' container' }>
         <Helmet title={'Document: ' + docName }/>
+        <Loading show={!firebaseConnectDone} message="Loading" />
         { doc ?
           (<div className={ styles.DocumentDetail + '-content' }>
             <h1>

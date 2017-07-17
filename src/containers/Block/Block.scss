@@ -4,10 +4,9 @@
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  padding-top: 1rem;
 
-  &-notLoggedIn {
-    margin: $padding-large-vertical $padding-large-horizontal;
+  & .Blocks-notLoggedIn {
+    margin: 2rem $padding-large-horizontal 1rem $padding-large-horizontal;
     width: 100%;
   }
 

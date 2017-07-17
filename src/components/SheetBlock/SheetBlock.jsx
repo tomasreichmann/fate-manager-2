@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Input, FormGroup } from 'components';
+import { Input, FormGroup, Alert } from 'components';
 import { Map } from 'immutable';
 import { intersperse } from '../../utils/utils';
 
@@ -24,13 +24,15 @@ export default class SheetBlock extends Component {
   }
 
   render() {
-    const { sheet, template, children } = this.props;
+    const { sheet = Map(), template = Map(), children } = this.props;
     const { name, key, refresh, description, aspects, skills = Map(), consequences, stress, stunts, extras } = sheet.toObject();
     console.log('sheet', sheet.toJS());
     console.log('template', template);
     console.log('template', template.toJS());
     console.log('name', name, 'key', key, 'refresh', refresh, 'aspects', aspects, 'skills', skills, 'consequences', consequences, 'stress', stress, 'stunts', stunts, 'extras', extras);
     const styles = require('./SheetBlock.scss');
+
+    const hasData = this.props.sheet && this.props.template;
 
     const headingRefresh = <span className={styles['SheetBlock-heading-refresh']}>{refresh}</span>;
 
@@ -109,18 +111,16 @@ export default class SheetBlock extends Component {
       } )}
     </div>) : null;
 
-    return (
-      <div className={styles.SheetBlock} key={key} >
-        <h2 className={styles['SheetBlock-name']} ><span>{name}</span>{headingRefresh}</h2>
-        {descriptionBlock}
-        {aspectBlock}
-        {skillBlock}
-        {stuntsBlock}
-        {extrasBlock}
-        {stressBlock}
-        {consequencesBlock}
-        {children}
-      </div>
-    );
+    return hasData ? (<div className={styles.SheetBlock} key={key} >
+      <h2 className={styles['SheetBlock-name']} ><span>{name}</span>{headingRefresh}</h2>
+      {descriptionBlock}
+      {aspectBlock}
+      {skillBlock}
+      {stuntsBlock}
+      {extrasBlock}
+      {stressBlock}
+      {consequencesBlock}
+      {children}
+    </div>) : <Alert className={styles['SheetBlock-notFound']} warning >No sheet to display</Alert>;
   }
 }

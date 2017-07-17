@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
-import { Button, Alert } from 'components';
+import { Loading, Button, Alert } from 'components';
 import contentComponents from '../../contentComponents';
 
 @connect(
@@ -32,6 +32,7 @@ export default class View extends Component {
     view: PropTypes.object,
     user: PropTypes.object,
     params: PropTypes.object.isRequired,
+    firebaseConnectDone: PropTypes.bool,
   };
 
   @autobind
@@ -70,7 +71,7 @@ export default class View extends Component {
     return (
       <div className={ styles.View + ' container' }>
         <Helmet title={'View ' + (name || key)}/>
-        { !firebaseConnectDone ? <Alert className={styles.ViewEdit_loading} info >loading...</Alert> : null }
+        <Loading show={!firebaseConnectDone} message="Loading" />
         { view ?
           (<div className={ styles.View + '-content' }>
             <h1>{ view.get('name') || view.get('key') }</h1>

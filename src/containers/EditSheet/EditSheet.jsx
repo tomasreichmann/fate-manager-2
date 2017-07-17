@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
 import { connect } from 'react-redux';
-import { Input, Button, FormGroup } from 'components';
+import { Alert, Input, Button, FormGroup } from 'components';
 import { Map } from 'immutable';
 import { updateSession, pushToSession, updateDb, discardSheetUpdates } from 'redux/modules/firebase';
 import autobind from 'autobind-decorator';
@@ -136,7 +136,7 @@ export default class EditSheet extends Component {
 
     if ( !editedSheets.getIn([key, 'template']) ) {
       console.log('EditSheet | NOT FOUND', key, editedSheets && editedSheets.toJS(), editedSheets && editedSheets.get(key), editedSheets && editedSheets.getIn([key, 'template']) );
-      return <div className={styles.EditSheet + ' container'} ><p className="alert alert-warning" >Sheet or template not found</p></div>;
+      return <div className={styles.EditSheet + ' container'} ><Alert className={styles['EditSheet-notFoung']} warning >Sheet or template for { params.key } not found.</Alert></div>;
     }
 
     const template = templates.get( editedSheets.getIn([key, 'template']) || 'VS-P' );

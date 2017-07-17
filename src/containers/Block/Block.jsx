@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
 import { updateDb, pushToDb, myFirebaseConnect } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
-import { Button, SheetBlock, Alert } from 'components';
+import { Loading, Button, SheetBlock, Alert } from 'components';
 import { List, fromJS } from 'immutable';
 import { Link } from 'react-router';
 import autobind from 'autobind-decorator';
@@ -32,6 +32,7 @@ export default class Block extends Component {
     templates: PropTypes.object,
     pushState: PropTypes.func.isRequired,
     params: PropTypes.object.isRequired,
+    firebaseConnectDone: PropTypes.bool,
   };
 
   static contextTypes = {
@@ -75,20 +76,21 @@ export default class Block extends Component {
   }
 
   render() {
-    const {sheets, templates, params, user} = this.props;
+    const {sheets, templates, params, user, firebaseConnectDone } = this.props;
     console.log('this.props', this.props);
     const keys = params.keys.split(';');
     const styles = require('./Block.scss');
     const selectedSheets = sheets ? sheets.filter( (sheet)=>( keys.indexOf( sheet.get('key') ) > -1 ) ) : List();
 
     return (
-      <div className={styles.Blocks + ' container'} >
+      <div className={styles.Blocks}>
+        <Loading show={!firebaseConnectDone} message="Loading" />
         { user ? null : <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Link to={ '/login/' + encodeURIComponent('sheet/' + params.keys) } ><Button link >log in</Button></Link>.</Alert> }
         { selectedSheets.map( (sheet)=>( <div className={styles['Blocks-item']} key={sheet.get('key')} >
-          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') || 'VS-P' )} updateDb={updateDb} >
+          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
             <div className={styles['Blocks-actions']} >
               <Button primary disabled={!user} onClick={this.duplicateSheet} onClickParams={sheet} >Duplicate</Button>
-              <Button warning onClick={this.redirect( '/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit' )} >Edit</Button>
+              <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning>Edit</Button></Link>
               <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, sheet.get('key')) } confirmMessage="Really delete forever?" >Delete</Button>
             </div>
           </SheetBlock>

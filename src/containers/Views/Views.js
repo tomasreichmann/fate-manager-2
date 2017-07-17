@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import Helmet from 'react-helmet';
 import { Map, fromJS } from 'immutable';
-import { Button, FormGroup, Alert, Image } from 'components';
+import { Loading, Button, FormGroup, Alert, Image } from 'components';
 import { myFirebaseConnect, updateDb } from '../../redux/modules/firebase';
 import { openModal } from '../../redux/modules/modal';
 import { connect } from 'react-redux';
@@ -59,10 +59,10 @@ export default class Views extends Component {
     return (
       <div className={styles.Views}>
         <Helmet title="Views"/>
+        <Loading show={!firebaseConnectDone} children="Loading..." />
 
         <div className="container">
 
-          { !firebaseConnectDone ? <Alert className={styles.Views_loading} info >loading...</Alert> : null }
           { (!user && firebaseConnectDone) ? <Alert className={styles.Views_notLoggedIn} warning >To use all features, you must <Link to="/login/views" ><Button link >log in.</Button></Link></Alert> : null }
 
           <div className={styles.Views_list} >

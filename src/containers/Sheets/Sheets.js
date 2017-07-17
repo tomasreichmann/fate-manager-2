@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { Link } from 'react-router';
 import Helmet from 'react-helmet';
 import { Map, fromJS } from 'immutable';
-import { SheetList, Button, FormGroup, Input, Alert } from 'components';
+import { SheetList, Button, FormGroup, Input, Alert, Loading } from 'components';
 import { push } from 'react-router-redux';
 import { myFirebaseConnect, toggleSheetSelection } from '../../redux/modules/firebase';
 
@@ -34,6 +34,7 @@ export default class Sheets extends Component {
     templates: PropTypes.object,
     pushState: PropTypes.func.isRequired,
     selection: PropTypes.object,
+    firebaseConnectDone: PropTypes.bool,
     toggleSelection: PropTypes.func.isRequired,
   };
   static contextTypes = {
@@ -80,7 +81,7 @@ export default class Sheets extends Component {
 
   render() {
     const styles = require('./Sheets.scss');
-    const {sheets, selection, templates, toggleSelection, user} = this.props;
+    const {sheets, selection, templates, toggleSelection, user, firebaseConnectDone} = this.props;
     // require the logo image both from client and server
 
     console.log('render sheets', sheets, sheets && sheets.toJS() );
@@ -90,6 +91,7 @@ export default class Sheets extends Component {
     return (
       <div className={styles.Sheets}>
         <Helmet title="Sheets"/>
+        <Loading show={!firebaseConnectDone} message="Loading" />
 
         <div className="container">
 
