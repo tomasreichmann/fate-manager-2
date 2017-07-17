@@ -7,7 +7,7 @@ import { push } from 'react-router-redux';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
-import { Button, Alert, Editable, SheetList, FormGroup, Input } from 'components';
+import { Loading, Button, Alert, Editable, SheetList, FormGroup, Input } from 'components';
 
 @connect(
   (state) => ({
@@ -48,6 +48,7 @@ export default class CampaignDetail extends Component {
     campaign: PropTypes.object,
     user: PropTypes.object,
     pushState: PropTypes.func.isRequired,
+    firebaseConnectDone: PropTypes.bool,
     params: PropTypes.object.isRequired,
   };
 
@@ -59,13 +60,18 @@ export default class CampaignDetail extends Component {
   }
 
   @autobind
-  toggleSheetSelection(key) {
-    console.log('toggleSheetSelection', key);
-    this.setState({
-      selectedSheets: {
-        ...this.state.selectedSheets,
-        [key]: !this.state.selectedSheets[key]
+  toggleSheetSelection(keys) {
+    console.log('toggleSheetSelection', keys);
+    const sheetKeys = Array.isArray(keys) ? keys : [keys];
+    const selectedSheets = sheetKeys.reduce( (updatedSelectedKeys, sheetKey) => (
+      {
+        ...updatedSelectedKeys,
+        [sheetKey]: !updatedSelectedKeys[sheetKey],
       }
+    ), this.state.selectedSheets );
+
+    this.setState({
+      selectedSheets
     });
   }
 
@@ -131,7 +137,8 @@ export default class CampaignDetail extends Component {
     availableSheets = Map(),
     availablePlayers = Map(),
     params = {},
-    user
+    user,
+    firebaseConnectDone,
   }) {
     const styles = require('./CampaignDetail.scss');
     const { sheetKeys = Map(), playerKeys = Map(), key: campaignKey, documents = Map() } = (campaign ? campaign.toObject() : {});
@@ -223,6 +230,7 @@ export default class CampaignDetail extends Component {
     return (
       <div className={ styles.CampaignDetail + ' container' }>
         <Helmet title="CampaignDetail"/>
+        <Loading show={!firebaseConnectDone} children="Loading" />
         { campaign ?
           (<div className={ styles.CampaignDetail + '-content' }>
             <h1>Campaign: <Editable type="text" onSubmit={this.updateCampaign} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>

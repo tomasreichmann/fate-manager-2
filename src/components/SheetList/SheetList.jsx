@@ -4,6 +4,7 @@ import { Button, Input } from 'components';
 import { updateDb } from 'redux/modules/firebase';
 import { Map } from 'immutable';
 import { injectProps } from 'relpers';
+import { intersperse } from 'utils/utils';
 import autobind from 'autobind-decorator';
 
 export default class SheetList extends Component {
@@ -33,6 +34,26 @@ export default class SheetList extends Component {
     this.props.toggleSheetSelection(key);
   }
 
+  @autobind
+  selectAll(value) {
+    console.log('selectAll(value)', value);
+    const {selection = Map(), sheets = Map(), toggleSheetSelection} = this.props;
+    const filteredSelection = Array.from(selection.filter( (isSelected)=>(isSelected) ).keys());
+
+    console.log('selection', selection);
+    console.log('sheets', sheets);
+    console.log('filteredSelection', filteredSelection);
+
+    if (!value) {
+      toggleSheetSelection( Array.from(sheets.keys()) );
+    } else {
+      const unselectedSheetKeys = Array.from(sheets.keys())
+        .filter( (sheetKey)=>( !selection.get( sheetKey ) ) )
+      ;
+      toggleSheetSelection(unselectedSheetKeys);
+    }
+  }
+
   @injectProps
   render({sheets = Map(), actions = [], selection, user}) {
     // const {info, load} = this.props; // eslint-disable-line no-shadow
@@ -47,6 +68,11 @@ export default class SheetList extends Component {
       ) )
     ;
     return (<div className={styles.SheetList} >
+      <div className={styles['SheetList-item']} key="selectAll" >
+        <div className={styles['SheetList-item-select']} >
+          <Input type="checkbox" handleChange={this.selectAll} value={filteredSelection.size === sheets.size} inline />&emsp;Select all
+        </div>
+      </div>
       { sheets
           .sort( (sheetA, sheetB)=>( sheetA.get('name') > sheetB.get('name') ) )
           .map( (item)=>( <div className={styles['SheetList-item']} key={item.get('key')} >
@@ -62,7 +88,15 @@ export default class SheetList extends Component {
           { actions.map( (ActionComponent)=>( cloneElement(ActionComponent, { onClickParams: item.get('key') }) ) ) }
         </div>
       </div> ) ) }
-      { filteredSelection.size ? <div className={styles['SheetList-openAll']} ><Link to={'/sheet/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';')} ><Button link>Open: { filteredSelection.join(', ') }</Button></Link></div> : null }
+      { filteredSelection.size ? <div className={styles['SheetList-openAll']} >
+        <Link to={'/sheet/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';')} >
+          Open all selected: {
+            intersperse(filteredSelection.toArray().map((item, index)=>(
+              <Button key={index} link >{ item }</Button>
+            )), ', ')
+          }
+        </Link>
+      </div> : null }
     </div>);
   }
 }

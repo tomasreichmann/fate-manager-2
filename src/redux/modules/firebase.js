@@ -449,7 +449,12 @@ export default function reducer(state = initialState, action = {}) {
       ;
     }
     case SHEETS_TOGGLE: {
-      return state.updateIn(['sheets', 'selected', action.payload.key], (selected)=>(!selected) );
+      const toggleSheetKeys = Array.isArray(action.payload.keys) ? action.payload.keys : [action.payload.keys];
+      return state.updateIn(['sheets', 'selected' ], (selectedKeys)=>(
+        toggleSheetKeys.reduce( (updatedSelectedKeys, sheetKey) => (
+          updatedSelectedKeys.update(sheetKey, (selected) => (!selected) )
+        ), selectedKeys )
+      ) );
     }
     case LOGIN:
     case REGISTER: {
@@ -709,11 +714,11 @@ export function createUserData() {
   return processUser(firebase.auth().currentUser);
 }
 
-export function toggleSheetSelection(key) {
+export function toggleSheetSelection(keys) {
   return {
     type: SHEETS_TOGGLE,
     payload: {
-      key
+      keys
     }
   };
 }
