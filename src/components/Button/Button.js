@@ -6,7 +6,7 @@ export default class Button extends Component {
   static propTypes = {
     className: PropTypes.string,
     onClick: PropTypes.func,
-    onClickParams: PropTypes.object,
+    onClickParams: PropTypes.any,
     primary: PropTypes.bool,
     secondary: PropTypes.bool,
     success: PropTypes.bool,

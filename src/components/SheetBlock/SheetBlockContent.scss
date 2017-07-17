@@ -1,0 +1,21 @@
+@import "../../theme/variables.scss";
+
+.SheetBlockContent {
+  &_blocks {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+
+    margin: 0 -1*$padding-large-horizontal;
+
+    &_item {
+      flex: 1 0 400px;
+      min-width: 400px;
+      padding: $padding-large-vertical $padding-large-horizontal;
+    }
+
+    &_actions {
+      text-align: right;
+    }
+  }
+}

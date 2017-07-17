@@ -11,6 +11,7 @@ export SheetList from './SheetList/SheetList';
 export Input from './Input/Input';
 export Button from './Button/Button';
 export SheetBlock from './SheetBlock/SheetBlock';
+export SheetBlockContent from './SheetBlock/SheetBlockContent';
 export Alert from './Alert/Alert';
 export AlertContent from './Alert/AlertContent';
 export Image from './Image/Image';
