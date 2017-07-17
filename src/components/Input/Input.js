@@ -6,6 +6,7 @@ export default class Input extends Component {
     label: PropTypes.any,
     inline: PropTypes.bool,
     inherit: PropTypes.bool,
+    multiple: PropTypes.bool,
     inputRef: PropTypes.func,
     className: PropTypes.string,
     handleChange: PropTypes.func,
@@ -46,7 +47,6 @@ export default class Input extends Component {
     checkbox: ({path, inputRef, value, styles, ...props})=>{
       const checkedProperty = value !== undefined ? { checked: !!value } : { defaultChecked: false };
       // console.log('path', path, 'inputRef', inputRef, 'value', value, 'styles', styles, '...props', props );
-      // console.log('checkedProperty', checkedProperty);
       return (<input
               {...props}
               ref={inputRef}
@@ -78,9 +78,19 @@ export default class Input extends Component {
 
   handleChange(event) {
     if (this.props.handleChange) {
-      this.props.handleChange((this.props.type === 'checkbox' || this.props.type === 'stressbox')
-        ? event.target.checked
-        : event.target.value, this.props.handleChangeParams );
+      let value = event.target.value;
+      if (this.props.type === 'checkbox' || this.props.type === 'stressbox') {
+        value = event.target.checked;
+      } else if ( this.props.type === 'select' && this.props.multiple ) {
+        const options = event.target.options;
+        console.log('options', options);
+        value = Array.from(options).filter( (option)=>(option.selected) ).map( (option) => (
+          option.value
+        ) );
+        console.log('value', value);
+      }
+
+      this.props.handleChange(value, this.props.handleChangeParams );
     }
   }
 
