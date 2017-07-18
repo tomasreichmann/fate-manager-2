@@ -3,7 +3,7 @@ import Helmet from 'react-helmet';
 import { fromJS, Map } from 'immutable';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import { myFirebaseConnect } from 'redux/modules/firebase';
+import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import { Loading, Button, Alert, FormGroup } from 'components';
 import { Link } from 'react-router';
@@ -37,6 +37,7 @@ export default class CampaignOverview extends Component {
   @autobind
   deleteCampaign(key) {
     console.log('deleteCampaign', key);
+    updateDb('/campaigns/' + key, null);
   }
 
   @injectProps

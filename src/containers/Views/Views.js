@@ -46,7 +46,7 @@ export default class Views extends Component {
   openQrModal(viewKey) {
     const styles = require('./Views.scss');
     this.props.openModal({children:
-      <Image className={ styles.Views_qr } modeContain imageUrl={'http://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=' + encodeURIComponent(window.location.origin + '/views/' + viewKey) + '&qzone=1&margin=0&size=800x800&ecc=L'} />
+      <Image className={ styles.Views_qr } modeContain imageUrl={'http://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=' + encodeURIComponent(window.location.origin + '/view/' + viewKey) + '&qzone=1&margin=0&size=800x800&ecc=L'} />
     });
   }
 
