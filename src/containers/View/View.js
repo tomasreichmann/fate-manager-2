@@ -57,9 +57,11 @@ export default class View extends Component {
     console.log('contentComponents', contentComponents);
 
     const contentBlock = contentElements.size ?
-      contentElements.sort( (CEa, CEb)=>(
-        CEa.get('order') > CEb.get('order')
-      ) ).map( (contentElement, contentElementKey) => {
+      contentElements.sort( (CEa, CEb)=>{
+        if (CEa.get('order') < CEb.get('order')) { return -1; }
+        if (CEa.get('order') > CEb.get('order')) { return 1; }
+        if (CEa.get('order') === CEb.get('order')) { return 0; }
+      } ).map( (contentElement, contentElementKey) => {
         const ContentComponent = contentComponents[contentElement.get('component')] || contentComponents.AlertContent;
         const componentProps = (contentElement.get('componentProps') || Map()).toJSON();
         console.log('componentProps', componentProps, 'ContentComponent', ContentComponent);
