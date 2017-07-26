@@ -14,6 +14,7 @@ export default class RichTextContent extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {};
     if (!props.preview) {
       this.RichTextEditor = require('react-rte');
       this.state = {
@@ -23,20 +24,22 @@ export default class RichTextContent extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.preview) {
+    if (!nextProps.preview && !this.RichTextEditor) {
       this.RichTextEditor = require('react-rte');
-      this.state = {
-        value: this.props.htmlContent ? this.RichTextEditor.createValueFromString(this.props.htmlContent, 'html') : this.RichTextEditor.createEmptyValue()
-      };
+      this.setState({
+        ...this.state,
+        value: this.props.htmlContent ? this.RichTextEditor.createValueFromString(this.props.htmlContent, 'html') : this.RichTextEditor.createEmptyValue(),
+      });
     }
   }
 
   @autobind
   onChange(value) {
-    console.log('onChange', value);
+    const newVal = value.toString('html');
+    console.log('onChange', 'newVal', newVal, 'this.props.htmlContent', this.props.htmlContent);
     this.setState({value});
-    if (this.props.handleChange) {
-      this.defferChange( this.props.handleChange, [value.toString('html'), {...this.props.handleChangeParams, path: 'componentProps/htmlContent'}] );
+    if (this.props.handleChange && newVal !== this.props.htmlContent ) {
+      this.defferChange( this.props.handleChange, [newVal, {...this.props.handleChangeParams, path: 'componentProps/htmlContent'}] );
     }
   }
 
