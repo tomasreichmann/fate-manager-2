@@ -22,6 +22,15 @@ export default class RichTextContent extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.preview) {
+      this.RichTextEditor = require('react-rte');
+      this.state = {
+        value: this.props.htmlContent ? this.RichTextEditor.createValueFromString(this.props.htmlContent, 'html') : this.RichTextEditor.createEmptyValue()
+      };
+    }
+  }
+
   @autobind
   onChange(value) {
     console.log('onChange', value);

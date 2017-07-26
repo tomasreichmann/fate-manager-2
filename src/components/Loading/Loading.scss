@@ -68,7 +68,8 @@
       text-align: center;
       line-height: 28px;
       color: #fff;
-      font-size: 40px;
+      font-size: 38px;
+      line-height: 38px;
       font-weight: bold;
       backface-visibility: hidden;
       position: absolute;
@@ -76,10 +77,9 @@
       top: 0;
     }
 
-
     &-z {
       &:before {
-        content: "–";
+        content: "−";
         transform: translateZ(-20px) rotateX(-180deg);
       }
       &:after {
@@ -93,7 +93,7 @@
         transform: translateY(-20px) rotateX(90deg);
       }
       &:after {
-        content: "–";
+        content: "−";
         transform: translateY(20px) rotateX(-90deg)  rotateZ(90deg);
       }
     }
