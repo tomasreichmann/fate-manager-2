@@ -1,0 +1,23 @@
+@import "../../theme/variables.scss";
+
+.Sounds {
+  .Sound {
+    align-items: center;
+
+    audio {
+      width: 100%;
+    }
+  }
+
+  &__compact .Sounds_list {
+    margin: $padding-base-vertical*-1 $padding-base-horizontal*-1;
+  }
+
+  &__compact .Sound {
+    margin: $padding-base-vertical $padding-base-horizontal;
+  }
+
+  &Content_Sound {
+    align-items: center;
+  }
+}

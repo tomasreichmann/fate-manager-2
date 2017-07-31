@@ -18,7 +18,6 @@ export default class Home extends Component {
           <p><em>Your toolbox for running and playing FATE CORE RPG.</em></p>
 
           <p>So far, You can manage your <Link to="/sheets" ><Button link>sheets</Button></Link>, <Link to="/campaigns" ><Button link>campaigns</Button></Link> and <Link to="/views" ><Button link>views</Button></Link>.</p>
-
         </div>
 
       </div>

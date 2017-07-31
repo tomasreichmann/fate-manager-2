@@ -22,3 +22,5 @@ export Editable from './Editable/Editable';
 export RichText from './RichText/RichText';
 export RichTextContent from './RichText/RichTextContent';
 export Loading from './Loading/Loading';
+export Sounds from './Sounds/Sounds';
+export SoundsContent from './Sounds/SoundsContent';

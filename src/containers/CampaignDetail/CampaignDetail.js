@@ -242,10 +242,10 @@ export default class CampaignDetail extends Component {
 
     return (
       <div className={ styles.CampaignDetail + ' container' }>
-        <Helmet title="CampaignDetail"/>
         <Loading show={!firebaseConnectDone} children="Loading" />
         { campaign ?
           (<div className={ styles.CampaignDetail + '-content' }>
+            <Helmet title={(campaign.get('name') || campaign.get('key')) + ' campaign'}/>
             <h1>Campaign: <Editable type="text" onSubmit={this.updateCampaign} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>
             { playersBlock }
             { sheetsBlock }

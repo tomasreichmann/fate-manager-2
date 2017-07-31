@@ -7,7 +7,7 @@ import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
 import { Loading, Button, Alert } from 'components';
-import contentComponents from '../../contentComponents';
+import contentComponents from 'contentComponents';
 
 @connect(
   (state) => ({
@@ -50,9 +50,6 @@ export default class View extends Component {
   }) {
     const styles = require('./View.scss');
     const { key, name, contentElements = Map() } = (view ? view.toObject() : {});
-    console.log('View view', view && view.toJS() );
-    console.log('View key', key, 'name', name );
-    console.log('View prop keys, props', Object.keys(this.props), this.props);
 
     console.log('contentComponents', contentComponents);
 
@@ -62,9 +59,8 @@ export default class View extends Component {
         if (CEa.get('order') > CEb.get('order')) { return 1; }
         if (CEa.get('order') === CEb.get('order')) { return 0; }
       } ).map( (contentElement, contentElementKey) => {
-        const ContentComponent = contentComponents[contentElement.get('component')] || contentComponents.AlertContent;
+        const ContentComponent = contentComponents[contentElement.get('component')] ? contentComponents[contentElement.get('component')].component : contentComponents.AlertContent.component;
         const componentProps = (contentElement.get('componentProps') || Map()).toJSON();
-        console.log('componentProps', componentProps, 'ContentComponent', ContentComponent);
         return <ContentComponent {...componentProps} key={contentElementKey} preview="true" />;
       } )
       : <Alert>Empty</Alert>

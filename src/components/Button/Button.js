@@ -121,7 +121,7 @@ export default class Button extends Component {
       }
     }
 
-    return (<button className={processedClassName} {...onClickProp} {...props} ref={ (buttonElement)=>( this.buttonElement = buttonElement ) }>
+    return (<button className={processedClassName} {...onClickProp} {...props} >
       {(confirmMessage && this.state.confirmIsShown) ? <div className={styles['Button-confirmMessage']} >{confirmMessage}</div> : null}
       {children}
     </button>);

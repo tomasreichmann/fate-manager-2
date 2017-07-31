@@ -6,6 +6,7 @@ import { Link } from 'react-router';
 import { push } from 'react-router-redux';
 import { myFirebaseConnect, updateDb, pushToDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
+import { sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
 import { Loading, Button, Alert, Editable, FormGroup, Input } from 'components';
 import contentComponents from 'contentComponents';
@@ -96,11 +97,7 @@ export default class DocumentDetail extends Component {
   }
 
   sortByOrder(contentElements) {
-    return contentElements.sort( (CEa, CEb)=>{
-      if (CEa.get('order') < CEb.get('order')) { return -1; }
-      if (CEa.get('order') > CEb.get('order')) { return 1; }
-      if (CEa.get('order') === CEb.get('order')) { return 0; }
-    } );
+    return contentElements.sort( sortByKey('order') );
   }
 
   @autobind
@@ -132,6 +129,11 @@ export default class DocumentDetail extends Component {
   }
 
   @autobind
+  openViewInNewTab(viewSelectKey) {
+    window.open('/view/' + this.sendToViewSelects[viewSelectKey].value);
+  }
+
+  @autobind
   sendToView({key, clear}) {
     console.log('sendToView', key, this.sendToViewSelects, this.sendToViewSelects[key]);
     const { doc } = this.props;
@@ -144,6 +146,7 @@ export default class DocumentDetail extends Component {
   render({
     doc,
     views = Map(),
+    campaign = Map(),
     params = {},
     firebaseConnectDone,
   }) {
@@ -159,12 +162,12 @@ export default class DocumentDetail extends Component {
       value: viewKey
     }) );
 
-    const contentElementOptions = Map(contentComponents).map( (value, label) => ({
+    const contentElementOptions = Map(contentComponents).map( ({ label, componentName }) => ({
       label,
-      value: label
+      value: componentName,
     }) ).toList().toJSON();
-    // console.log('contentElementOptions', contentElementOptions );
-    // console.log('contentComponents', contentComponents );
+    console.log('contentElementOptions', contentElementOptions );
+    console.log('contentComponents', contentComponents );
 
     const sortedContentElements = this.sortByOrder(contentElements);
 
@@ -177,7 +180,7 @@ export default class DocumentDetail extends Component {
     const contentBlock = (<div className={ styles.DocumentDetail_contentBlock } >
       { sortedContentElements.size ? sortedContentElements.map( (componentElement, key)=>{
         const {component, componentProps = {}, preview} = componentElement ? componentElement.toJS() : {};
-        const ContentElement = contentComponents[component];
+        const ContentElement = contentComponents[component] && contentComponents[component].component;
         // console.log('componentElement', componentElement, component, componentProps, ContentElement);
         if (!ContentElement) {
           return <Alert warning>Malformed component - <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} >Remove</Button></Alert>;
@@ -218,10 +221,12 @@ export default class DocumentDetail extends Component {
               <FormGroup childTypes={['flexible']} >
                 <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ docName }</Editable>
                 <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) } />
+                <Button primary onClick={this.openViewInNewTab} onClickParams={'doc'} >Open</Button>
                 <Button secondary onClick={this.sendToView} onClickParams={{ key: 'doc' }} >Send</Button>
                 <Button warning onClick={this.sendToView} onClickParams={{ key: 'doc', clear: true }} >Clear</Button>
               </FormGroup>
             </h1>
+            <p><Link to={ '/campaign/' + campaign.get('key') }><Button link>Back to campaign { campaign.get('name') || campaign.get('key') }</Button></Link></p>
             { contentBlock }
           </div>)
          : <Alert className={styles['DocumentDetail-notFoung']} warning >Document { params.key } not found. Back to <Link to="/campaigns" ><Button link>Campaign Overview</Button></Link></Alert> }
