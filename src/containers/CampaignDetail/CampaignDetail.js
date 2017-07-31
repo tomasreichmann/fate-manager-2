@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
-import { Map, fromJS } from 'immutable';
+import { Map, OrderedMap, fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { push } from 'react-router-redux';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
+import { sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
 import { Loading, Button, Alert, Editable, SheetList, FormGroup, Input } from 'components';
 
@@ -25,22 +26,34 @@ import { Loading, Button, Alert, Editable, SheetList, FormGroup, Input } from 'c
       console.log('campaign pathResolver params', params),
       path + params.key
     ),
-    adapter: (snapshot)=>(
-      console.log('campaign snapshot', snapshot, snapshot.val()),
-      { campaign: fromJS(snapshot.val()) || undefined }
-    ),
+    adapter: (snapshot)=>{
+      console.log('campaign snapshot', snapshot, snapshot.val());
+      return { campaign: fromJS(snapshot.val()) || undefined };
+    },
   },
   {
     path: '/sheets',
-    adapter: (snapshot)=>(
-      { availableSheets: fromJS(snapshot.val()) || undefined }
-    ),
+    adapter: (snapshot)=>{
+      let availableSheets = new OrderedMap();
+      snapshot.forEach( (child)=>{
+        availableSheets = availableSheets.set(child.val().key, fromJS(child.val()));
+      });
+      console.log('CampaignOverview snapshot availableSheets', availableSheets.toJS() );
+      return { availableSheets };
+    },
+    orderByChild: 'name',
   },
   {
     path: '/users',
-    adapter: (snapshot)=>(
-      { availablePlayers: fromJS(snapshot.val()) || undefined }
-    ),
+    adapter: (snapshot)=>{
+      let availablePlayers = new OrderedMap();
+      snapshot.forEach( (child)=>{
+        availablePlayers = availablePlayers.set(child.val().uid, fromJS(child.val()));
+      });
+      console.log('CampaignOverview snapshot availablePlayers', availablePlayers.toJS() );
+      return { availablePlayers };
+    },
+    orderByChild: 'displayName',
   }
 ])
 export default class CampaignDetail extends Component {
@@ -134,8 +147,8 @@ export default class CampaignDetail extends Component {
   render({
     campaign,
     templates,
-    availableSheets = Map(),
-    availablePlayers = Map(),
+    availableSheets = new OrderedMap(),
+    availablePlayers = new OrderedMap(),
     params = {},
     user,
     firebaseConnectDone,
@@ -157,7 +170,7 @@ export default class CampaignDetail extends Component {
     const playersBlock = (<div className={styles.CampaignDetail_players} >
       <h2>Players</h2>
       <div className={styles.CampaignDetail_documents_list} >
-      { players.size ? players.map( (player, playerKey) => (
+      { players.size ? players.sort(sortByKey('displayName')).map( (player, playerKey) => (
         <FormGroup key={playerKey} childTypes={['flexible', null]} >
           <Link to={'/user/' + playerKey} ><Button link >{availablePlayers.getIn([playerKey, 'displayName']) || availablePlayers.getIn([playerKey, 'uid'])}</Button></Link>
           <Button warning onClick={ this.unassignPlayer } onClickParams={playerKey} confirmMessage="Really unassign?" >Unassign</Button>

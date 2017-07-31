@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router';
 import Helmet from 'react-helmet';
-import { Map, fromJS } from 'immutable';
+import { Map, fromJS, OrderedMap } from 'immutable';
 import { SheetList, Button, FormGroup, Input, Alert, Loading } from 'components';
 import { push } from 'react-router-redux';
 import { myFirebaseConnect, toggleSheetSelection } from '../../redux/modules/firebase';
@@ -22,9 +22,16 @@ import { myFirebaseConnect, toggleSheetSelection } from '../../redux/modules/fir
 @myFirebaseConnect([
   {
     path: '/sheets',
-    adapter: (snapshot)=>(
-      { sheets: fromJS(snapshot.val()) }
-    ),
+    adapter: (snapshot)=>{
+      let sheets = new OrderedMap();
+      console.log('Sheets snapshot', snapshot.val() );
+      snapshot.forEach( (child)=>{
+        sheets = sheets.set(child.val().key, fromJS(child.val()));
+      });
+      console.log('Sheets snapshot new sheets', 'sheets', sheets.toJS() );
+      return { sheets };
+    },
+    orderByChild: 'name',
   }
 ])
 export default class Sheets extends Component {

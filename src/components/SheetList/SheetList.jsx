@@ -74,7 +74,6 @@ export default class SheetList extends Component {
         </div>
       </div>
       { sheets
-          .sort( (sheetA, sheetB)=>( sheetA.get('name') > sheetB.get('name') ) )
           .map( (item)=>( <div className={styles['SheetList-item']} key={item.get('key')} >
         <div className={styles['SheetList-item-select']} >
           <Input type="checkbox" handleChange={this.select} handleChangeParams={item.get('key')} value={!!selection.get(item.get('key'))}/>

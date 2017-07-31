@@ -7,6 +7,14 @@ export function seq(count) {
   return Array(count).fill(null).map( (item, index)=>( index ) );
 }
 
+export function sortByKey(key) {
+  return (itemA, itemB) => {
+    if (itemA.get(key) < itemB.get(key)) { return -1; }
+    if (itemA.get(key) > itemB.get(key)) { return 1; }
+    if (itemA.get(key) === itemB.get(key)) { return 0; }
+  };
+}
+
 /* intersperse: Return an array with the separator interspersed between
  * each element of the input array.
  *

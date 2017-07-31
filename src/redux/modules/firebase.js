@@ -8,7 +8,12 @@ export const firebaseApp = firebase.initializeApp(firebaseConfig);
 export const firebaseDb = firebaseApp.database();
 
 export function firebaseConnect(db, initialDefinitions) {
-  const defs = (Array.isArray(initialDefinitions) ? initialDefinitions : [initialDefinitions]).map( (def) => (
+  let initialDefinitionsArray = initialDefinitions || [];
+  if (!Array.isArray(initialDefinitions)) {
+    initialDefinitionsArray = [initialDefinitions];
+  }
+
+  const defs = initialDefinitionsArray.map( (def) => (
     {
       once: false,
       event: 'value',
@@ -77,7 +82,35 @@ export function firebaseConnect(db, initialDefinitions) {
         listener.ref = this.dbRefs[listener.resolvedPath];
         listener.callback = this.onUpdate.bind(this, listener);
         const method = once ? 'once' : 'on';
-        listener.ref[method](event, listener.callback);
+        let subscriber = listener.ref;
+
+        console.log('!subscribeListener listener', listener);
+
+        if (listener.orderByChild) {
+          console.log('!subscribeListener listener.orderByChild', listener.orderByChild);
+          subscriber = subscriber.orderByChild(listener.orderByChild);
+        } else if (listener.orderByKey) {
+          subscriber = subscriber.orderByKey();
+        } else if (listener.orderByValue) {
+          subscriber = subscriber.orderByValue();
+        }
+
+        if (listener.limitToFirst) {
+          subscriber = subscriber.limitToFirst(listener.limitToFirst);
+        } else if (listener.limitToLast) {
+          subscriber = subscriber.limitToLast(listener.limitToLast);
+        } else if (listener.equalTo) {
+          subscriber = subscriber.equalTo(listener.equalTo);
+        } else if (listener.startAt || listener.endAt) {
+          if (listener.startAt) {
+            subscriber = subscriber.startAt(listener.startAt);
+          }
+          if (listener.endAt) {
+            subscriber = subscriber.endAt(listener.endAt);
+          }
+        }
+
+        subscriber[method](event, listener.callback);
       }
 
       @autobind
@@ -99,7 +132,7 @@ export function firebaseConnect(db, initialDefinitions) {
           done: this.checkDone(),
           props: {
             ...this.state.props,
-            ...listener.adapter(snapshot, this.props),
+            ...listener.adapter(snapshot, this.props, this.state.props, listener),
           },
         });
       }

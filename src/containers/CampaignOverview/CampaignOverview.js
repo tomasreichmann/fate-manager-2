@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
-import { fromJS, Map } from 'immutable';
+import { fromJS, OrderedMap } from 'immutable';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
@@ -20,10 +20,15 @@ import autobind from 'autobind-decorator';
 @myFirebaseConnect([
   {
     path: '/campaigns',
-    adapter: (snapshot)=>(
-      console.log('snapshot', snapshot, snapshot.val()),
-      { campaigns: fromJS(snapshot.val()) || Map() }
-    ),
+    adapter: (snapshot)=>{
+      let campaigns = new OrderedMap();
+      snapshot.forEach( (child)=>{
+        campaigns = campaigns.set(child.val().key, fromJS(child.val()));
+      });
+      console.log('CampaignOverview snapshot new campaigns', 'campaigns', campaigns.toJS() );
+      return { campaigns };
+    },
+    orderByChild: 'name',
   }
 ])
 export default class CampaignOverview extends Component {
@@ -41,7 +46,7 @@ export default class CampaignOverview extends Component {
   }
 
   @injectProps
-  render({campaigns = Map(), user, pushState, firebaseConnectDone}) {
+  render({campaigns = new OrderedMap(), user, pushState, firebaseConnectDone}) {
     const styles = require('./CampaignOverview.scss');
 
     return (
