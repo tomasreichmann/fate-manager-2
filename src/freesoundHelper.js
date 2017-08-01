@@ -1,6 +1,6 @@
 const token = 'biQNMP2u2wH4UOZyz1zZGIk8UWWApipFL00TWzEc';
 
-const apiUrl = 'http://www.freesound.org/apiv2';
+const apiUrl = '//www.freesound.org/apiv2';
 
 const uris = {
   textSearch: apiUrl + '/search/text/'
