@@ -81,7 +81,7 @@ export default class SoundsContent extends Component {
         <hr />
         <div className={ styles.SoundContent_selected } >
         {
-          soundsMap.size ?
+          (soundsMap && soundsMap.size) ?
           soundsMap.map( (sound) => (
             <FormGroup key={sound.id} className={styles.SoundsContent_Sound} childTypes={['flexible']} >
               <Sounds sounds={List([sound])} />
