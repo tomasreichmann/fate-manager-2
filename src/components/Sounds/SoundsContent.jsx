@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { List, fromJS } from 'immutable';
+import { List, OrderedMap, fromJS } from 'immutable';
 import { Sounds, Input, FormGroup, Button, Alert } from 'components';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
@@ -53,7 +53,7 @@ export default class SoundsContent extends Component {
     const { results } = this.state;
     const styles = require('./Sounds.scss');
     console.log('SoundsContent sounds', sounds);
-    const soundsMap = fromJS(sounds);
+    const soundsMap = fromJS(sounds) || new OrderedMap();
 
     return preview ?
       (<div className={ styles.SoundsContent } {...props} >
