@@ -11,6 +11,7 @@ import { closeModal } from 'redux/modules/modal';
 import { push } from 'react-router-redux';
 import { Modal } from 'components';
 import config from '../../config';
+import autobind from 'autobind-decorator';
 
 @connect(
   state => ({
@@ -45,6 +46,10 @@ export default class App extends Component {
     store: PropTypes.object.isRequired
   };
 
+  constructor(props) {
+    super(props);
+  }
+
   componentWillReceiveProps(nextProps) {
     console.log('App | componentWillReceiveProps', this.props.location.pathname, nextProps.location.pathname, 'save?', this.props.session && (this.props.location.pathname !== nextProps.location.pathname ));
     if (nextProps.session && nextProps.location.pathname && (this.props.location.pathname !== nextProps.location.pathname )) {
@@ -69,10 +74,17 @@ export default class App extends Component {
     }
   }
 
-  handleLogout = (event) => {
+  @autobind
+  handleLogout(event) {
     event.preventDefault();
     this.props.logout();
-  };
+  }
+
+  @autobind
+  collapseNavbar() {
+    console.log('collapseNavbar', this.navbarToggle);
+    document.querySelector('.navbar-toggle').click();
+  }
 
   render() {
     const styles = require('./App.scss');
@@ -94,33 +106,33 @@ export default class App extends Component {
 
           <Navbar.Collapse eventKey={0}>
             <Nav navbar>
-              <LinkContainer to="/sheets">
+              <LinkContainer to="/sheets" onClick={this.collapseNavbar} >
                 <NavItem eventKey={1} >
                   Sheets
                 </NavItem>
               </LinkContainer>
-              <LinkContainer to="/campaigns">
+              <LinkContainer to="/campaigns" onClick={this.collapseNavbar} >
                 <NavItem eventKey={2} >
                   Campaigns
                 </NavItem>
               </LinkContainer>
-              <LinkContainer to="/views">
+              <LinkContainer to="/views" onClick={this.collapseNavbar} >
                 <NavItem eventKey={3} >
                   Views
                 </NavItem>
               </LinkContainer>
               {user ?
-                <LinkContainer to="/logout">
+                <LinkContainer to="/logout" onClick={this.collapseNavbar} >
                   <NavItem eventKey={8} onClick={this.handleLogout}>
                     Logout
                   </NavItem>
                 </LinkContainer>
                 :
-                <LinkContainer to="/login">
+                <LinkContainer to="/login" onClick={this.collapseNavbar} >
                   <NavItem eventKey={8}>Login</NavItem>
                 </LinkContainer>
               }
-              {user ? <LinkContainer to={'/user'}>
+              {user ? <LinkContainer to={'/user'} onClick={this.collapseNavbar} >
                 <NavItem eventKey={9} >
                   Profile: {user.get('displayName') || user.get('email')}
                 </NavItem>
