@@ -5,8 +5,6 @@ import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
 import { searchSound } from 'freesoundHelper';
 
-console.log('searchSound', searchSound);
-
 export default class SoundsContent extends Component {
   static propTypes = {
     preview: PropTypes.bool,
@@ -47,13 +45,14 @@ export default class SoundsContent extends Component {
   render({
     preview = false,
     sounds,
+    handleChange,
     handleChangeParams,
     ...props,
   } = {}) {
     const { results } = this.state;
     const styles = require('./Sounds.scss');
-    console.log('SoundsContent sounds', sounds);
     const soundsMap = fromJS(sounds) || new OrderedMap();
+    console.log('SoundsContent sounds', soundsMap.toJS());
 
     return preview ?
       (<div className={ styles.SoundsContent } {...props} >
@@ -85,6 +84,14 @@ export default class SoundsContent extends Component {
           soundsMap.map( (sound) => (
             <FormGroup key={sound.id} className={styles.SoundsContent_Sound} childTypes={['flexible']} >
               <Sounds sounds={List([sound])} />
+              <Input
+                label="Autoplay"
+                inline
+                type="checkbox"
+                value={sound.get('autoPlay')}
+                handleChange={handleChange}
+                handleChangeParams={{...handleChangeParams, path: 'componentProps/sounds/' + sound.get('id') + '/autoPlay' }}
+              />
               <Button danger onClick={this.handleButtonClick} onClickParams={{...handleChangeParams, value: null, path: 'componentProps/sounds/' + sound.get('id') }} >Remove</Button>
             </FormGroup>
           ) )

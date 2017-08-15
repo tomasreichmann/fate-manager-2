@@ -9,11 +9,23 @@ export default class Sounds extends Component {
   static propTypes = {
     sounds: PropTypes.object,
     compact: PropTypes.bool,
+    admin: PropTypes.bool,
   };
 
   constructor(props) {
     super(props);
     this.audioElements = {};
+  }
+
+  componentDidMount() {
+    if (!this.props.admin) {
+      this.props.sounds.map( (sound) => {
+        if (sound.get('autoPlay')) {
+          console.log('autoplay sound', sound.toJS());
+          this.audioElements[sound.get('id')].play();
+        }
+      });
+    }
   }
 
   @autobind
@@ -38,7 +50,7 @@ export default class Sounds extends Component {
             :
             (<FormGroup className={styles.Sound} key={sound.get('id')} childTypes={[null, 'flexible']} >
               <span>{sound.get('name')}</span>
-              <audio controls preload="none" src={sound.getIn(['previews', 'preview-hq-mp3'])} ></audio>
+              <audio controls ref={ (audio) => (this.audioElements[sound.get('id')] = audio) } preload="none" src={sound.getIn(['previews', 'preview-hq-mp3'])} ></audio>
             </FormGroup>)
           ;
         }) }
