@@ -8,6 +8,7 @@ import { searchSound } from 'freesoundHelper';
 export default class SoundsContent extends Component {
   static propTypes = {
     preview: PropTypes.bool,
+    admin: PropTypes.bool,
     handleChange: PropTypes.func,
     handleChangeParams: PropTypes.any,
     sounds: PropTypes.object,
@@ -45,6 +46,7 @@ export default class SoundsContent extends Component {
   render({
     preview = false,
     sounds,
+    admin = false,
     handleChange,
     handleChangeParams,
     ...props,
@@ -56,7 +58,7 @@ export default class SoundsContent extends Component {
 
     return preview ?
       (<div className={ styles.SoundsContent } {...props} >
-        <Sounds sounds={ soundsMap } />
+        <Sounds sounds={ soundsMap } admin={admin} />
       </div>)
       :
       (<div className={ styles.SoundsContent } {...props} >
@@ -83,7 +85,7 @@ export default class SoundsContent extends Component {
           (soundsMap && soundsMap.size) ?
           soundsMap.map( (sound) => (
             <FormGroup key={sound.id} className={styles.SoundsContent_Sound} childTypes={['flexible']} >
-              <Sounds sounds={List([sound])} />
+              <Sounds sounds={List([sound])} admin={admin} />
               <Input
                 label="Autoplay"
                 inline
