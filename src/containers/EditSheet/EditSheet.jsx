@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
 import { connect } from 'react-redux';
-import { Alert, Input, Button, FormGroup } from 'components';
+import { Alert, Input, Button, FormGroup, Editable } from 'components';
 import { Map } from 'immutable';
 import { updateSession, pushToSession, updateDb, discardSheetUpdates } from 'redux/modules/firebase';
 import autobind from 'autobind-decorator';
@@ -142,6 +142,7 @@ export default class EditSheet extends Component {
     const template = templates.get( editedSheets.getIn([key, 'template']) || 'VS-P' );
     const sheet = Map({
       description: '',
+      image: '',
       aspects: Map(),
       skills: Map(),
       extras: Map(),
@@ -150,18 +151,15 @@ export default class EditSheet extends Component {
       consequences: Map(),
       template: template.get('key'),
     }).merge( editedSheets.get(key) );
-    // console.log('sheet', sheet.toJS());
-    // console.log('template', template.toJS());
-    // console.log('description', sheet.get('description'));
-    // console.log('aspects', sheet.get('aspects'));
-    // console.log('skills', sheet.get('skills'));
-    // console.log('extras', sheet.get('extras'));
-    // console.log('stunts', sheet.get('stunts'));
-    // console.log('stress', sheet.get('stress'));
-    // console.log('consequences', sheet.get('consequences'));
 
     const descriptionBlock = (<div className={styles['EditSheet-descriptionBlock']} >
       <Input label="Description" type="textarea" value={sheet.get('description')} handleChange={this.handleChange} handleChangeParams={{path: 'description'}} />
+    </div>);
+
+    const imageBlock = (<div className={styles['EditSheet-imageBlock']} >
+      {sheet.get('image') ? <div><img src={sheet.get('image')} className={styles['EditSheet-image']} /></div> : null}
+      <p><strong>Image</strong></p>
+      <Editable type="text" onSubmit={this.handleChange} onSubmitParams={{path: 'image'}} >{ sheet.get('image') || 'no image'}</Editable>
     </div>);
 
     const aspectsBlock = (<div className={styles['EditSheet-aspectsBlock']} >
@@ -273,6 +271,7 @@ export default class EditSheet extends Component {
             <div><Input label="Name" value={sheet.get('name')} handleChange={this.handleChange} handleChangeParams={{path: 'name'}} /></div>
             <div><Input value={sheet.get('refresh')} label="Refresh" handleChange={this.handleChange} handleChangeParams={{path: 'refresh'}} /></div>
           </h2>
+          {imageBlock}
           {descriptionBlock}
           {aspectsBlock}
           {skillsBlock}

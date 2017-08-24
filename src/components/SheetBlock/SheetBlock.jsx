@@ -25,7 +25,7 @@ export default class SheetBlock extends Component {
 
   render() {
     const { sheet = Map(), template = Map(), children } = this.props;
-    const { name, key, refresh, description, aspects, skills = Map(), consequences, stress, stunts, extras } = sheet.toObject();
+    const { name, key, refresh, description, aspects, skills = Map(), consequences, stress, stunts, extras, image } = sheet.toObject();
     console.log('sheet', sheet.toJS());
     console.log('template', template);
     console.log('template', template.toJS());
@@ -37,8 +37,13 @@ export default class SheetBlock extends Component {
     const headingRefresh = <span className={styles['SheetBlock-heading-refresh']}>{refresh}</span>;
 
     // description ---
-    const descriptionBlock = description ? (<div className={styles['SheetBlock-extras']}>
+    const descriptionBlock = description ? (<div className={styles['SheetBlock-description']}>
       <p>{description}</p>
+    </div>) : null;
+
+    // image ---
+    const imageBlock = image ? (<div className={styles['SheetBlock-imageBlock']}>
+      <img src={image} className={ styles['SheetBlock-image'] } />
     </div>) : null;
 
     // aspects ---
@@ -113,7 +118,10 @@ export default class SheetBlock extends Component {
 
     return hasData ? (<div className={styles.SheetBlock} key={key} >
       <h2 className={styles['SheetBlock-name']} ><span>{name}</span>{headingRefresh}</h2>
-      {descriptionBlock}
+      <div className={styles['SheetBlock-imageClearer']} >
+        {imageBlock}
+        {descriptionBlock}
+      </div>
       {aspectBlock}
       {skillBlock}
       {stuntsBlock}

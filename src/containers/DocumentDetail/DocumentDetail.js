@@ -63,7 +63,7 @@ export default class DocumentDetail extends Component {
   }
 
   @autobind
-  updateDocument({ path }, value, method) {
+  updateDocument(value, { path }, method) {
     const { campaign, doc } = this.props;
     console.log('updateDocument', path, value, method);
     updateDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/' + path, value, method);

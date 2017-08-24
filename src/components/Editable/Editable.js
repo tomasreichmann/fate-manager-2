@@ -25,7 +25,7 @@ export default class Editable extends Component {
   @killEvent
   onSubmit() {
     if (typeof this.props.onSubmit === 'function') {
-      this.props.onSubmit(this.props.onSubmitParams, this.inputElement.value);
+      this.props.onSubmit(this.inputElement.value, this.props.onSubmitParams);
     }
     this.setState({
       editing: false

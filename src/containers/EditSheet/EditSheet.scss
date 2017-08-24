@@ -12,6 +12,12 @@
     margin: $padding-large-vertical ($padding-base-horizontal * -1);
   }
 
+  &-image {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  &-imageBlock,
   &-descriptionBlock,
   &-aspectsBlock,
   &-skillsBlock,
@@ -83,6 +89,13 @@
     &-stressBlock,
     &-consequencesBlock {
       width: 50%;
+    }
+    
+    &-imageBlock {
+      width: 30%;
+    }
+    &-imageBlock + &-descriptionBlock, {
+      width: 70%;
     }
   }
 }

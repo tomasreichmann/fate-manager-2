@@ -34,7 +34,7 @@ export default class ViewEdit extends Component {
   };
 
   @autobind
-  updateView({ path }, value) {
+  updateView(value, { path }) {
     const { view } = this.props;
     console.log('updateView', path, value);
     updateDb('/views/' + view.get('key') + '/' + path, value);

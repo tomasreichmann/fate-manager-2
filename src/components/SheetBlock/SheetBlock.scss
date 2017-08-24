@@ -29,6 +29,21 @@
     font-style: italic;
   }
 
+  &-imageClearer:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  &-imageBlock {
+    float: left;
+  }
+  
+  &-image {
+    width: 100%;
+    max-width: 360px;
+  }
+
   &-note {
     display: inline-block;
     font-size: 10px;

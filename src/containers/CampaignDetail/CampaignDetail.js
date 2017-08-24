@@ -137,7 +137,7 @@ export default class CampaignDetail extends Component {
   }
 
   @autobind
-  updateCampaign({ path }, value) {
+  updateCampaign(value, { path }) {
     const { campaign } = this.props;
     console.log('updateCampaign', path, value);
     updateDb('/campaigns/' + campaign.get('key') + '/' + path, value);
