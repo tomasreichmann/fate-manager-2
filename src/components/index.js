@@ -24,3 +24,4 @@ export RichTextContent from './RichText/RichTextContent';
 export Loading from './Loading/Loading';
 export Sounds from './Sounds/Sounds';
 export SoundsContent from './Sounds/SoundsContent';
+export Breadcrumbs from './Breadcrumbs/Breadcrumbs';

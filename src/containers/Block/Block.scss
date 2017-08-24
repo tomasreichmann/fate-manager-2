@@ -2,20 +2,24 @@
 
 .Blocks {
   position: relative;
-  display: flex;
-  flex-wrap: wrap;
+  
+  &_list {
+    display: flex;
+    flex-wrap: wrap;
+  }
 
-  & .Blocks-notLoggedIn {
+  & .Blocks_notLoggedIn {
     margin: 2rem $padding-large-horizontal 1rem $padding-large-horizontal;
     width: 100%;
   }
 
-  &-item {
+  &_item {
     flex: 1 0 400px;
     min-width: 400px;
     padding: $padding-large-vertical $padding-large-horizontal;
   }
-  &-actions {
+
+  &_actions {
     text-align: right;
 
     button {

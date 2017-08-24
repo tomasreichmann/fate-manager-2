@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
 import { updateDb, pushToDb, myFirebaseConnect } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
-import { Loading, Button, SheetBlock, Alert } from 'components';
+import { Loading, Button, SheetBlock, Alert, Breadcrumbs } from 'components';
 import { List, fromJS } from 'immutable';
 import { Link } from 'react-router';
 import autobind from 'autobind-decorator';
@@ -84,18 +84,25 @@ export default class Block extends Component {
 
     return (
       <div className={styles.Blocks}>
-        <Loading show={!firebaseConnectDone} message="Loading" />
-        { user ? null : <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Link to={ '/login/' + encodeURIComponent('sheet/' + params.keys) } ><Button link >log in</Button></Link>.</Alert> }
-        { selectedSheets.map( (sheet)=>( <div className={styles['Blocks-item']} key={sheet.get('key')} >
-          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
-            <div className={styles['Blocks-actions']} >
-              <Button primary disabled={!user} onClick={this.duplicateSheet} onClickParams={sheet} >Duplicate</Button>
-              <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning>Edit</Button></Link>
-              <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, sheet.get('key')) } confirmMessage="Really delete forever?" >Delete</Button>
-            </div>
-          </SheetBlock>
-        </div> ) ) }
-        { selectedSheets.size === 0 ? <Alert warning >No sheet found</Alert> : null }
+        <Breadcrumbs links={[
+          {url: '/', label: '⌂'},
+          {url: '/sheets', label: 'Sheets'},
+          {label: selectedSheets.map( (sheet)=>( sheet.get('name') || sheet.get('key') )).join(', ') }
+        ]} />
+        <div className={styles.Blocks_list}>
+          <Loading show={!firebaseConnectDone} message="Loading" />
+          { user ? null : <Alert className={styles.Blocks_notLoggedIn} warning >To use all features, you must <Link to={ '/login/' + encodeURIComponent('sheet/' + params.keys) } ><Button link >log in</Button></Link>.</Alert> }
+          { selectedSheets.map( (sheet)=>( <div className={styles.Blocks_item} key={sheet.get('key')} >
+            <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
+              <div className={styles.Blocks_actions} >
+                <Button primary disabled={!user} onClick={this.duplicateSheet} onClickParams={sheet} >Duplicate</Button>
+                <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning>Edit</Button></Link>
+                <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, sheet.get('key')) } confirmMessage="Really delete forever?" >Delete</Button>
+              </div>
+            </SheetBlock>
+          </div> ) ) }
+          { selectedSheets.size === 0 ? <Alert warning >No sheet found</Alert> : null }
+        </div>
       </div>
     );
   }

@@ -1,0 +1,21 @@
+@import "../../theme/variables.scss";
+
+.Breadcrumbs {
+  border-bottom: $inputBorder;
+  padding: $padding-base-vertical $padding-base-horizontal;
+
+  &_link {
+    display: inline-block;
+  }
+}
+
+@keyframes delayedReveal {
+  0% {
+    opacity: 0;
+    visibility: visible;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}

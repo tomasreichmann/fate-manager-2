@@ -8,7 +8,7 @@ import { myFirebaseConnect, updateDb, pushToDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import { sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
-import { Loading, Button, Alert, Editable, FormGroup, Input } from 'components';
+import { Loading, Button, Alert, Editable, FormGroup, Input, Breadcrumbs } from 'components';
 import contentComponents from 'contentComponents';
 
 @connect(
@@ -146,7 +146,7 @@ export default class DocumentDetail extends Component {
   render({
     doc,
     views = Map(),
-    campaign = Map(),
+    campaign,
     params = {},
     firebaseConnectDone,
   }) {
@@ -210,9 +210,17 @@ export default class DocumentDetail extends Component {
       </FormGroup>
     </div>);
 
-
     return (
       <div className={ styles.DocumentDetail + ' container' }>
+        <Breadcrumbs links={[
+          {url: '/', label: '⌂'},
+          {url: '/campaigns', label: 'campaigns'},
+          {
+            url: (campaign ? ('/campaign/' + campaign.get('key')) : null),
+            label: (campaign ? (campaign.get('name') || campaign.get('key')) : '-')
+          },
+          {label: docName }
+        ]} />
         <Helmet title={'Document: ' + docName }/>
         <Loading show={!firebaseConnectDone} message="Loading" />
         { doc ?
@@ -226,7 +234,7 @@ export default class DocumentDetail extends Component {
                 <Button warning onClick={this.sendToView} onClickParams={{ key: 'doc', clear: true }} >Clear</Button>
               </FormGroup>
             </h1>
-            <p><Link to={ '/campaign/' + campaign.get('key') }><Button link>Back to campaign { campaign.get('name') || campaign.get('key') }</Button></Link></p>
+            <p>Created on {doc.get('created')} by: {doc.get('createdBy')}</p>
             { contentBlock }
           </div>)
          : <Alert className={styles['DocumentDetail-notFoung']} warning >Document { params.key } not found. Back to <Link to="/campaigns" ><Button link>Campaign Overview</Button></Link></Alert> }
