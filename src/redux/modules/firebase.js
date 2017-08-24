@@ -186,7 +186,6 @@ export function processUser(user) {
     uid: user.uid
   }) : null;
 }
-console.log('templates', templates);
 const initialState = Map({
   sheets: Map({
     loaded: false,

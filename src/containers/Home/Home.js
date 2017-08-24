@@ -27,9 +27,7 @@ export default class Home extends Component {
           <p>Breadcrumbs</p>
           <p>Template editing</p>
           <p>Icons</p>
-
-
-          <p>Icons</p>
+          <p>Sheet images</p>
         </div>
 
       </div>

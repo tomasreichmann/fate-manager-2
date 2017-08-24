@@ -258,7 +258,7 @@ export default Map({
             value: 'main',
           },
           {
-            label: 'Vztah k šéfovi',
+            label: 'Vztah k Zaracusovi',
             value: 'boss',
           },
           {
