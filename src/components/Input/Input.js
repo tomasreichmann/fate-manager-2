@@ -83,11 +83,9 @@ export default class Input extends Component {
         value = event.target.checked;
       } else if ( this.props.type === 'select' && this.props.multiple ) {
         const options = event.target.options;
-        console.log('options', options);
         value = Array.from(options).filter( (option)=>(option.selected) ).map( (option) => (
           option.value
         ) );
-        console.log('value', value);
       }
 
       this.props.handleChange(value, this.props.handleChangeParams );

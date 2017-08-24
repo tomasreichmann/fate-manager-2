@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
-import { Button } from 'components';
+import { Button, Image } from 'components';
 import { Link } from 'react-router';
 
 export default class Home extends Component {
@@ -18,6 +18,18 @@ export default class Home extends Component {
           <p><em>Your toolbox for running and playing FATE CORE RPG.</em></p>
 
           <p>So far, You can manage your <Link to="/sheets" ><Button link>sheets</Button></Link>, <Link to="/campaigns" ><Button link>campaigns</Button></Link> and <Link to="/views" ><Button link>views</Button></Link>.</p>
+
+          <h2>This is ALPHA VERSION!</h2>
+          <p>Let me know if you are having problems: <a href="https://www.facebook.com/tomasreichmann" target="_blank" >Facebook</a> / Whatsupp</p>
+          <p><Image mode1to1 imageUrl="https://vignette3.wikia.nocookie.net/roblox-medieval-warfare-reforged/images/0/08/Resized_courage-wolf-meme-generator-im-gonna-be-alpha-u-got-a-problem-with-that-cf9fdb.jpg/revision/latest?cb=20150311022101" /></p>
+
+          <h2>TO DO</h2>
+          <p>Breadcrumbs</p>
+          <p>Template editing</p>
+          <p>Icons</p>
+
+
+          <p>Icons</p>
         </div>
 
       </div>
