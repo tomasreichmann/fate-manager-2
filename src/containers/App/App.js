@@ -6,7 +6,7 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { connectSheets, logout, connectSession, saveRoute } from 'redux/modules/firebase';
+import { getInitialUser, connectSheets, logout, connectSession, saveRoute } from 'redux/modules/firebase';
 import { closeModal } from 'redux/modules/modal';
 import { push } from 'react-router-redux';
 import { Modal } from 'components';
@@ -21,7 +21,7 @@ import autobind from 'autobind-decorator';
     session: state.firebase.get('session'),
     sheetsLoaded: state.firebase.getIn(['sheets', 'loaded']),
   }),
-  {logout, pushState: push, connectSession, connectSheets, closeModal}
+  {getInitialUser, logout, pushState: push, connectSession, connectSheets, closeModal}
 )
 export default class App extends Component {
   static propTypes = {
@@ -37,6 +37,7 @@ export default class App extends Component {
     saveRoute: PropTypes.func.isRequired,
     closeModal: PropTypes.func.isRequired,
     routeBeforeLogin: PropTypes.string,
+    getInitialUser: PropTypes.func.isRequired,
     location: PropTypes.shape({
       pathname: PropTypes.string
     }),
@@ -48,6 +49,10 @@ export default class App extends Component {
 
   constructor(props) {
     super(props);
+  }
+
+  componentWillMount() {
+    this.props.getInitialUser();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -64,9 +69,11 @@ export default class App extends Component {
       // this.props.pushState('/loginSuccess');
     } else if ((!this.props.session || !this.props.sheetsLoaded) && nextProps.session && nextProps.sheetsLoaded) {
       console.log('App | both session and sheets are connected, redirect to routeBeforeLogin or session last route');
-      // On session connect redirect to route before login, last page or home
-      const redirectTo = (nextProps.routeBeforeLogin && decodeURIComponent(nextProps.routeBeforeLogin)) || nextProps.session.get('route') || '/';
-      this.props.pushState(redirectTo);
+      // On session connect redirect to route before login, last page or home if not home or on login success page
+      if (nextProps.location.pathname === '/' || /^\/login\//.test(nextProps.location.pathname)) {
+        const redirectTo = (nextProps.routeBeforeLogin && decodeURIComponent(nextProps.routeBeforeLogin)) || nextProps.session.get('route') || '/';
+        this.props.pushState(redirectTo);
+      }
     } else if (this.props.user && !nextProps.user) {
       console.log('App | just logged out, redirect to /login');
       // logout

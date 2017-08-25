@@ -162,6 +162,7 @@ const SHEETS_SUCCESS = 'fate-manager/firebase/SHEETS_SUCCESS';
 const SHEETS_FAIL = 'fate-manager/firebase/SHEETS_FAIL';
 const SHEETS_UPDATE = 'fate-manager/firebase/SHEETS_UPDATE';
 const SHEETS_TOGGLE = 'fate-manager/firebase/SHEETS_TOGGLE';
+const USER_UPDATE = 'fate-manager/firebase/USER_UPDATE';
 const LOGIN = 'fate-manager/firebase/LOGIN';
 const LOGIN_SUCCESS = 'fate-manager/firebase/LOGIN_SUCCESS';
 const LOGIN_FAIL = 'fate-manager/firebase/LOGIN_FAIL';
@@ -186,6 +187,23 @@ export function processUser(user) {
     uid: user.uid
   }) : null;
 }
+
+export function getInitialUser() {
+  return function dispatchOnGetInitialUser(dispatch) {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log('user already logged in', user);
+        dispatch({
+          type: USER_UPDATE,
+          payload: {
+            user: processUser(user)
+          },
+        });
+      }
+    });
+  };
+}
+
 const initialState = Map({
   sheets: Map({
     loaded: false,
@@ -248,9 +266,10 @@ export default function reducer(state = initialState, action = {}) {
         registerError: null
       });
     }
-    case LOGIN_SUCCESS:
+    case USER_UPDATE: {
+      return state.set('user', action.payload.user);
+    }
     case REGISTER_SUCCESS: {
-      console.log('LOGIN_SUCCESS action', action);
       return state.merge({
         loggingIn: false,
         user: action.result,
