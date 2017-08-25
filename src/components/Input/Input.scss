@@ -13,7 +13,7 @@ $inputBorder: 2px solid $inverse-bg;
   line-height: 2rem;
 
   &--textarea {
-    resize: vertical;
+    resize: none;
   }
 
   &--select {

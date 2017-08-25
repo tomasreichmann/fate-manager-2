@@ -31,6 +31,7 @@ export default class Home extends Component {
           <h2>Changelog</h2>
 
           <h3>25/08/17</h3>
+          <p>Textarea autosizing</p>
           <p>Markdown Sheet descriptions</p>
 
           <h3>24/08/17</h3>

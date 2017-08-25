@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import Textarea from 'react-textarea-autosize';
 
 export default class Input extends Component {
   static propTypes = {
@@ -34,7 +35,7 @@ export default class Input extends Component {
       />
     ),
     textarea: ({path, inputRef, value, styles, ...props})=>(
-      <textarea
+      <Textarea
         {...props}
         ref={inputRef}
         className={[styles.Input, styles['Input--textarea']].join(' ')}
@@ -42,7 +43,7 @@ export default class Input extends Component {
         key={path}
         value={value}
         onChange={this.handleChange}
-      ></textarea>
+      />
     ),
     checkbox: ({path, inputRef, value, styles, ...props})=>{
       const checkedProperty = value !== undefined ? { checked: !!value } : { defaultChecked: false };
