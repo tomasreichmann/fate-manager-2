@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import classnames from 'classnames';
 import Textarea from 'react-textarea-autosize';
 
 export default class Input extends Component {
@@ -9,6 +10,7 @@ export default class Input extends Component {
     inherit: PropTypes.bool,
     multiple: PropTypes.bool,
     inputRef: PropTypes.func,
+    inputClassName: PropTypes.string,
     className: PropTypes.string,
     handleChange: PropTypes.func,
     handleChangeParams: PropTypes.any,
@@ -22,11 +24,11 @@ export default class Input extends Component {
   }
 
   inputTemplates = {
-    text: ({path, inputRef, type, value, styles, ...props})=>(
+    text: ({path, inputRef, type, value, styles, inputClassName, ...props})=>(
       <input
         {...props}
         ref={inputRef}
-        className={ [styles.Input].join(' ')}
+        className={classnames([styles.Input], inputClassName)}
         type={type}
         key={path}
         data-model={path}
@@ -34,24 +36,24 @@ export default class Input extends Component {
         onChange={this.handleChange}
       />
     ),
-    textarea: ({path, inputRef, value, styles, ...props})=>(
+    textarea: ({path, inputRef, value, styles, inputClassName, ...props})=>(
       <Textarea
         {...props}
-        ref={inputRef}
-        className={[styles.Input, styles['Input--textarea']].join(' ')}
+        inputRef={inputRef}
+        className={classnames([styles.Input, styles['Input--textarea']], inputClassName)}
         data-model={path}
         key={path}
         value={value}
         onChange={this.handleChange}
       />
     ),
-    checkbox: ({path, inputRef, value, styles, ...props})=>{
+    checkbox: ({path, inputRef, value, styles, inputClassName, ...props})=>{
       const checkedProperty = value !== undefined ? { checked: !!value } : { defaultChecked: false };
       // console.log('path', path, 'inputRef', inputRef, 'value', value, 'styles', styles, '...props', props );
       return (<input
               {...props}
               ref={inputRef}
-              className={[styles.Input, styles['Input--checkbox']].join(' ')}
+              className={classnames([styles.Input, styles['Input--checkbox']], inputClassName)}
               type="checkbox"
               key={path}
               data-model={path}
@@ -59,11 +61,11 @@ export default class Input extends Component {
               onChange={this.handleChange}
             />);
     },
-    select: ({path, options = [], inputRef, value, styles, ...props})=>(
+    select: ({path, options = [], inputRef, value, styles, inputClassName, ...props})=>(
       <select
         {...props}
         ref={inputRef}
-        className={[styles.Input, styles['Input--select']].join(' ')}
+        className={classnames([styles.Input, styles['Input--select']], inputClassName)}
         type="select"
         key={path}
         data-model={path}
@@ -88,7 +90,6 @@ export default class Input extends Component {
           option.value
         ) );
       }
-
       this.props.handleChange(value, this.props.handleChangeParams );
     }
   }
@@ -98,6 +99,7 @@ export default class Input extends Component {
     const {
       label,
       className = '',
+      inputClassName = '',
       type = 'text',
       superscriptBefore,
       superscriptAfter,
@@ -121,6 +123,7 @@ export default class Input extends Component {
       <div className={styles['Label-inputWrap']} >
       {this.inputTemplates[template]({
         ...props,
+        inputClassName,
         type,
         styles,
       })}

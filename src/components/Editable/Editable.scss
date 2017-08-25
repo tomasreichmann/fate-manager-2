@@ -5,14 +5,31 @@
   position: relative;
   vertical-align: text-bottom;
 
-  &-content {
+  &__block {
+    display: block;
+  }
+    
+  &__block &_content {
+    display: block;
+  }
+
+  &_input,
+  &_input input,
+  &_input textarea{
+    line-height: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  &_content {
     display: inline;
     border-bottom: $inputBorder;
     border-bottom-style: dashed;
     border-bottom-color: $brand-primary;
   }
 
-  &-form.Editable-form {
+  &_form.Editable-form {
     display: inline-flex;
     margin-top: 0;
     margin-bottom: 0;

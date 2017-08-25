@@ -4,6 +4,7 @@ import { Map, OrderedMap, fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { push } from 'react-router-redux';
+import marked from 'marked';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import { sortByKey } from 'utils/utils';
@@ -154,13 +155,27 @@ export default class CampaignDetail extends Component {
     firebaseConnectDone,
   }) {
     const styles = require('./CampaignDetail.scss');
-    const { sheetKeys = Map(), playerKeys = Map(), key: campaignKey, documents = Map() } = (campaign ? campaign.toObject() : {});
+    const { sheetKeys = Map(), playerKeys = Map(), key: campaignKey, documents = Map(), description } = (campaign ? campaign.toObject() : {});
     const sheets = availableSheets.filter((sheet = Map())=>( sheetKeys.includes(sheet.get('key')) ));
     const players = availablePlayers.filter((player = Map())=>( playerKeys.includes(player.get('uid')) ));
     const CampaignDetailInstance = this;
     console.log('CampaignDetail sheets', sheetKeys.toJS(), sheets.toJS() );
     console.log('CampaignDetail prop keys, props', Object.keys(this.props), this.props);
     console.log('CampaignDetail campaign', campaign && campaign.toJS() );
+    console.log('CampaignDetail marked', marked );
+
+    const descriptionBlock = (<div className={styles.CampaignDetail_description} >
+      <Editable
+        type="textarea"
+        block
+        onSubmit={this.updateCampaign}
+        onSubmitParams={{ path: 'description' }}
+        placeholder="no description"
+        processChildren={ (value) => ( value ? <div dangerouslySetInnerHTML={{__html: marked(value)}} /> : null ) } // TODO: SANITIZE THIS POTENTIAL SECURITY BREACH
+      >
+        { description }
+      </Editable>
+    </div>);
 
     const assignPlayerOptions = availablePlayers
       .filter( (availablePlayer)=>( !players.includes(availablePlayer) ) )
@@ -241,24 +256,27 @@ export default class CampaignDetail extends Component {
     </div>);
 
     return (
-      <div className={ styles.CampaignDetail + ' container' }>
+      <div className={ styles.CampaignDetail }>
         <Breadcrumbs links={[
           {url: '/', label: '⌂'},
           {url: '/campaigns', label: 'campaigns'},
           {label: campaign ? campaign.get('name') || campaign.get('key') : '-' }
         ]} />
-        <Loading show={!firebaseConnectDone} children="Loading" />
-        { campaign ?
-          (<div className={ styles.CampaignDetail + '-content' }>
-            <Helmet title={(campaign.get('name') || campaign.get('key')) + ' campaign'}/>
-            <h1>Campaign: <Editable type="text" onSubmit={this.updateCampaign} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>
-            <p>Created on {(new Date(campaign.get('created'))).toString()} by: {campaign.get('createdBy')}</p>
-            { playersBlock }
-            { sheetsBlock }
-            { documentsBlock }
-          </div>)
-         : <Alert className={styles['CampaignDetail-notFoung']} warning >Campaign { params.key } not found. Try refreshing or back to <Link to="/campaigns" ><Button primary >Campaign Overview</Button></Link></Alert> }
+        <div className={'container'} >
+          <Loading show={!firebaseConnectDone} children="Loading" />
+          { campaign ?
+            (<div className={ styles.CampaignDetail + '-content' }>
+              <Helmet title={(campaign.get('name') || campaign.get('key'))}/>
+              <h1><Editable block type="textarea" onSubmit={this.updateCampaign} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>
+              <p>Created on {(new Date(campaign.get('created'))).toString()} by: {campaign.get('createdBy')}</p>
+              { descriptionBlock }
+              { playersBlock }
+              { sheetsBlock }
+              { documentsBlock }
+            </div>)
+          : <Alert className={styles['CampaignDetail-notFoung']} warning >Campaign { params.key } not found. Try refreshing or back to <Link to="/campaigns" ><Button primary >Campaign Overview</Button></Link></Alert> }
 
+        </div>
       </div>
     );
   }

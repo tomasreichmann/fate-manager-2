@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { Map } from 'immutable';
 import { killEvent } from 'relpers';
 import autobind from 'autobind-decorator';
 import { Button, Input, FormGroup } from 'components';
+import classnames from 'classnames';
 
 export default class Editable extends Component {
   static propTypes = {
@@ -11,7 +11,10 @@ export default class Editable extends Component {
     onSubmitParams: PropTypes.object,
     children: PropTypes.any,
     type: PropTypes.string,
+    block: PropTypes.bool,
     inputProps: PropTypes.object,
+    placeholder: PropTypes.string,
+    processChildren: PropTypes.func,
   };
 
   constructor(props) {
@@ -24,6 +27,7 @@ export default class Editable extends Component {
   @autobind
   @killEvent
   onSubmit() {
+    console.log('onSUbmit this.inputElement', this.inputElement);
     if (typeof this.props.onSubmit === 'function') {
       this.props.onSubmit(this.inputElement.value, this.props.onSubmitParams);
     }
@@ -52,28 +56,42 @@ export default class Editable extends Component {
     const styles = require('./Editable.scss');
     const {
       className = '',
-      type,
+      type = 'text',
+      block = false,
       inputProps = {},
+      processChildren = value => value,
+      placeholder = '[empty]',
       children,
       ...props,
     } = this.props;
 
-    const classNames = Map({
-      type,
-    }).reduce( (output, value, key)=>(
-      value ? output.concat([ styles['Editable--' + key] ]) : output
-    ), className.split(' ') );
+    const cls = classnames([
+      styles.Editable,
+      className,
+      {
+        type: styles['Editable__' + type],
+      },
+      block ? styles.Editable__block : null
+    ]);
 
-    const processedClassName = [styles.Editable].concat(classNames).join(' ');
+    const processedChildren = processChildren(children);
 
-    return (<span className={processedClassName} {...props} >
+    return (<span className={cls} {...props} >
       { this.state.editing ?
-        <FormGroup className={styles['Editable-form' ]} childTypes={['flexible', null, null]} >
-          <Input inherit defaultValue={ inputProps.value || children } {...inputProps} inputRef={ (input)=>(this.inputElement = input) } />
+        <FormGroup className={styles.Editable_form} alignRight={block} childTypes={[block ? 'full' : 'flexible', null, null]} >
+          <Input
+            inherit
+            type={type}
+            inputClassName={styles.Editable_input}
+            defaultValue={ inputProps.value || children }
+            placeholder={placeholder}
+            {...inputProps}
+            inputRef={ (input)=>(this.inputElement = input) }
+          />
           <Button block danger clip-bottom-left onClick={this.onCancel} >Cancel</Button>
           <Button block success onClick={this.onSubmit} >OK</Button>
         </FormGroup>
-      : <span className={styles['Editable-content' ]} onClick={this.onEdit} >{children}</span>}
+      : <span className={styles.Editable_content} onClick={this.onEdit} >{processedChildren || placeholder}</span>}
     </span>);
   }
 }
