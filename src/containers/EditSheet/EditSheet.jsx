@@ -153,7 +153,7 @@ export default class EditSheet extends Component {
     }).merge( editedSheets.get(key) );
 
     const descriptionBlock = (<div className={styles['EditSheet-descriptionBlock']} >
-      <Input label="Description" type="textarea" value={sheet.get('description')} handleChange={this.handleChange} handleChangeParams={{path: 'description'}} />
+      <Input label={<span>Description (<a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank" >markdown</a>)</span>} type="textarea" value={sheet.get('description')} handleChange={this.handleChange} handleChangeParams={{path: 'description'}} />
     </div>);
 
     const imageBlock = (<div className={styles['EditSheet-imageBlock']} >

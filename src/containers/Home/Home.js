@@ -27,11 +27,14 @@ export default class Home extends Component {
           <p>Resolve createdBy displayName</p>
           <p>Template editing</p>
           <p>Icons</p>
-          <p>Sheet images</p>
 
           <h2>Changelog</h2>
 
+          <h3>25/08/17</h3>
+          <p>Markdown Sheet descriptions</p>
+
           <h3>24/08/17</h3>
+          <p>Sheet images</p>
           <p>Breadcrumbs</p>
           <p>Homepage update</p>
           <p>Campaign, Document created, createdBy</p>

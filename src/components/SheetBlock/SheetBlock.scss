@@ -29,19 +29,26 @@
     font-style: italic;
   }
 
-  &-imageClearer:after {
-    content: "";
-    display: table;
-    clear: both;
+  &-image-description-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 $padding-base-horizontal*-1 $padding-large-vertical $padding-base-horizontal*-1
   }
 
   &-imageBlock {
-    float: left;
+    position: relative;
+    flex: 1 0 200px;
+    margin: 0 $padding-base-horizontal
   }
   
   &-image {
     width: 100%;
-    max-width: 360px;
+  }
+
+  &-description {
+    min-width: 300px;
+    flex: 2 0 300px;
+    margin: 0 $padding-base-horizontal
   }
 
   &-note {

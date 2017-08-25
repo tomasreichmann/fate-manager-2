@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Input, FormGroup, Alert } from 'components';
 import { Map } from 'immutable';
 import { intersperse } from '../../utils/utils';
+import marked from 'marked';
 
 export default class SheetBlock extends Component {
 
@@ -37,9 +38,7 @@ export default class SheetBlock extends Component {
     const headingRefresh = <span className={styles['SheetBlock-heading-refresh']}>{refresh}</span>;
 
     // description ---
-    const descriptionBlock = description ? (<div className={styles['SheetBlock-description']}>
-      <p>{description}</p>
-    </div>) : null;
+    const descriptionBlock = description ? (<div className={styles['SheetBlock-description']} dangerouslySetInnerHTML={{__html: marked(description)}} ></div>) : null;
 
     // image ---
     const imageBlock = image ? (<div className={styles['SheetBlock-imageBlock']}>
@@ -118,7 +117,7 @@ export default class SheetBlock extends Component {
 
     return hasData ? (<div className={styles.SheetBlock} key={key} >
       <h2 className={styles['SheetBlock-name']} ><span>{name}</span>{headingRefresh}</h2>
-      <div className={styles['SheetBlock-imageClearer']} >
+      <div className={styles['SheetBlock-image-description-wrapper']} >
         {imageBlock}
         {descriptionBlock}
       </div>
