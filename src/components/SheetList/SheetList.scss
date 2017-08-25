@@ -16,12 +16,16 @@
     }
 
     &-title {
-      flex: 1 0 auto;
+      flex: 1 1 auto;
       font-weight: bold;
     }
 
     &-actions {
+      text-align: right;
+      margin: $padding-base-vertical*-1 0;
       button {
+        margin-top: $padding-base-vertical;
+        margin-bottom: $padding-base-vertical;
         margin-left: $padding-base-horizontal;
       }
     }
