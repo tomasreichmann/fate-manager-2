@@ -16,7 +16,7 @@
   &_item {
     flex: 1 0 360px;
     min-width: 360px;
-    padding: $padding-large-vertical $padding-large-horizontal;
+    padding: $padding-large-vertical*2 $padding-large-horizontal;
   }
 
   &_actions {

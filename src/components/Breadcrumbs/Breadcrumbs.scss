@@ -5,6 +5,11 @@
   padding: $padding-base-vertical $padding-base-horizontal;
   font-size: 1.5rem;
 
+  &_link button {
+    min-width: 2rem;
+    text-align: center;
+  }
+
   &_divider {
     display: inline-block;
     vertical-align: bottom;
