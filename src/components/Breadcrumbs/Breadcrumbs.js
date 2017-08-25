@@ -28,7 +28,7 @@ export default class Breadcrumbs extends Component {
         links.map( (item, index) => {
           return item.url ? <Link key={index} to={item.url} className={styles.Breadcrumbs_link} ><Button link>{item.label}</Button></Link> : <span key={index} className={styles.Breadcrumbs_text} >{item.label}</span>;
         }),
-        ' ▸ '
+        <span className={styles.Breadcrumbs_divider}>▸</span>
       )
     }</div>);
   }
