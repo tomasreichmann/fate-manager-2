@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import Helmet from 'react-helmet';
 import { push } from 'react-router-redux';
 import { updateDb, pushToDb, myFirebaseConnect } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
@@ -81,9 +82,11 @@ export default class Block extends Component {
     const keys = params.keys.split(';');
     const styles = require('./Block.scss');
     const selectedSheets = sheets ? sheets.filter( (sheet)=>( keys.indexOf( sheet.get('key') ) > -1 ) ) : List();
+    const selectedSheetNames = selectedSheets.map( (sheet) => ( sheet.get('name') || sheet.get('key') ) ).join(', ');
 
     return (
       <div className={styles.Blocks}>
+        <Helmet title={selectedSheetNames}/>
         <Breadcrumbs links={[
           {url: '/', label: '⌂'},
           {url: '/sheets', label: 'Sheets'},
