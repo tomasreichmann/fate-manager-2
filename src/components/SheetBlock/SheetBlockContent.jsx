@@ -6,6 +6,7 @@ import { updateDb, myFirebaseConnect } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
 import { fromJS } from 'immutable';
 import { Link } from 'react-router';
+import { FaClose } from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -56,7 +57,7 @@ export default class BlockContent extends Component {
       <div className={ styles.SheetBlockContent_blocks_item } >
         <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
           <div className={ styles.SheetBlockContent_blocks_actions }>
-            <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning>Edit</Button></Link>
+            <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning><FaClose /></Button></Link>
           </div>
         </SheetBlock>
       </div>

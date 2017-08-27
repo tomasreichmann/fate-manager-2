@@ -8,6 +8,7 @@ import { openModal } from '../../redux/modules/modal';
 import { connect } from 'react-redux';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
+import { FaQrcode, FaEdit, FaTrash } from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -68,10 +69,10 @@ export default class Views extends Component {
           <div className={styles.Views_list} >
             { views.size ? views.map( (view, viewKey)=>(
               <FormGroup childTypes={['flexible']} >
-                <Link to={ '/view/' + viewKey } ><Button link>{view.get('name') || viewKey}</Button></Link>
-                <Button info onClick={this.openQrModal} onClickParams={viewKey} >QR code</Button>
-                <Link to={ '/view/' + viewKey + '/edit' } ><Button warning >Edit</Button></Link>
-                <Button disabled={!user} onClick={this.deleteView} onClickParams={viewKey} danger confirmMessage="Really remove view forever?" >Delete</Button>
+                <Link to={ '/view/' + viewKey } ><Button block className="text-left" link>{view.get('name') || viewKey}</Button></Link>
+                <Button info onClick={this.openQrModal} onClickParams={viewKey} ><FaQrcode /></Button>
+                <Link to={ '/view/' + viewKey + '/edit' } ><Button warning ><FaEdit /></Button></Link>
+                <Button disabled={!user} onClick={this.deleteView} onClickParams={viewKey} danger confirmMessage="Really remove view forever?" ><FaTrash /></Button>
               </FormGroup>
             ) ) : <Alert>No views yet</Alert> }
           </div>

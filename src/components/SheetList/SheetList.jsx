@@ -6,6 +6,7 @@ import { Map } from 'immutable';
 import { injectProps } from 'relpers';
 import { intersperse } from 'utils/utils';
 import autobind from 'autobind-decorator';
+import { FaEdit, FaTrash } from 'react-icons/lib/fa';
 
 export default class SheetList extends Component {
 
@@ -82,8 +83,8 @@ export default class SheetList extends Component {
           <Link to={'/sheet/' + encodeURIComponent(item.get('key'))} ><Button link className="text-left" block >{item.get('name')}</Button></Link>
         </div>
         <div className={styles['SheetList-item-actions']} >
-          <Link to={'/sheet/' + encodeURIComponent(item.get('key')) + '/edit'} ><Button warning >Edit</Button></Link>
-          <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, item.get('key')) } confirmMessage="Really delete?" >Delete</Button>
+          <Link to={'/sheet/' + encodeURIComponent(item.get('key')) + '/edit'} ><Button warning clipBottomLeft ><FaEdit /></Button></Link>
+          <Button noClip={actions.length} danger disabled={!user} onClick={ this.deleteSheet.bind(this, item.get('key')) } confirmMessage="Really delete?" ><FaTrash /></Button>
           { actions.map( (ActionComponent)=>( cloneElement(ActionComponent, { onClickParams: item.get('key') }) ) ) }
         </div>
       </div> ) ) }

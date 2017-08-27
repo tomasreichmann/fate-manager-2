@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
-import { Button, Image } from 'components';
+import { Button, Image, FormGroup } from 'components';
 import { Link } from 'react-router';
+import { FaDesktop, FaFileText, FaFlag } from 'react-icons/lib/fa';
 
 export default class Home extends Component {
-
   render() {
     const styles = require('./Home.scss');
 
@@ -17,7 +17,13 @@ export default class Home extends Component {
           <h1>Welcome to Fate Manager</h1>
           <p><em>Your toolbox for running and playing FATE CORE RPG.</em></p>
 
-          <p>So far, You can manage your <Link to="/sheets" ><Button link>sheets</Button></Link>, <Link to="/campaigns" ><Button link>campaigns</Button></Link> and <Link to="/views" ><Button link>views</Button></Link>.</p>
+          <p>So far, You can manage</p>
+
+          <FormGroup>
+            <Link to="/sheets" ><Button primary appIcon><FaFileText size="30" /><br />sheets</Button></Link>
+            <Link to="/campaigns" ><Button secondary appIcon><FaFlag size="30" /><br />campaigns</Button></Link>
+            <Link to="/views" ><Button info appIcon><FaDesktop size="30" /><br />views</Button></Link>
+          </FormGroup>
 
           <h2>This is ALPHA VERSION!</h2>
           <p>Let me know if you are having problems: <a href="https://www.facebook.com/tomasreichmann" target="_blank" >Facebook</a> / Whatsupp</p>
@@ -26,9 +32,11 @@ export default class Home extends Component {
           <h2>TO DO</h2>
           <p>Resolve createdBy displayName</p>
           <p>Template editing</p>
-          <p>Icons</p>
 
           <h2>Changelog</h2>
+
+          <h3>27/08/17</h3>
+          <p>Icons</p>
 
           <h3>25/08/17</h3>
           <p>Campaign descriptions</p>

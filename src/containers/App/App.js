@@ -51,31 +51,28 @@ export default class App extends Component {
     super(props);
   }
 
+
   componentWillMount() {
     this.props.getInitialUser();
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('App | componentWillReceiveProps', this.props.location.pathname, nextProps.location.pathname, 'save?', this.props.session && (this.props.location.pathname !== nextProps.location.pathname ));
     if (nextProps.session && nextProps.location.pathname && (this.props.location.pathname !== nextProps.location.pathname )) {
-      console.log('App | saveRoute', this.props.location.pathname);
       saveRoute(nextProps.location.pathname);
     }
     if (!this.props.user && nextProps.user) {
-      console.log('App | user just logged in, get session and sheets');
       // on user login connect session
       this.props.connectSession();
       this.props.connectSheets();
       // this.props.pushState('/loginSuccess');
     } else if ((!this.props.session || !this.props.sheetsLoaded) && nextProps.session && nextProps.sheetsLoaded) {
-      console.log('App | both session and sheets are connected, redirect to routeBeforeLogin or session last route');
       // On session connect redirect to route before login, last page or home if not home or on login success page
       if (nextProps.location.pathname === '/' || /^\/login\//.test(nextProps.location.pathname)) {
-        const redirectTo = (nextProps.routeBeforeLogin && decodeURIComponent(nextProps.routeBeforeLogin)) || nextProps.session.get('route') || '/';
+        const routeBeforeLogin = nextProps.routeBeforeLogin || nextProps.params.routeBeforeLogin;
+        const redirectTo = (routeBeforeLogin && decodeURIComponent(routeBeforeLogin)) || nextProps.session.get('route') || '/';
         this.props.pushState(redirectTo);
       }
     } else if (this.props.user && !nextProps.user) {
-      console.log('App | just logged out, redirect to /login');
       // logout
       this.props.pushState('/login');
     }
@@ -89,7 +86,6 @@ export default class App extends Component {
 
   @autobind
   collapseNavbar() {
-    console.log('collapseNavbar', this.navbarToggle);
     document.querySelector('.navbar-toggle').click();
   }
 
@@ -110,29 +106,20 @@ export default class App extends Component {
             </Navbar.Brand>
             <Navbar.Toggle/>
           </Navbar.Header>
-
           <Navbar.Collapse eventKey={0}>
             <Nav navbar>
               <LinkContainer to="/sheets" onClick={this.collapseNavbar} >
-                <NavItem eventKey={1} >
-                  Sheets
-                </NavItem>
+                <NavItem eventKey={1} >Sheets</NavItem>
               </LinkContainer>
               <LinkContainer to="/campaigns" onClick={this.collapseNavbar} >
-                <NavItem eventKey={2} >
-                  Campaigns
-                </NavItem>
+                <NavItem eventKey={2} >Campaigns</NavItem>
               </LinkContainer>
               <LinkContainer to="/views" onClick={this.collapseNavbar} >
-                <NavItem eventKey={3} >
-                  Views
-                </NavItem>
+                <NavItem eventKey={3} >Views</NavItem>
               </LinkContainer>
               {user ?
                 <LinkContainer to="/logout" onClick={this.collapseNavbar} >
-                  <NavItem eventKey={8} onClick={this.handleLogout}>
-                    Logout
-                  </NavItem>
+                  <NavItem eventKey={8} onClick={this.handleLogout}>Logout</NavItem>
                 </LinkContainer>
                 :
                 <LinkContainer to="/login" onClick={this.collapseNavbar} >
@@ -158,7 +145,7 @@ export default class App extends Component {
           created by <a href="https://tomasreichmann.cz" target="_blank" >Tomáš Reichmann</a> 2017
         </footer>
 
-        {modal && modal.isOpen ? <Modal closeModal={this.props.closeModal} {...modal} /> : null }
+      {modal && modal.isOpen ? <Modal closeModal={this.props.closeModal} {...modal} /> : null }
       </div>
     );
   }

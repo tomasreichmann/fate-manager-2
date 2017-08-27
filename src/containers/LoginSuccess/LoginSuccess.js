@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {logout} from 'redux/modules/firebase';
+import { FaSignOut } from 'react-icons/lib/fa';
 
 @connect(
   state => ({user: state.firebase.get('user') }),
@@ -27,7 +28,7 @@ class LoginSuccess extends Component {
           : <p>You have just successfully logged in as {user.get('displayName') || user.get('email')}</p> }
 
           <div>
-            <button className="btn btn-danger" onClick={logoutAction}><i className="fa fa-sign-out"/>{' '}Log Out</button>
+            <button className="btn btn-danger" onClick={logoutAction}><FaSignOut />&emsp;Log Out</button>
           </div>
         </div>
       </div>

@@ -10,6 +10,8 @@ import { sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
 import { Loading, Button, Alert, Editable, FormGroup, Input, Breadcrumbs } from 'components';
 import contentComponents from 'contentComponents';
+import { FaChevronDown, FaChevronUp, FaTrash, FaEye, FaPlus, FaExternalLink, FaEraser} from 'react-icons/lib/fa';
+import { MdCast } from 'react-icons/lib/md';
 
 @connect(
   (state) => ({
@@ -183,21 +185,23 @@ export default class DocumentDetail extends Component {
         const ContentElement = contentComponents[component] && contentComponents[component].component;
         // console.log('componentElement', componentElement, component, componentProps, ContentElement);
         if (!ContentElement) {
-          return <Alert warning>Malformed component - <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} >Remove</Button></Alert>;
+          return <Alert warning>Malformed component - <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /></Button></Alert>;
         }
         return (<div className={ styles.DocumentDetail_contentElement } key={key}>
-          <FormGroup childTypes={['flexible']}>
+          <FormGroup childTypes={[null, 'flexible']}>
+            <div>
+              <Button secondary clipBottomLeft disabled={componentElement === sortedContentElements.first()} onClick={this.moveContent} onClickParams={{ shift: -1, key}} ><FaChevronUp /></Button>
+              <Button secondary disabled={componentElement === sortedContentElements.last()} onClick={this.moveContent} onClickParams={{ shift: 1, key}} ><FaChevronDown /></Button>
+            </div>
             <strong>{component}</strong>
-            <Button secondary disabled={componentElement === sortedContentElements.first()} onClick={this.moveContent} onClickParams={{ shift: -1, key}} >Up</Button>
-            <Button secondary disabled={componentElement === sortedContentElements.last()} onClick={this.moveContent} onClickParams={{ shift: 1, key}} >Down</Button>
-            <Input inline type="checkbox" label="Preview" value={preview} handleChange={this.updateContent} handleChangeParams={{key, path: 'preview'}} />
-            <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} >Remove</Button>
+            <Input inline type="checkbox" label={<FaEye style={{ verticalAlign: 'text-bottom' }} />} value={preview} handleChange={this.updateContent} handleChangeParams={{key, path: 'preview'}} />
+            <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /></Button>
           </FormGroup>
           <ContentElement {...componentProps} preview={preview} handleChange={this.updateContent} handleChangeParams={{key}} admin />
           <FormGroup childTypes={['flexible']}>
             <div></div>
             <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects[key] = sendToViewSelect) } />
-            <Button secondary onClick={this.sendToView} onClickParams={{key}} >Send</Button>
+            <Button secondary onClick={this.sendToView} onClickParams={{key}} ><MdCast /></Button>
           </FormGroup>
           <hr />
         </div>);
@@ -206,12 +210,12 @@ export default class DocumentDetail extends Component {
       <hr />
       <FormGroup>
         <Input type="select" options={ contentElementOptions } inputRef={ (addContentSelect)=>(this.addContentSelects.last = addContentSelect) } />
-        <Button primary onClick={this.addContent} onClickParams="last" >Add</Button>
+        <Button primary onClick={this.addContent} onClickParams="last" ><FaPlus /> Add Content</Button>
       </FormGroup>
     </div>);
 
     return (
-      <div className={ styles.DocumentDetail + ' container' }>
+      <div className={ styles.DocumentDetail }>
         <Breadcrumbs links={[
           {url: '/', label: '⌂'},
           {url: '/campaigns', label: 'campaigns'},
@@ -221,23 +225,27 @@ export default class DocumentDetail extends Component {
           },
           {label: docName }
         ]} />
-        <Helmet title={'Document: ' + docName }/>
+        <Helmet title={docName }/>
         <Loading show={!firebaseConnectDone} message="Loading" />
-        { doc ?
-          (<div className={ styles.DocumentDetail + '-content' }>
-            <h1>
-              <FormGroup childTypes={['flexible']} >
-                <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ docName }</Editable>
-                <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) } />
-                <Button primary onClick={this.openViewInNewTab} onClickParams={'doc'} >Open</Button>
-                <Button secondary onClick={this.sendToView} onClickParams={{ key: 'doc' }} >Send</Button>
-                <Button warning onClick={this.sendToView} onClickParams={{ key: 'doc', clear: true }} >Clear</Button>
-              </FormGroup>
-            </h1>
-            <p>Created on {doc.get('created')} by: {doc.get('createdBy')}</p>
-            { contentBlock }
-          </div>)
-         : <Alert className={styles['DocumentDetail-notFoung']} warning >Document { params.key } not found. Back to <Link to="/campaigns" ><Button link>Campaign Overview</Button></Link></Alert> }
+        <div className="container" >
+          { doc ?
+            (<div className={ styles.DocumentDetail + '-content' }>
+              <h1>
+                <FormGroup childTypes={['flexible']} >
+                  <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ docName }</Editable>
+                  <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) } />
+                  <div>
+                    <Button primary clipBottomLeft onClick={this.openViewInNewTab} onClickParams={'doc'} ><FaExternalLink /></Button>
+                    <Button secondary noClip onClick={this.sendToView} onClickParams={{ key: 'doc' }} ><MdCast /></Button>
+                    <Button warning onClick={this.sendToView} onClickParams={{ key: 'doc', clear: true }} ><FaEraser /></Button>
+                  </div>
+                </FormGroup>
+              </h1>
+              <p>Created on {(new Date(doc.get('created'))).toString()} by: {doc.get('createdBy')}</p>
+              { contentBlock }
+            </div>)
+          : <Alert className={styles['DocumentDetail-notFoung']} warning >Document { params.key } not found. Back to <Link to="/campaigns" ><Button link>Campaign Overview</Button></Link></Alert> }
+        </div>
       </div>
     );
   }

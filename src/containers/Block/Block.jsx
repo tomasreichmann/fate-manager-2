@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { Loading, Button, SheetBlock, Alert, Breadcrumbs } from 'components';
 import { List, fromJS } from 'immutable';
 import { Link } from 'react-router';
+import { FaTrash, FaClone, FaEdit} from 'react-icons/lib/fa';
 import autobind from 'autobind-decorator';
 
 @connect(
@@ -98,9 +99,9 @@ export default class Block extends Component {
           { selectedSheets.map( (sheet)=>( <div className={styles.Blocks_item} key={sheet.get('key')} >
             <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
               <div className={styles.Blocks_actions} >
-                <Button primary disabled={!user} onClick={this.duplicateSheet} onClickParams={sheet} >Duplicate</Button>
-                <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning>Edit</Button></Link>
-                <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, sheet.get('key')) } confirmMessage="Really delete forever?" >Delete</Button>
+                <Button primary disabled={!user} onClick={this.duplicateSheet} onClickParams={sheet} clipBottomLeft ><FaClone /></Button>
+                <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning noClip ><FaEdit /></Button></Link>
+                <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, sheet.get('key')) } confirmMessage="Really delete forever?" ><FaTrash /></Button>
               </div>
             </SheetBlock>
           </div> ) ) }

@@ -4,6 +4,7 @@ import { push } from 'react-router-redux';
 import Helmet from 'react-helmet';
 import {register, logout} from 'redux/modules/firebase';
 import { Button, Alert, Input } from 'components';
+import { FaSignOut, FaSignIn, FaUserPlus } from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -49,7 +50,7 @@ export default class Register extends Component {
         <div>
           <Alert warning message={'You are already registered and logged in as ' + (user.get('displayName') || user.get('email'))} />
           <div>
-            <Button danger onClick={logoutAction}><i className="fa fa-sign-out"/>{' '}Log Out</Button>
+            <Button danger onClick={logoutAction}><FaSignOut />&emsp;Log Out</Button>
           </div>
         </div>
         :
@@ -64,8 +65,8 @@ export default class Register extends Component {
           { this.props.errorMessage ? (<div className={styles.formRow}><Alert message={this.props.errorMessage} /></div>) : null }
 
           <div className={styles.formRow}>
-            <Button success block onClick={this.handleSubmit}><i className="fa fa-user"/>{' '}Register and log in</Button>
-            <Button link block onClick={this.goLogin}><i className="fa fa-sign-in"/>{' '}Log In</Button>
+            <Button success block onClick={this.handleSubmit}><FaUserPlus />&emsp;Register and log in</Button>
+            <Button link block onClick={this.goLogin}><FaSignIn />&emsp;Log In</Button>
           </div>
         </form>
         }

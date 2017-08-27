@@ -68,7 +68,7 @@ export default class View extends Component {
 
     return (
       <div className={ styles.View + ' container' }>
-        <Helmet title={'View ' + (name || key)}/>
+        <Helmet title={(name || key || 'Unknown view')}/>
         <Loading show={!firebaseConnectDone} message="Loading" />
         { view ?
           (<div className={ styles.View + '-content' }>

@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { Button } from 'components';
 import { intersperse } from '../../utils/utils';
 import classnames from 'classnames';
+import AngleRight from 'react-icons/lib/fa/angle-right';
 
 export default class Breadcrumbs extends Component {
   static propTypes = {
@@ -28,7 +29,7 @@ export default class Breadcrumbs extends Component {
         links.map( (item, index) => {
           return item.url ? <Link key={index} to={item.url} className={styles.Breadcrumbs_link} ><Button link>{item.label}</Button></Link> : <span key={index} className={styles.Breadcrumbs_text} >{item.label}</span>;
         }),
-        <span className={styles.Breadcrumbs_divider}>▸</span>
+        <span className={styles.Breadcrumbs_divider}><AngleRight /></span>
       )
     }</div>);
   }

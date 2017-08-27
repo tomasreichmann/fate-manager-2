@@ -10,6 +10,7 @@ import { injectProps } from 'relpers';
 import { sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
 import { Loading, Button, Alert, Editable, SheetList, FormGroup, Input, Breadcrumbs } from 'components';
+import { FaPlus, FaChain, FaChainBroken, FaTrash} from 'react-icons/lib/fa';
 
 @connect(
   (state) => ({
@@ -171,7 +172,7 @@ export default class CampaignDetail extends Component {
         onSubmit={this.updateCampaign}
         onSubmitParams={{ path: 'description' }}
         placeholder="no description"
-        processChildren={ (value) => ( value ? <div dangerouslySetInnerHTML={{__html: marked(value)}} /> : null ) } // TODO: SANITIZE THIS POTENTIAL SECURITY BREACH
+        processChildren={ (value) => ( value ? <div dangerouslySetInnerHTML={{__html: marked(value)}} /> : null ) }
       >
         { description }
       </Editable>
@@ -188,7 +189,7 @@ export default class CampaignDetail extends Component {
       { players.size ? players.sort(sortByKey('displayName')).map( (player, playerKey) => (
         <FormGroup key={playerKey} childTypes={['flexible', null]} >
           <Link to={'/user/' + playerKey} ><Button link >{availablePlayers.getIn([playerKey, 'displayName']) || availablePlayers.getIn([playerKey, 'uid'])}</Button></Link>
-          <Button warning onClick={ this.unassignPlayer } onClickParams={playerKey} confirmMessage="Really unassign?" >Unassign</Button>
+          <Button warning onClick={ this.unassignPlayer } onClickParams={playerKey} confirmMessage="Really unassign?" ><FaChainBroken /></Button>
         </FormGroup>
       ) )
       : <Alert warning >No players yet</Alert>}
@@ -199,7 +200,7 @@ export default class CampaignDetail extends Component {
           inputRef={(assignPlayerSelect)=>(this.assignPlayerSelect = assignPlayerSelect)}
           options={assignPlayerOptions}
         />
-        <Button disabled={!assignPlayerOptions.size} success onClick={this.assignPlayer} >Assign player</Button>
+        <Button disabled={!assignPlayerOptions.size} success onClick={this.assignPlayer} ><FaChain /></Button>
       </FormGroup>
     </div>);
 
@@ -217,7 +218,7 @@ export default class CampaignDetail extends Component {
         selection={selectedSheets}
         toggleSheetSelection={this.toggleSheetSelection}
         user={user}
-        actions={[<Button onClick={this.removeSheetFromCampaign} warning >Unassign</Button>]}
+        actions={[<Button onClick={this.removeSheetFromCampaign} warning ><FaChainBroken /></Button>]}
       />
       : <Alert warning >No sheets assigned to campaign yet</Alert>}
       <FormGroup>
@@ -226,7 +227,7 @@ export default class CampaignDetail extends Component {
           inputRef={(addExistingSheetSelect)=>(this.addExistingSheetSelect = addExistingSheetSelect)}
           options={addExistingSheetOptions}
         />
-        <Button disabled={!addExistingSheetOptions.size} success onClick={this.addExistingSheet} >Assign sheet</Button>
+        <Button disabled={!addExistingSheetOptions.size} success onClick={this.addExistingSheet} ><FaChain /></Button>
       </FormGroup>
       <FormGroup>
         <Input
@@ -235,7 +236,7 @@ export default class CampaignDetail extends Component {
           label="template"
           inputRef={ (select)=>(CampaignDetailInstance.newSheetTemplateSelect = select) }
         />
-        <Button primary onClick={ this.assignNewSheet } >Assign new sheet</Button>
+        <Button primary onClick={ this.assignNewSheet } ><FaPlus /><FaChain /></Button>
       </FormGroup>
     </div>);
 
@@ -245,13 +246,13 @@ export default class CampaignDetail extends Component {
       { documents.size ? documents.map( (doc, docKey) => (
         <FormGroup key={docKey} childTypes={['flexible', null]} >
           <Link to={'/campaign/' + campaignKey + '/document/' + docKey} ><Button link >{doc.get('name')}</Button></Link>
-          <Button danger onClick={ this.deleteDocument } onClickParams={docKey} confirmMessage="Really delete?" >Delete</Button>
+          <Button danger onClick={ this.deleteDocument } onClickParams={docKey} confirmMessage="Really delete?" ><FaTrash /></Button>
         </FormGroup>
       ) )
       : <Alert warning >No documents yet</Alert>}
       </div>
       <FormGroup>
-        <Link to={'/campaign/' + campaignKey + '/new-document'} ><Button primary >Create new document</Button></Link>
+        <Link to={'/campaign/' + campaignKey + '/new-document'} ><Button primary ><FaPlus /></Button></Link>
       </FormGroup>
     </div>);
 

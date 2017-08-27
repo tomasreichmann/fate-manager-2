@@ -1,10 +1,13 @@
 import React, { Component, PropTypes } from 'react';
+import Helmet from 'react-helmet';
 import { push } from 'react-router-redux';
 import { connect } from 'react-redux';
-import { Alert, Input, Button, FormGroup, Editable } from 'components';
+import { Alert, Input, Button, FormGroup, Editable, Breadcrumbs } from 'components';
 import { Map } from 'immutable';
 import { updateSession, pushToSession, updateDb, discardSheetUpdates } from 'redux/modules/firebase';
 import autobind from 'autobind-decorator';
+import classnames from 'classnames';
+import { FaPlus, FaMinus, FaSignOut, FaEraser, FaCheck, FaTrash} from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -177,7 +180,7 @@ export default class EditSheet extends Component {
           type: template.getIn(['aspects', 'types']).first().get('value'),
           title: '',
         }
-      }}>add</Button>
+      }}><FaPlus /></Button>
     </div>);
 
     const skillsBlock = (<div className={styles['EditSheet-skillsBlock']} >
@@ -186,8 +189,8 @@ export default class EditSheet extends Component {
         level > 0 ? elements.concat([<FormGroup className={styles['EditSheet-skill']} childTypes={['flexible', null]} >
           <strong>{template.getIn(['skills', skillSlug, 'name'])} {level}</strong>
           <div>
-            <Button danger clipBottomLeft onClick={this.changeSkill.bind(this, skillSlug, level - 1)} >&ndash;</Button>
-            <Button success onClick={this.changeSkill.bind(this, skillSlug, level + 1)} >+</Button>
+            <Button danger clipBottomLeft onClick={this.changeSkill.bind(this, skillSlug, level - 1)} ><FaMinus /></Button>
+            <Button success onClick={this.changeSkill.bind(this, skillSlug, level + 1)} ><FaPlus /></Button>
           </div>
         </FormGroup>]) : elements
       ), [] ) }
@@ -201,7 +204,7 @@ export default class EditSheet extends Component {
             .sort()
             .map( (skill) => ( { label: skill.get('name'), value: skill.get('key') } ) ) }
           inputRef={ (select)=>( this.newSkillSelect = select ) } />
-        <Button primary onClick={this.addSkill} >Add</Button>
+        <Button primary onClick={this.addSkill} ><FaPlus /></Button>
       </FormGroup>
     </div>);
 
@@ -210,10 +213,10 @@ export default class EditSheet extends Component {
       {sheet.get('extras') && sheet.get('extras').size && sheet.get('extras').map( (extra, extraKey) =>{
         return (<FormGroup key={'extra-' + extraKey} childTypes={['flexible', null]}>
           <Input type="text" value={extra} handleChange={this.handleChange} handleChangeParams={{path: 'extras/' + extraKey}} />
-          <Button danger onClick={this.removeItem} onClickParams={{path: 'extras/' + extraKey}} >delete</Button>
+          <Button danger onClick={this.removeItem} onClickParams={{path: 'extras/' + extraKey}} ><FaTrash /></Button>
         </FormGroup>);
       }) || null }
-      <Button primary onClick={this.addItem} onClickParams={{ path: 'extras' }}>add</Button>
+      <Button primary onClick={this.addItem} onClickParams={{ path: 'extras' }}><FaPlus /></Button>
     </div>);
 
     const stuntsBlock = (<div className={styles['EditSheet-stuntsBlock']} >
@@ -221,10 +224,10 @@ export default class EditSheet extends Component {
       {sheet.get('stunts') && sheet.get('stunts').size && sheet.get('stunts').map( (stunt, stuntKey) =>{
         return (<FormGroup key={'stunt-' + stuntKey} childTypes={['flexible', null]}>
           <Input type="text" value={stunt} handleChange={this.handleChange} handleChangeParams={{path: 'stunts/' + stuntKey}} />
-          <Button danger onClick={this.removeItem} onClickParams={{path: 'stunts/' + stuntKey}} >delete</Button>
+          <Button danger onClick={this.removeItem} onClickParams={{path: 'stunts/' + stuntKey}} ><FaTrash /></Button>
         </FormGroup>);
       }) || null }
-      <Button primary onClick={this.addItem} onClickParams={{ path: 'stunts/' }}>add</Button>
+      <Button primary onClick={this.addItem} onClickParams={{ path: 'stunts/' }}><FaPlus /></Button>
     </div>);
 
     const stressBlock = (<div className={styles['EditSheet-stressBlock']} >
@@ -238,8 +241,8 @@ export default class EditSheet extends Component {
             ) ) }
           </div>
           <div>
-            <Button danger clipBottomLeft onClick={this.removeStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}>&ndash;</Button>
-            <Button success onClick={this.addStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}>+</Button>
+            <Button danger clipBottomLeft onClick={this.removeStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}><FaMinus /></Button>
+            <Button success onClick={this.addStressBox} onClickParams={{stressLaneIndex, sheetStressLane: sheet.getIn(['stress', stressLaneIndex.toString()]) }}><FaPlus /></Button>
           </div>
         </FormGroup>
       ) ) }
@@ -258,15 +261,21 @@ export default class EditSheet extends Component {
             handleChangeParams={{path: 'consequences/' + consequenceKey}}
             superscriptAfter={template.getIn(['consequences', consequenceIndex, 'value']) || template.get('consequences').last().get('value')}
           />
-          <Button danger onClick={this.removeItem} onClickParams={{path: 'consequences/' + consequenceKey}} >delete</Button>
+          <Button danger onClick={this.removeItem} onClickParams={{path: 'consequences/' + consequenceKey}} ><FaTrash /></Button>
         </FormGroup>)];
       } ) : null}
-      <Button primary onClick={this.addItem} onClickParams={{ path: 'consequences' }}>add</Button>
+      <Button primary onClick={this.addItem} onClickParams={{ path: 'consequences' }}><FaPlus /></Button>
     </div>);
 
     return (
-      <div className={styles.EditSheet + ' container'} >
-        <form className={styles['EditSheet-form']}>
+      <div className={styles.EditSheet} >
+        <Breadcrumbs links={[
+          {url: '/', label: '⌂'},
+          {url: '/sheets', label: 'sheets'},
+          {label: sheet.get('name') || sheet.get('key') }
+        ]} />
+        <Helmet title={sheet.get('name') || sheet.get('key')} />
+        <form className={classnames(styles['EditSheet-form'], 'container')}>
           <h2 className={styles['EditSheet-heading']}>
             <div><Input label="Name" value={sheet.get('name')} handleChange={this.handleChange} handleChangeParams={{path: 'name'}} /></div>
             <div><Input value={sheet.get('refresh')} label="Refresh" handleChange={this.handleChange} handleChangeParams={{path: 'refresh'}} /></div>
@@ -281,9 +290,9 @@ export default class EditSheet extends Component {
           {consequencesBlock}
           <hr />
           <div className={styles['EditSheet-actions']} >
-            <Button danger onClick={this.discard} confirmMessage="Really discard all updates?" >Discard updates</Button>
-            <Button primary onClick={this.viewAsBlock} >Leave unsaved and view as Block</Button>
-            <Button success onClick={this.save} >Save</Button>
+            <Button danger onClick={this.discard} confirmMessage="Really discard all updates?" ><FaEraser /> Discard updates</Button>
+            <Button primary onClick={this.viewAsBlock} ><FaSignOut />Leave unsaved and view as Block</Button>
+            <Button success onClick={this.save} ><FaCheck /> Save</Button>
           </div>
         </form>
       </div>

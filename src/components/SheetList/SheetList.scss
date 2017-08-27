@@ -23,10 +23,10 @@
     &-actions {
       text-align: right;
       margin: $padding-base-vertical*-1 0;
+      margin-left: $padding-base-horizontal;
       button {
         margin-top: $padding-base-vertical;
         margin-bottom: $padding-base-vertical;
-        margin-left: $padding-base-horizontal;
       }
     }
   }

@@ -3,10 +3,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router';
 import Helmet from 'react-helmet';
-import { Map, fromJS, OrderedMap } from 'immutable';
+import { fromJS, OrderedMap } from 'immutable';
 import { SheetList, Button, FormGroup, Input, Alert, Loading } from 'components';
 import { push } from 'react-router-redux';
 import { myFirebaseConnect, toggleSheetSelection } from '../../redux/modules/firebase';
+import { FaPlus } from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -50,7 +51,6 @@ export default class Sheets extends Component {
 
   constructor(props) {
     super(props);
-    this.migrateSheetAspects = this.migrateSheetAspects.bind(this);
     this.newSheet = this.newSheet.bind(this);
   }
 
@@ -58,32 +58,6 @@ export default class Sheets extends Component {
     console.log('newSheet');
     const templateKey = this.newSheetTemplateSelect.value;
     this.props.pushState('/sheet/new/' + templateKey);
-  }
-
-  migrateSheetAspects() {
-    console.log('sheets', this.props.sheets );
-    console.log('selection', this.props.selection );
-    console.log('templates', this.props.templates );
-    const newSheets = this.props.sheets.map( (sheet)=>{
-      const template = this.props.templates.get( sheet.get('template') || '-1' );
-      return sheet.update('aspects', (aspects)=>{
-        return aspects.map( (aspect, aspectIndex)=>{
-          if (typeof aspect === 'string') {
-            const typeMap = {
-              0: template.getIn(['aspects', 'types', 0, 'value']),
-              1: template.getIn(['aspects', 'types', 1, 'value']),
-              2: template.getIn(['aspects', 'types', 2, 'value']),
-            };
-            return Map({
-              type: typeMap[ Math.min(aspectIndex, 2) ],
-              title: aspect,
-            });
-          }
-          return aspect;
-        } );
-      } );
-    });
-    console.log(JSON.stringify(newSheets.toJSON()));
   }
 
   render() {
@@ -108,16 +82,15 @@ export default class Sheets extends Component {
 
           <hr />
 
-          {false && <p><Button block danger onClick={this.migrateSheetAspects} >DANGEROUS: migrateSheetAspects!</Button></p>}
 
-          { <FormGroup childTypes={[null, 'flexible']}>
+          { <FormGroup>
             <Input
               type="select"
               options={templates.map( (template)=>( { label: template.get('name'), value: template.get('key') } ) )}
               label="template"
               inputRef={ (select)=>(SheetsInstance.newSheetTemplateSelect = select) }
             />
-            <Button disabled={!user} block success onClick={this.newSheet}>New sheet</Button>
+            <Button disabled={!user} block success onClick={this.newSheet}><FaPlus />&emsp;New sheet</Button>
           </FormGroup> }
 
         </div>

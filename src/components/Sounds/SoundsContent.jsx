@@ -4,6 +4,7 @@ import { Sounds, Input, FormGroup, Button, Alert } from 'components';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
 import { searchSound } from 'freesoundHelper';
+import { FaSearch, FaPlus, FaTrash } from 'react-icons/lib/fa';
 
 export default class SoundsContent extends Component {
   static propTypes = {
@@ -64,7 +65,7 @@ export default class SoundsContent extends Component {
       (<div className={ styles.SoundsContent } {...props} >
         <FormGroup childTypes={['flexible']} >
           <Input type="text" inputRef={ (input) => ( this.searchInput = input ) } placeholder="Search" name="query" />
-          <Button onClick={this.search} primary >Search</Button>
+          <Button onClick={this.search} primary ><FaSearch /></Button>
         </FormGroup>
         <div className={ styles.SoundContent_results } >
         {
@@ -72,7 +73,7 @@ export default class SoundsContent extends Component {
           results.map( (sound) => (
             <FormGroup key={sound.id} className={styles.SoundsContent_Sound} childTypes={['flexible']} >
               <Sounds sounds={List([fromJS(sound)])} />
-              <Button primary onClick={this.handleButtonClick} onClickParams={{...handleChangeParams, value: soundsMap.set(sound.id, fromJS(sound) ), path: 'componentProps/sounds' }} >Add</Button>
+              <Button primary onClick={this.handleButtonClick} onClickParams={{...handleChangeParams, value: soundsMap.set(sound.id, fromJS(sound) ), path: 'componentProps/sounds' }} ><FaPlus /></Button>
             </FormGroup>
           ) )
           :
@@ -94,7 +95,7 @@ export default class SoundsContent extends Component {
                 handleChange={handleChange}
                 handleChangeParams={{...handleChangeParams, path: 'componentProps/sounds/' + sound.get('id') + '/autoPlay' }}
               />
-              <Button danger onClick={this.handleButtonClick} onClickParams={{...handleChangeParams, value: null, path: 'componentProps/sounds/' + sound.get('id') }} >Remove</Button>
+              <Button danger onClick={this.handleButtonClick} onClickParams={{...handleChangeParams, value: null, path: 'componentProps/sounds/' + sound.get('id') }} ><FaTrash /></Button>
             </FormGroup>
           ) )
           :

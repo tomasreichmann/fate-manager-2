@@ -3,6 +3,7 @@ import { killEvent } from 'relpers';
 import autobind from 'autobind-decorator';
 import { Button, Input, FormGroup } from 'components';
 import classnames from 'classnames';
+import { FaBan, FaCheck } from 'react-icons/lib/fa';
 
 export default class Editable extends Component {
   static propTypes = {
@@ -78,7 +79,7 @@ export default class Editable extends Component {
 
     return (<span className={cls} {...props} >
       { this.state.editing ?
-        <FormGroup className={styles.Editable_form} alignRight={block} childTypes={[block ? 'full' : 'flexible', null, null]} >
+        <FormGroup className={styles.Editable_form} alignRight={block} childTypes={[block ? 'full' : 'flexible', null]} >
           <Input
             inherit
             type={type}
@@ -88,8 +89,10 @@ export default class Editable extends Component {
             {...inputProps}
             inputRef={ (input)=>(this.inputElement = input) }
           />
-          <Button block danger clip-bottom-left onClick={this.onCancel} >Cancel</Button>
-          <Button block success onClick={this.onSubmit} >OK</Button>
+          <div>
+            <Button inline danger clipBottomLeft onClick={this.onCancel} ><FaBan /></Button>
+            <Button inline success onClick={this.onSubmit} ><FaCheck /></Button>
+          </div>
         </FormGroup>
       : <span className={styles.Editable_content} onClick={this.onEdit} >{processedChildren || placeholder}</span>}
     </span>);

@@ -74,6 +74,14 @@ export function firebaseConnect(db, initialDefinitions) {
         } );
       }
 
+      componentWillUnmount() {
+        // unsubscribe
+        Object.keys(this.listeners).map( (key)=>{
+          const {ref, event, callback} = this.listeners[key];
+          ref.off(event, callback);
+        });
+      }
+
       @autobind
       subscribeListener(listener, resolvedPath) {
         const { once, event } = listener;
@@ -135,14 +143,6 @@ export function firebaseConnect(db, initialDefinitions) {
             ...this.state.props,
             ...listener.adapter(snapshot, this.props, this.state.props, listener),
           },
-        });
-      }
-
-      componentWillUnmount() {
-        // unsubscribe
-        Object.keys(this.listeners).map( (key)=>{
-          const {ref, event, callback} = this.listeners[key];
-          ref.off(event, callback);
         });
       }
 

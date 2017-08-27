@@ -77,7 +77,7 @@ export default class UserProfile extends Component {
 
     return (
       <div className={styles.UserProfile}>
-        <Helmet title={'User profile: ' + name }/>
+        <Helmet title={ name }/>
 
         <div className="container">
 

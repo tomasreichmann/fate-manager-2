@@ -23,6 +23,7 @@ export default class Button extends Component {
     confirmAutocloseDelay: PropTypes.number,
     clipBottomLeft: PropTypes.bool,
     noClip: PropTypes.bool,
+    appIcon: PropTypes.bool,
     children: PropTypes.any,
   };
 
@@ -78,6 +79,7 @@ export default class Button extends Component {
       link,
       block,
       disabled,
+      appIcon,
       onClick,
       onClickParams,
       confirmMessage,
@@ -99,6 +101,7 @@ export default class Button extends Component {
       link,
       block,
       disabled,
+      appIcon,
       confirm: confirmMessage,
       confirmPositionTop,
       confirmPositionRight,

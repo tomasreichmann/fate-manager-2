@@ -7,6 +7,7 @@ import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
 import { Button, Alert, Editable, FormGroup } from 'components';
+import { FaExternalLink } from 'react-icons/lib/fa';
 
 @connect(
   (state) => ({
@@ -48,9 +49,6 @@ export default class ViewEdit extends Component {
   }) {
     const styles = require('./ViewEdit.scss');
     const { key, name } = (view ? view.toObject() : {});
-    console.log('ViewEdit view', view && view.toJS() );
-    console.log('ViewEdit key', key, 'name', name );
-    console.log('ViewEdit prop keys, props', Object.keys(this.props), this.props);
 
     return (
       <div className={ styles.ViewEdit + ' container' }>
@@ -61,9 +59,10 @@ export default class ViewEdit extends Component {
             <h1>
               <FormGroup childTypes={['flexible']} >
                 <Editable type="text" onSubmit={this.updateView} onSubmitParams={{ path: 'name' }} >{ view.get('name') || view.get('key') }</Editable>
-                <Link to={'/view/' + key } ><Button link >Open view</Button></Link>
+                <Link to={'/view/' + key } target="_blank" ><Button primary ><FaExternalLink /></Button></Link>
               </FormGroup>
             </h1>
+            <p>Created on {(new Date(view.get('created'))).toString()} by: {view.get('createdBy')}</p>
           </div>)
          : <Alert className={styles['ViewEdit-notFoung']} warning >View { params.key } not found. Back to <Link to="/views" ><Button primary >Views</Button></Link></Alert> }
       </div>

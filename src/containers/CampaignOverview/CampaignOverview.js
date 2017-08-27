@@ -8,6 +8,7 @@ import { injectProps } from 'relpers';
 import { Loading, Button, Alert, FormGroup } from 'components';
 import { Link } from 'react-router';
 import autobind from 'autobind-decorator';
+import { FaPlus, FaTrash} from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -51,7 +52,7 @@ export default class CampaignOverview extends Component {
 
     return (
       <div className={ styles.CampaignOverview + ' container' }>
-        <Helmet title="CampaignOverview"/>
+        <Helmet title="Campaigns"/>
         <Loading show={!firebaseConnectDone} children="Loading" />
 
         <h1>Campaign Overview</h1>
@@ -64,14 +65,14 @@ export default class CampaignOverview extends Component {
                 <Button link className="text-left" block onClick={pushState.bind(this, '/campaign/' + encodeURIComponent(campaign.get('key')) )} >{campaign.get('name') || campaign.get('key')}</Button>
               </div>
               <div className={styles['CampaignOverview-item-actions']} >
-                <Button danger disabled={!user} onClick={ this.deleteCampaign } onClickParams={campaign.get('key')} confirmMessage="Really delete?" >Delete</Button>
+                <Button danger disabled={!user} onClick={ this.deleteCampaign } onClickParams={campaign.get('key')} confirmMessage="Really delete?" ><FaTrash /></Button>
               </div>
             </FormGroup>
           ) ) : <Alert warning >No campaigns available</Alert> }
         </div>
 
         <FormGroup childTypes={[null]}>
-          <Button disabled={!user} block success onClick={pushState.bind(this, '/campaign/new/' )} >New campaign</Button>
+          <Button disabled={!user} block success onClick={pushState.bind(this, '/campaign/new/' )} ><FaPlus /> New campaign</Button>
         </FormGroup>
 
       </div>

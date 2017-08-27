@@ -4,6 +4,7 @@ import { push } from 'react-router-redux';
 import Helmet from 'react-helmet';
 import {login, logout} from 'redux/modules/firebase';
 import { Button, Alert, Input } from 'components';
+import { FaSignOut, FaSignIn, FaUserPlus } from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -50,7 +51,7 @@ export default class Login extends Component {
           <p>You are currently logged in as {user.get('displayName') || user.get('email') }.</p>
 
           <div>
-            <Button danger onClick={logoutAction}><i className="fa fa-sign-out"/>{' '}Log Out</Button>
+            <Button danger onClick={logoutAction}><FaSignOut />&emsp;Log out</Button>
           </div>
         </div>
         :
@@ -65,8 +66,8 @@ export default class Login extends Component {
           { this.props.errorMessage ? (<div className={styles.formRow}><Alert message={this.props.errorMessage} /></div>) : null }
 
           <div className={styles.formRow}>
-            <Button success block onClick={this.handleSubmit}><i className="fa fa-sign-in"/>{' '}Log In</Button>
-            <Button link block onClick={this.goRegister}><i className="fa fa-user"/>{' '}Register</Button>
+            <Button success block onClick={this.handleSubmit}><FaSignIn />&emsp;Log in</Button>
+            <Button link block onClick={this.goRegister}><FaUserPlus />&emsp;Register</Button>
           </div>
         </form>
         }
