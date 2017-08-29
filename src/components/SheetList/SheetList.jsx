@@ -14,15 +14,14 @@ export default class SheetList extends Component {
     sheets: PropTypes.object,
     selection: PropTypes.object,
     actions: PropTypes.array,
-    toggleSheetSelection: PropTypes.func.isRequired,
-  };
-
-  static contextTypes = {
-    store: PropTypes.object.isRequired
+    toggleSheetSelection: PropTypes.func,
   };
 
   constructor(props) {
     super(props);
+    this.state = {
+      selection: Map({})
+    };
   }
 
   deleteSheet(key) {
@@ -32,18 +31,25 @@ export default class SheetList extends Component {
 
   @autobind
   select(value, key) {
-    this.props.toggleSheetSelection(key);
+    const { toggleSheetSelection = this.toggleSheetSelection } = this.props;
+    toggleSheetSelection(key);
+  }
+
+  @autobind
+  toggleSheetSelection(keys) {
+    console.log('toggleSheetSelection keys', keys, this.state);
+    const toggleSheetKeys = Array.isArray(keys) ? keys : [keys];
+    return this.setState({
+      selection: toggleSheetKeys.reduce( (updatedSelectedKeys, sheetKey) => (
+        updatedSelectedKeys.update(sheetKey, (selected) => (!selected) )
+      ), this.state.selection )
+    });
   }
 
   @autobind
   selectAll(value) {
     console.log('selectAll(value)', value);
-    const {selection = Map(), sheets = Map(), toggleSheetSelection} = this.props;
-    const filteredSelection = Array.from(selection.filter( (isSelected)=>(isSelected) ).keys());
-
-    console.log('selection', selection);
-    console.log('sheets', sheets);
-    console.log('filteredSelection', filteredSelection);
+    const {selection = this.state.selection, sheets = Map(), toggleSheetSelection = this.toggleSheetSelection} = this.props;
 
     if (!value) {
       toggleSheetSelection( Array.from(sheets.keys()) );
@@ -56,10 +62,10 @@ export default class SheetList extends Component {
   }
 
   @injectProps
-  render({sheets = Map(), actions = [], selection, user}) {
+  render({sheets = Map(), actions = [], selection = this.state.selection, user}) {
     // const {info, load} = this.props; // eslint-disable-line no-shadow
     console.log('SheetList sheets', sheets.toJS());
-    console.log('SheetList ', sheets.toJS());
+    console.log('SheetList selection', selection.toJS());
 
     const styles = require('./SheetList.scss');
     const filteredSelection = selection

@@ -53,13 +53,15 @@ export function firebaseConnect(db, initialDefinitions) {
       componentWillReceiveProps(nextProps) {
         Object.keys(this.listeners).map( (listenerKey) => {
           const listener = this.listeners[listenerKey];
+
+          // TODO: update all listeners based on new computed values
           const { path, pathResolver = (passPath) => (passPath), event } = listener;
           const newResolvedPath = pathResolver(path, nextProps);
           if ( newResolvedPath !== listener.resolvedPath ) {
             // unsubscribe previous connection
             listener.ref.off(event, listener.callback);
             // subscribe new connection
-            this.subscribeListener(listener, newResolvedPath);
+            this.subscribeListener(listener, newResolvedPath, nextProps);
           }
         } );
       }
@@ -70,7 +72,7 @@ export function firebaseConnect(db, initialDefinitions) {
           const listener = this.listeners[listenerKey];
           const { path, pathResolver = (passPath) => (passPath) } = listener;
           const resolvedPath = pathResolver(path, this.props);
-          this.subscribeListener(listener, resolvedPath);
+          this.subscribeListener(listener, resolvedPath, this.props);
         } );
       }
 
@@ -82,8 +84,12 @@ export function firebaseConnect(db, initialDefinitions) {
         });
       }
 
+      getParamValue(param, props) {
+        return typeof param === 'function' ? param(props) : param;
+      }
+
       @autobind
-      subscribeListener(listener, resolvedPath) {
+      subscribeListener(listener, resolvedPath, props) {
         const { once, event } = listener;
         listener.updated = false;
         listener.resolvedPath = resolvedPath;
@@ -96,12 +102,11 @@ export function firebaseConnect(db, initialDefinitions) {
         console.log('!subscribeListener listener', listener);
 
         if (listener.orderByChild) {
-          console.log('!subscribeListener listener.orderByChild', listener.orderByChild);
-          subscriber = subscriber.orderByChild(listener.orderByChild);
+          subscriber = subscriber.orderByChild(this.getParamValue(listener.orderByChild, props));
         } else if (listener.orderByKey) {
-          subscriber = subscriber.orderByKey();
+          subscriber = subscriber.orderByKey(this.getParamValue(listener.orderByKey, props));
         } else if (listener.orderByValue) {
-          subscriber = subscriber.orderByValue();
+          subscriber = subscriber.orderByValue(this.getParamValue(listener.orderByValue, props));
         }
 
         if (listener.limitToFirst) {
@@ -109,13 +114,13 @@ export function firebaseConnect(db, initialDefinitions) {
         } else if (listener.limitToLast) {
           subscriber = subscriber.limitToLast(listener.limitToLast);
         } else if (listener.equalTo) {
-          subscriber = subscriber.equalTo(listener.equalTo);
+          subscriber = subscriber.equalTo(this.getParamValue(listener.equalTo, props));
         } else if (listener.startAt || listener.endAt) {
           if (listener.startAt) {
-            subscriber = subscriber.startAt(listener.startAt);
+            subscriber = subscriber.startAt(this.getParamValue(listener.startAt, props));
           }
           if (listener.endAt) {
-            subscriber = subscriber.endAt(listener.endAt);
+            subscriber = subscriber.endAt(this.getParamValue(listener.endAt, props));
           }
         }
 
@@ -176,15 +181,23 @@ const SESSION_UPDATE = 'fate-manager/firebase/SESSION_UPDATE';
 
 const initialUser = firebase.auth().currentUser;
 
-export function processUser(user) {
-  return user ? Map({
-    displayName: user.displayName,
-    email: user.email,
-    emailVerified: user.emailVerified,
-    isAnonymous: user.isAnonymous,
-    photoURL: user.photoURL,
-    refreshToken: user.refreshToken,
-    uid: user.uid
+export function processUser({
+  displayName,
+  email,
+  emailVerified,
+  isAnonymous,
+  photoURL,
+  refreshToken,
+  uid
+}) {
+  return uid ? Map({
+    displayName,
+    email,
+    emailVerified,
+    isAnonymous,
+    photoURL,
+    refreshToken,
+    uid
   }) : null;
 }
 
@@ -358,6 +371,8 @@ export function register(email, password, routeBeforeLogin) {
         firebaseDb.ref('users/' + user.uid).set({
           created: Date.now(),
           ...user,
+          uid: user.uid,
+          photoURL: 'http://i.imgur.com/VSCr50R.gif'
         });
         return user;
       } )

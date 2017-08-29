@@ -180,7 +180,7 @@ export default class CampaignDetail extends Component {
 
     const assignPlayerOptions = availablePlayers
       .filter( (availablePlayer)=>( !players.includes(availablePlayer) ) )
-      .map( (availablePlayer)=>({ label: availablePlayer.get('displayName'), value: availablePlayer.get('uid') } ) )
+      .map( (availablePlayer)=>({ label: availablePlayer.get('displayName') || availablePlayer.get('uid'), value: availablePlayer.get('uid') } ) )
     ;
 
     const playersBlock = (<div className={styles.CampaignDetail_players} >
@@ -245,7 +245,7 @@ export default class CampaignDetail extends Component {
       <div className={styles.CampaignDetail_documents_list} >
       { documents.size ? documents.map( (doc, docKey) => (
         <FormGroup key={docKey} childTypes={['flexible', null]} >
-          <Link to={'/campaign/' + campaignKey + '/document/' + docKey} ><Button link >{doc.get('name')}</Button></Link>
+          <Link to={'/campaign/' + campaignKey + '/document/' + docKey} ><Button link >{doc.get('name') || doc.get('key')}</Button></Link>
           <Button danger onClick={ this.deleteDocument } onClickParams={docKey} confirmMessage="Really delete?" ><FaTrash /></Button>
         </FormGroup>
       ) )

@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 // import { Link } from 'react-router';
 import Helmet from 'react-helmet';
-import { fromJS, Map } from 'immutable';
+import { fromJS, Map, OrderedMap } from 'immutable';
 // import { Button, FormGroup, Input, Alert } from 'components';
-import { Editable, FormGroup } from 'components';
+import { Editable, FormGroup, SheetList } from 'components';
 import { myFirebaseConnect, getUser, getUserInterface, updateDb } from '../../redux/modules/firebase';
 import { injectProps } from 'relpers';
+import sortByKey from '../../helpers/sortByKey';
 import autobind from 'autobind-decorator';
 
 @myFirebaseConnect([
@@ -18,6 +19,14 @@ import autobind from 'autobind-decorator';
       console.log('snapshot user', snapshot.val()),
       { userData: fromJS(snapshot.val()) || undefined}
     ),
+  },
+  {
+    path: '/sheets',
+    orderByChild: 'createdBy',
+    equalTo: (props) => ( props.params.key ),
+    adapter: (snapshot)=>(
+      { sheets: snapshot.val() ? fromJS(snapshot.val()).sort(sortByKey('name')) : new OrderedMap() }
+    ),
   }
 ])
 export default class UserProfile extends Component {
@@ -25,9 +34,6 @@ export default class UserProfile extends Component {
     user: PropTypes.object,
     params: PropTypes.object,
     userData: PropTypes.object,
-  };
-  static contextTypes = {
-    store: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -48,8 +54,7 @@ export default class UserProfile extends Component {
   }
 
   @autobind
-  updateProfile(prop, value) {
-    console.log('updateProfile', value, prop);
+  updateProfile(value, prop) {
     if (prop) {
       this.userInterface
         .updateProfile({
@@ -68,10 +73,11 @@ export default class UserProfile extends Component {
   }
 
   @injectProps
-  render() {
+  render({sheets = Map()}) {
     const user = this.state.userInfo || this.props.userData || Map();
     const isCurrentUser = this.state.currentUser;
-    console.log('user', user.toJS(), 'isCurrentUser', isCurrentUser);
+    console.log('UserProfile user', user.toJS(), 'isCurrentUser', isCurrentUser);
+    console.log('UserProfile sheets', sheets.toJS());
     const styles = require('./UserProfile.scss');
     const name = (user.get('displayName') || user.get('uid'));
 
@@ -81,12 +87,19 @@ export default class UserProfile extends Component {
 
         <div className="container">
 
-          <h1>User profile: { isCurrentUser ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'displayName'} >{ name || ' ' }</Editable> : name }</h1>
+          <h1>{ isCurrentUser ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'displayName'} placeholder="please fill in name" >{ name || ' ' }</Editable> : name }</h1>
 
-          <FormGroup className={ styles.UserProfile_photo } >
+          <FormGroup className={ styles.UserProfile_photo } childTypes={[null, 'flexible']} >
             <img src={user.get('photoURL')} className={ styles.UserProfile_photo_img } />
-            {isCurrentUser ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'photoURL'} >{ user.get('photoURL') || '-none-'}</Editable> : null }
+            <div>
+              <h3>Image URL</h3>
+              {isCurrentUser ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'photoURL'} >{ user.get('photoURL') || '-none-'}</Editable> : null }
+            </div>
           </FormGroup>
+
+          <h2>Created sheets</h2>
+
+          <SheetList sheets={sheets} user={user} />
 
         </div>
 
