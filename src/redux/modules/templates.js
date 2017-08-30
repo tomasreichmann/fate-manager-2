@@ -186,6 +186,10 @@ export default Map({
               value: 5
             }
           ]
+        },
+        {
+          label: 'Mírný',
+          value: 2
         }
       ]
     },
@@ -258,7 +262,7 @@ export default Map({
             value: 'main',
           },
           {
-            label: 'Vztah k Zaracusovi',
+            label: 'Vztah k Zaracusovi / Arcturiusovi',
             value: 'boss',
           },
           {

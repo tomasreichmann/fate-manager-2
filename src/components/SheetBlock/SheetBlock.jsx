@@ -1,8 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { Input, FormGroup, Alert } from 'components';
+import { Input, FormGroup, Alert, Button } from 'components';
 import { Map } from 'immutable';
 import { intersperse } from '../../utils/utils';
+import classnames from 'classnames';
 import marked from 'marked';
+import autobind from 'autobind-decorator';
 
 export default class SheetBlock extends Component {
 
@@ -16,12 +18,42 @@ export default class SheetBlock extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
+    this.state = {
+      showFullDescription: false,
+      showFullImage: false,
+    };
+  }
+
+  getAspectTypeName(type) {
+    console.log('getAspectTypeName', type);
+    const templateAspectTypes = this.props.template.getIn(['aspects', 'types']);
+    const templateAspect = templateAspectTypes && templateAspectTypes.size
+      ? templateAspectTypes.find((aspect) => ( aspect.get('value') === type ))
+      : undefined
+    ;
+    console.log('getAspectTypeName templateAspectTypes', templateAspectTypes.toJS());
+    console.log('getAspectTypeName templateAspect', templateAspect && templateAspect.toJS());
+    return templateAspect ? templateAspect.get('label') : undefined;
   }
 
   handleChange(value, {key, path}) {
     console.log('handleChange', value, path);
     const sessionPath = key + '/' + path;
     this.props.updateDb('/sheets/' + sessionPath, value);
+  }
+
+  @autobind
+  toggleDescription() {
+    this.setState({
+      showFullDescription: !this.state.showFullDescription
+    });
+  }
+
+  @autobind
+  toggleImage() {
+    this.setState({
+      showFullImage: !this.state.showFullImage
+    });
   }
 
   render() {
@@ -35,14 +67,28 @@ export default class SheetBlock extends Component {
 
     const hasData = this.props.sheet && this.props.template;
 
-    const headingRefresh = <span className={styles['SheetBlock-heading-refresh']}>{refresh}</span>;
+    const headingRefresh = <span className={styles.SheetBlock_heading_refresh}>{refresh}</span>;
 
     // description ---
-    const descriptionBlock = description ? (<div className={styles['SheetBlock-description']} dangerouslySetInnerHTML={{__html: marked(description)}} ></div>) : null;
+    const descriptionBlock = description ? (<div className={styles.SheetBlock_description} >
+      <div
+        className={classnames({[styles.SheetBlock_description__hidden]: !this.state.showFullDescription})}
+        dangerouslySetInnerHTML={{__html: marked(description)}}
+      />
+      <Button link inline active={this.state.showFullDescription} onClick={this.toggleDescription} >toggle full description</Button>
+      <hr />
+    </div>) : null;
 
     // image ---
-    const imageBlock = image ? (<div className={styles['SheetBlock-imageBlock']}>
-      <img src={image} className={ styles['SheetBlock-image'] } />
+    const imageBlock = image ? (<div className={styles.SheetBlock_imageBlock}>
+      <div className={classnames(styles.SheetBlock_imageWrapper, {[styles.SheetBlock_imageWrapper__clipped]: !this.state.showFullImage})} >
+        <img
+          src={image}
+          className={styles.SheetBlock_image}
+        />
+      </div>
+      <Button link inline active={this.state.showImage} onClick={this.toggleImage} >toggle full image</Button>
+      <hr />
     </div>) : null;
 
     // aspects ---
@@ -58,47 +104,50 @@ export default class SheetBlock extends Component {
           styles.Aspect,
           styles[aspect.get('type') || 'Aspect-other']
         ].join(' ');
-        return <span className={classNames} key={'aspect-' + aspectKey} >{aspect.get('title')}</span>;
+        const aspectLabel = this.getAspectTypeName(aspect.get('type'));
+        return <span className={classNames} key={'aspect-' + aspectKey} ><strong>{aspect.get('title')}</strong>{aspectLabel ? ' (' + aspectLabel + ')' : null}</span>;
       }),
       ', ') : null
     ;
-    const aspectBlock = aspectElements ? <p className={styles['SheetBlock-aspects']}>{aspectElements}</p> : null;
-
+    const aspectBlock = aspectElements ? (<div className={styles.SheetBlock_aspectsBlock} >
+      <h3>Aspects</h3>
+      <p className={styles.SheetBlock_aspects}>{aspectElements}</p>
+    </div>) : null;
 
     // skills ---
     const skillsElements = intersperse(skills.sort().reverse().reduce( ( elements, level, skillSlug ) => (
-      level > 0 ? elements.concat([<span className={styles['SheetBlock-skill']} >{template.getIn(['skills', skillSlug, 'name'])} {level}</span>]) : elements
+      level > 0 ? elements.concat([<span className={styles.SheetBlock_skill} >{template.getIn(['skills', skillSlug, 'name'])} {level}</span>]) : elements
     ), [] ), ', ');
-    const skillBlock = skillsElements ? <p className={styles['SheetBlock-skills']}>{skillsElements}</p> : null;
+    const skillBlock = skillsElements ? <p className={styles.SheetBlock_skills}>{skillsElements}</p> : null;
 
     // stunts ---
     const stuntsBlock = stunts && stunts.size ? (<div><h3>Stunts</h3>{stunts.map( (stunt, index)=>(
-        <p key={index} className={styles['SheetBlock-stunt']}>{stunt}</p>
+        <p key={index} className={styles.SheetBlock_stunt}>{stunt}</p>
       ) )}</div>) : null;
 
     // extras ---
-    const extrasBlock = extras && extras.size ? (<div><h3>Extras</h3>{extras.map( (extra, index)=>(
-        <p key={index} className={styles['SheetBlock-extra']}>{extra}</p>
-      ) )}</div>) : null;
+    const extrasBlock = extras && extras.size ? (<div><h3>Extras</h3><p>{extras.join(', ')}</p></div>) : null;
 
     // stress ---
-    const stressBlock = stress ? (<div className={styles['SheetBlock-stressBlock']} >
+    const stressBlock = stress ? (<div className={styles.SheetBlock_stressBlock} >
       <h2>Stress</h2>
-      { template.get('stress').map( (stressLane, stressLaneIndex)=>(
-        <FormGroup className={styles['SheetBlock-stressLane']} key={stressLaneIndex} childTypes={['full', 'flexible', null]}>
-          <strong>{stressLane.get('label')}: </strong>
-          <div className={styles['SheetBlock-stressBlock-boxes']}>
-            { (stress.get(stressLaneIndex.toString()) || []).map( (isUsed, boxIndex)=>(
-              <span key={'stressBox-' + boxIndex} className={styles['SheetBlock-stressBox']}><Input type="checkbox" value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}} /></span>
-            ) ) }
+      <FormGroup childTypes={['flexible', 'flexible']} >
+        { template.get('stress').map( (stressLane, stressLaneIndex)=>(
+          <div>
+            <p>{stressLane.get('label')}</p>
+            <div className={styles.SheetBlock_stressBlock_boxes}>
+              { (stress.get(stressLaneIndex.toString()) || []).map( (isUsed, boxIndex)=>(
+                <span key={'stressBox-' + boxIndex} className={styles.SheetBlock_stressBox}><Input type="checkbox" value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}} /></span>
+              ) ) }
+            </div>
           </div>
-        </FormGroup>
-      ) ) }
+        ) ) }
+      </FormGroup>
     </div>) : null;
 
     // consequences ---
 
-    const consequencesBlock = consequences ? (<div className={styles['SheetBlock-consequencesBlock']} >
+    const consequencesBlock = consequences ? (<div className={styles.SheetBlock_consequencesBlock} >
       <h2>Consequences</h2>
       { consequences.toMap().mapEntries( (consequenceEntry, consequenceIndex)=>{
         const consequenceKey = consequenceEntry[0];
@@ -116,8 +165,8 @@ export default class SheetBlock extends Component {
     </div>) : null;
 
     return hasData ? (<div className={styles.SheetBlock} key={key} >
-      <h2 className={styles['SheetBlock-name']} ><span>{name}</span>{headingRefresh}</h2>
-      <div className={styles['SheetBlock-image-description-wrapper']} >
+      <h2 className={styles.SheetBlock_name} ><span>{name}</span>{headingRefresh}</h2>
+      <div className={styles.SheetBlock_imageDescriptionWrapper} >
         {imageBlock}
         {descriptionBlock}
       </div>
@@ -128,6 +177,6 @@ export default class SheetBlock extends Component {
       {stressBlock}
       {consequencesBlock}
       {children}
-    </div>) : <Alert className={styles['SheetBlock-notFound']} warning >No sheet to display</Alert>;
+    </div>) : <Alert className={styles.SheetBlock_notFound} warning >No sheet to display</Alert>;
   }
 }

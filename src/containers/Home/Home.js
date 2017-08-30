@@ -31,9 +31,17 @@ export default class Home extends Component {
 
           <h2>TO DO</h2>
           <p>Resolve createdBy displayName</p>
+          <p>Private sheets and documents</p>
+          <p>Read-only documents</p>
           <p>Template editing</p>
+          <p>Display campaigns created and assigned on profile page</p>
+          <p>Sheet list paging</p>
 
           <h2>Changelog</h2>
+
+          <h3>30/08/17</h3>
+          <p>App version checking with autoreload</p>
+          <p>SheetBlocks cosmetic update, image, description clipping</p>
 
           <h3>27/08/17</h3>
           <p>Icons</p>

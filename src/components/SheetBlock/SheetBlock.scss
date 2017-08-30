@@ -21,47 +21,78 @@
     border-right: $btn-clipping-size solid transparent;
   }
 
-  .Aspect-main {
+  .Aspect_main {
     font-weight: bold;
   }
 
-  .Aspect-trouble {
+  .Aspect_trouble {
     font-style: italic;
   }
 
-  &-image-description-wrapper {
+  &_imageDescriptionWrapper {
     display: flex;
     flex-wrap: wrap;
     margin: 0 $padding-base-horizontal*-1 $padding-large-vertical $padding-base-horizontal*-1
   }
 
-  &-imageBlock {
+  &_imageBlock {
     position: relative;
     flex: 1 0 200px;
     margin: 0 $padding-base-horizontal $padding-large-vertical $padding-base-horizontal
   }
   
-  &-image {
+  &_image {
+    width: 100%;
+  }
+  
+  &_imageWrapper {
+    margin-bottom: $padding-base-vertical;
+  }
+
+  &_imageWrapper__clipped {
+    position: relative;
+    padding-top: 50%;
+    overflow: hidden;
+  }
+
+  &_imageWrapper__clipped &_image {
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
   }
 
-  &-description {
+  &_description {
+    position: relative;
     min-width: 300px;
     flex: 2 0 300px;
-    margin: 0 $padding-base-horizontal
+    margin: 0 $padding-base-horizontal;
+
+    &__hidden, &__hidden * {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    &__hidden * + * {
+      display: none;
+    }
   }
 
-  &-note {
+  &_note {
     display: inline-block;
     font-size: 10px;
     line-height: inherit;
   }
 
-  &-stressBox + &-stressBox {
+  &_stressBlock_boxes {
+    padding-bottom: $padding-large-vertical;
+  }
+
+  &_stressBox + &_stressBox {
     margin-left: 1rem;
   }
 
-  &-superscript {
+  &_superscript {
     position: absolute;
     font-size: 1.8rem;
     font-weight: bold;
