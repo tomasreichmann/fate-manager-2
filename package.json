@@ -1,26 +1,17 @@
 {
-  "name": "react-redux-universal-hot-example",
-  "description": "Example of an isomorphic (universal) webapp using react redux and hot reloading",
-  "author": "Erik Rasmussen <rasmussenerik@gmail.com> (http://github.com/erikras)",
+  "name": "fate-manager",
+  "description": "Your toolbox for running and playing FATE CORE RPG",
+  "author": "Tomas Reichmann <tomasreichmann@gmail.com> (http://github.com/tomasreichmann)",
   "license": "MIT",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/erikras/react-redux-universal-hot-example"
+    "url": "https://github.com/tomasreichmann/fate-manager-2"
   },
-  "homepage": "https://github.com/erikras/react-redux-universal-hot-example",
+  "homepage": "http://fate-manager.tomasreichmann.cz",
   "keywords": [
-    "react",
-    "isomorphic",
-    "universal",
-    "webpack",
-    "express",
-    "hot reloading",
-    "react-hot-reloader",
-    "redux",
-    "starter",
-    "boilerplate",
-    "babel"
+    "fate core RPG",
+    "RPG"
   ],
   "main": "bin/server.js",
   "scripts": {
