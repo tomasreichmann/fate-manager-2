@@ -6,12 +6,15 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
-import { getInitialUser, connectSheets, logout, connectSession, saveRoute } from 'redux/modules/firebase';
+import { myFirebaseConnect, updateDb, getInitialUser, connectSheets, logout, connectSession, saveRoute } from 'redux/modules/firebase';
 import { closeModal } from 'redux/modules/modal';
 import { push } from 'react-router-redux';
 import { Modal } from 'components';
 import config from '../../config';
 import autobind from 'autobind-decorator';
+
+const packageJson = require('../../../package.json');
+const { version = '0.0.0' } = packageJson;
 
 @connect(
   state => ({
@@ -23,6 +26,14 @@ import autobind from 'autobind-decorator';
   }),
   {getInitialUser, logout, pushState: push, connectSession, connectSheets, closeModal}
 )
+@myFirebaseConnect([
+  {
+    path: '/version',
+    adapter: (snapshot)=>(
+      { version: snapshot.val() }
+    ),
+  }
+])
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
@@ -43,20 +54,31 @@ export default class App extends Component {
     }),
   };
 
-  static contextTypes = {
-    store: PropTypes.object.isRequired
+  static defaultProps = {
+    version: null
   };
 
   constructor(props) {
     super(props);
   }
 
-
   componentWillMount() {
     this.props.getInitialUser();
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+    console.log('nextProps.version', nextProps.version);
+    const versionDifference = nextProps.version !== null ? this.compareVersions(nextProps.version, version) : 0;
+    console.log('versionDifference', versionDifference);
+
+    if ( versionDifference < 0 && process.env.NODE_ENV === 'production' ) {
+      console.log('updateDb', updateDb);
+      updateDb('version', version).then( ()=>(window.location.reload()) );
+    } else if (versionDifference > 0) {
+      window.location.reload();
+    }
+
     if (nextProps.session && nextProps.location.pathname && (this.props.location.pathname !== nextProps.location.pathname )) {
       saveRoute(nextProps.location.pathname);
     }
@@ -76,6 +98,20 @@ export default class App extends Component {
       // logout
       this.props.pushState('/login');
     }
+  }
+
+  compareVersions(serverVersion = '0.0.0', clientVersion = '0.0.0') {
+    console.log('serverVersion clientVersion', serverVersion, clientVersion);
+    const serverSubversions = serverVersion.split('.');
+    const clientSubversions = clientVersion.split('.');
+    for (let subversionIndex = 0; subversionIndex < serverSubversions.length; subversionIndex++) {
+      const serverSubversion = parseInt(serverSubversions[subversionIndex], 10);
+      const clientSubversion = parseInt(clientSubversions[subversionIndex], 10);
+      if (serverSubversion !== clientSubversion) {
+        return serverSubversion - clientSubversion;
+      }
+    }
+    return 0;
   }
 
   @autobind
