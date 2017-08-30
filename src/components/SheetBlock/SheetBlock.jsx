@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Input, FormGroup, Alert, Button } from 'components';
+import { Input, FormGroup, Alert, Button, Togglable } from 'components';
 import { Map } from 'immutable';
 import { intersperse } from '../../utils/utils';
 import classnames from 'classnames';
@@ -70,14 +70,18 @@ export default class SheetBlock extends Component {
     const headingRefresh = <span className={styles.SheetBlock_heading_refresh}>{refresh}</span>;
 
     // description ---
-    const descriptionBlock = description ? (<div className={styles.SheetBlock_description} >
+    const descriptionBlock = description ? (<Togglable
+      className={styles.SheetBlock_description}
+      label="toggle full description"
+      collapsedContent={<div
+        className={styles.SheetBlock_description__hidden}
+        dangerouslySetInnerHTML={{__html: marked(description)}}
+      />}
+    >
       <div
-        className={classnames({[styles.SheetBlock_description__hidden]: !this.state.showFullDescription})}
         dangerouslySetInnerHTML={{__html: marked(description)}}
       />
-      <Button link inline active={this.state.showFullDescription} onClick={this.toggleDescription} >toggle full description</Button>
-      <hr />
-    </div>) : null;
+    </Togglable>) : null;
 
     // image ---
     const imageBlock = image ? (<div className={styles.SheetBlock_imageBlock}>

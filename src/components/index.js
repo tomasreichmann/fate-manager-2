@@ -25,3 +25,4 @@ export Loading from './Loading/Loading';
 export Sounds from './Sounds/Sounds';
 export SoundsContent from './Sounds/SoundsContent';
 export Breadcrumbs from './Breadcrumbs/Breadcrumbs';
+export Togglable from './Togglable/Togglable';
