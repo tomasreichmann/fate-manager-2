@@ -9,7 +9,7 @@ import auth from './auth';
 import firebase from './firebase';
 import modal from './modal';
 import {reducer as form} from 'redux-form';
-import info from './info';
+import app from './app';
 import widgets from './widgets';
 
 export default combineReducers({
@@ -25,7 +25,7 @@ export default combineReducers({
     counter3: counter
   }),
 */
-  info,
+  app,
   pagination,
   widgets
 });

@@ -9,7 +9,7 @@ export default class Editable extends Component {
   static propTypes = {
     className: PropTypes.string,
     onSubmit: PropTypes.func,
-    onSubmitParams: PropTypes.object,
+    onSubmitParams: PropTypes.any,
     children: PropTypes.any,
     type: PropTypes.string,
     block: PropTypes.bool,

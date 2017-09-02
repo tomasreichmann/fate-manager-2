@@ -1,12 +1,12 @@
 import React, { Component, PropTypes, cloneElement } from 'react';
 import { Link } from 'react-router';
-import { Button, Input } from 'components';
+import { Button, Input, User } from 'components';
 import { updateDb } from 'redux/modules/firebase';
 import { Map } from 'immutable';
 import { injectProps } from 'relpers';
 import { intersperse } from 'utils/utils';
 import autobind from 'autobind-decorator';
-import { FaEdit, FaTrash } from 'react-icons/lib/fa';
+import { FaEdit, FaTrash, FaUserTimes } from 'react-icons/lib/fa';
 
 export default class SheetList extends Component {
 
@@ -86,11 +86,14 @@ export default class SheetList extends Component {
           <Input type="checkbox" handleChange={this.select} handleChangeParams={item.get('key')} value={!!selection.get(item.get('key'))}/>
         </div>
         <div className={styles['SheetList-item-title']} >
-          <Link to={'/sheet/' + encodeURIComponent(item.get('key'))} ><Button link className="text-left" block >{item.get('name')}</Button></Link>
+          <Link to={'/sheet/' + encodeURIComponent(item.get('key'))} ><Button link className="text-left" block >{item.get('npc') ? <FaUserTimes style={{marginRight: '1rem', fontSize: '1.2em'}} /> : null}{item.get('name')}</Button></Link>
+        </div>
+        <div className={styles['SheetList-item-user']} >
+          <User uid={item.get('createdBy')} />
         </div>
         <div className={styles['SheetList-item-actions']} >
           <Link to={'/sheet/' + encodeURIComponent(item.get('key')) + '/edit'} ><Button warning clipBottomLeft ><FaEdit /></Button></Link>
-          <Button noClip={actions.length} danger disabled={!user} onClick={ this.deleteSheet.bind(this, item.get('key')) } confirmMessage="Really delete?" ><FaTrash /></Button>
+          <Button noClip={!!actions.length} danger disabled={!user} onClick={ this.deleteSheet.bind(this, item.get('key')) } confirmMessage="Really delete?" ><FaTrash /></Button>
           { actions.map( (ActionComponent)=>( cloneElement(ActionComponent, { onClickParams: item.get('key') }) ) ) }
         </div>
       </div> ) ) }

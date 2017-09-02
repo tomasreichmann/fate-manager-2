@@ -13,6 +13,10 @@
     }
   }
 
+  h3 {
+    margin-top: 0;
+  }
+
   &::after {
     display: block;
     content: '';
@@ -29,16 +33,29 @@
     font-style: italic;
   }
 
-  &_imageDescriptionWrapper {
+  &_contentWrapper {
     display: flex;
     flex-wrap: wrap;
     margin: 0 $padding-base-horizontal*-1 $padding-large-vertical $padding-base-horizontal*-1
   }
+  
+  &_blockWrapper {
+    flex: 2 0 300px;
+    min-width: 300px;
+    display: flex;
+    flex-wrap: wrap;
+  }
 
+  &_contentBlock {
+    flex: 2 0 300px;
+    min-width: 300px;
+    padding: 0 $padding-base-horizontal $padding-large-vertical $padding-base-horizontal
+  }
+  
   &_imageBlock {
     position: relative;
     flex: 1 0 200px;
-    margin: 0 $padding-base-horizontal $padding-large-vertical $padding-base-horizontal
+    min-width: 200px;
   }
   
   &_image {
@@ -66,7 +83,6 @@
     position: relative;
     min-width: 300px;
     flex: 2 0 300px;
-    margin: 0 $padding-base-horizontal;
 
     &__hidden, &__hidden * {
       white-space: nowrap;
@@ -90,6 +106,18 @@
 
   &_stressBox + &_stressBox {
     margin-left: 1rem;
+  }
+
+  &_consequenceList {
+    display: flex;
+    flex-wrap: wrap;
+    margin: $padding-base-vertical*-1 $padding-base-horizontal*-1;
+  }
+
+  &_consequence {
+    flex: 1 0 200px;
+    min-width: 200px;
+    padding: $padding-base-vertical $padding-base-horizontal;
   }
 
   &_superscript {

@@ -9,12 +9,13 @@ import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import { sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
-import { Loading, Button, Alert, Editable, SheetList, FormGroup, Input, Breadcrumbs } from 'components';
+import { Loading, Button, Alert, Editable, SheetList, FormGroup, Input, Breadcrumbs, User } from 'components';
 import { FaPlus, FaChain, FaChainBroken, FaTrash} from 'react-icons/lib/fa';
 
 @connect(
   (state) => ({
     user: state.firebase.get('user'),
+    availablePlayers: state.app.get('users'),
     templates: state.firebase.getIn(['templates', 'list']),
   }),
   {
@@ -35,27 +36,19 @@ import { FaPlus, FaChain, FaChainBroken, FaTrash} from 'react-icons/lib/fa';
   },
   {
     path: '/sheets',
-    adapter: (snapshot)=>{
+    adapter: (snapshot, props)=>{
       let availableSheets = new OrderedMap();
-      snapshot.forEach( (child)=>{
-        availableSheets = availableSheets.set(child.val().key, fromJS(child.val()));
+      snapshot.forEach( (sheetSnapshot)=>{
+        const sheet = fromJS(sheetSnapshot.val());
+        console.log('sheet', sheet.toJS(), props.user.get('uid') );
+        if ( !sheet.get('private') || sheet.get('createdBy') === props.user.get('uid') ) {
+          availableSheets = availableSheets.set(sheet.get('key'), sheet );
+        }
       });
       console.log('CampaignOverview snapshot availableSheets', availableSheets.toJS() );
       return { availableSheets };
     },
     orderByChild: 'name',
-  },
-  {
-    path: '/users',
-    adapter: (snapshot)=>{
-      let availablePlayers = new OrderedMap();
-      snapshot.forEach( (child)=>{
-        availablePlayers = availablePlayers.set(child.val().uid, fromJS(child.val()));
-      });
-      console.log('CampaignOverview snapshot availablePlayers', availablePlayers.toJS() );
-      return { availablePlayers };
-    },
-    orderByChild: 'displayName',
   }
 ])
 export default class CampaignDetail extends Component {
@@ -157,6 +150,11 @@ export default class CampaignDetail extends Component {
   }) {
     const styles = require('./CampaignDetail.scss');
     const { sheetKeys = Map(), playerKeys = Map(), key: campaignKey, documents = Map(), description } = (campaign ? campaign.toObject() : {});
+
+    console.log('CampaignDetail!!! sheetKeys', sheetKeys.toJS() );
+    console.log('CampaignDetail!!! availableSheets', availableSheets.toJS() );
+
+
     const sheets = availableSheets.filter((sheet = Map())=>( sheetKeys.includes(sheet.get('key')) ));
     const players = availablePlayers.filter((player = Map())=>( playerKeys.includes(player.get('uid')) ));
     const CampaignDetailInstance = this;
@@ -188,7 +186,7 @@ export default class CampaignDetail extends Component {
       <div className={styles.CampaignDetail_documents_list} >
       { players.size ? players.sort(sortByKey('displayName')).map( (player, playerKey) => (
         <FormGroup key={playerKey} childTypes={['flexible', null]} >
-          <Link to={'/user/' + playerKey} ><Button link >{availablePlayers.getIn([playerKey, 'displayName']) || availablePlayers.getIn([playerKey, 'uid'])}</Button></Link>
+          <User uid={playerKey} />
           <Button warning onClick={ this.unassignPlayer } onClickParams={playerKey} confirmMessage="Really unassign?" ><FaChainBroken /></Button>
         </FormGroup>
       ) )
@@ -213,6 +211,11 @@ export default class CampaignDetail extends Component {
 
     const sheetsBlock = (<div className={styles.CampaignDetail_sheets} >
       <h2>Sheets</h2>
+      <p>
+        <Link to={'/sheet/' + sheets.filter( sheet => !sheet.get('npc') ).map(sheet => sheet.get('key')).join(';')} target="_blank"><Button link>All PC blocks</Button></Link>
+        {' '}
+        <Link to={'/sheet/' + sheets.filter( sheet => sheet.get('npc') ).map(sheet => sheet.get('key')).join(';')} target="_blank"><Button link>All NPC blocks</Button></Link>
+      </p>
       { sheets.size ? <SheetList
         sheets={sheets}
         selection={selectedSheets}

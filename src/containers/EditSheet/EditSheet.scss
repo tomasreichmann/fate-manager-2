@@ -2,27 +2,31 @@
 
 .EditSheet {
 
-  &-form {
+  &_form {
     display: flex;
     flex-wrap: wrap;
     align-items: stretch;
-    align-contents: stretch;
-    margin: $padding-large-vertical ($padding-base-horizontal * -1);
+    align-content: stretch;
+    margin: $padding-large-vertical 0;
   }
 
-  &-image {
+  &_refreshInput {
+    width: 130px;
+  }
+
+  &_image {
     width: 100%;
     max-width: 300px;
   }
 
-  &-imageBlock,
-  &-descriptionBlock,
-  &-aspectsBlock,
-  &-skillsBlock,
-  &-extrasBlock,
-  &-stuntsBlock,
-  &-stressBlock,
-  &-consequencesBlock {
+  &_imageBlock,
+  &_descriptionBlock,
+  &_aspectsBlock,
+  &_skillsBlock,
+  &_extrasBlock,
+  &_stuntsBlock,
+  &_stressBlock,
+  &_consequencesBlock {
     width: 100%;
     padding: $padding-large-vertical $padding-base-horizontal;
 
@@ -31,23 +35,25 @@
     }
   }
 
-  &-heading {
+  &_heading {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
     margin: 0 $padding-base-horizontal;
+    padding: 0;
 
     > div {
-      flex: 1 1 auto;
+      flex: 3 0 300px;
+      margin: $padding-base-vertical $padding-base-horizontal;
 
       + div {
-        flex: 0 1 auto;
-        margin-left: 2rem;
+        flex: 0 0 auto;
       }
     }
 
     label {
       display: flex;
-      align-items: baseline;
+      align-items: center;
 
       > div {
         flex: 1 1 auto;
@@ -56,20 +62,20 @@
     }
   }
 
-  &-skill {
+  &_skill {
     strong {
       margin-right: 2rem;
     }
   }
 
-  &-stressBox + &-stressBox {
+  &_stressBox + &_stressBox {
     margin-left: 1rem;
   }
 
-  &-actions {
+  &_actions {
     width: 100%;
     text-align: right;
-    margin-top: $padding-large-vertical;
+    margin: $padding-large-vertical $padding-base-horizontal;
 
     button {
       margin-top: $padding-base-vertical;
@@ -82,19 +88,19 @@
 @media screen and (min-width: $tabletPortrait) {
 
   .EditSheet {
-    &-aspectsBlock,
-    &-skillsBlock,
-    &-extrasBlock,
-    &-stuntsBlock,
-    &-stressBlock,
-    &-consequencesBlock {
+    &_aspectsBlock,
+    &_skillsBlock,
+    &_extrasBlock,
+    &_stuntsBlock,
+    &_stressBlock,
+    &_consequencesBlock {
       width: 50%;
     }
     
-    &-imageBlock {
+    &_imageBlock {
       width: 30%;
     }
-    &-imageBlock + &-descriptionBlock, {
+    &_imageBlock + &_descriptionBlock, {
       width: 70%;
     }
   }

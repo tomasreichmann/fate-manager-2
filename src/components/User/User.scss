@@ -1,0 +1,12 @@
+@import "../../theme/variables.scss";
+
+.User {
+  &_image {
+    margin-right: $padding-base-horizontal;
+    height: 2rem;
+    width: 2rem;
+    object-fit: cover;
+    object-position: 50% 0;
+    border-radius: 50%;
+  }
+}

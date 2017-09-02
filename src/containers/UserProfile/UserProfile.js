@@ -1,25 +1,31 @@
 import React, { Component, PropTypes } from 'react';
-// import { Link } from 'react-router';
 import Helmet from 'react-helmet';
 import { fromJS, Map, OrderedMap } from 'immutable';
-// import { Button, FormGroup, Input, Alert } from 'components';
-import { Editable, FormGroup, SheetList } from 'components';
-import { myFirebaseConnect, getUser, getUserInterface, updateDb } from '../../redux/modules/firebase';
+import { connect } from 'react-redux';
 import { injectProps } from 'relpers';
 import sortByKey from '../../helpers/sortByKey';
 import autobind from 'autobind-decorator';
 
+import { myFirebaseConnect, getUserInterface, updateDb } from '../../redux/modules/firebase';
+import { Editable, FormGroup, SheetList, Alert } from 'components';
+
+@connect(
+  (state, props) => {
+    const uid = props.params.key;
+    const currentUser = state.firebase.get('user');
+    const isCurrentUser = currentUser.get('uid') === uid;
+    const users = state.app.get('users');
+
+    console.log('currentUser', currentUser);
+
+    return {
+      uid,
+      user: users.get(uid),
+      isCurrentUser,
+    };
+  }
+)
 @myFirebaseConnect([
-  {
-    path: '/users/',
-    pathResolver: (path, props)=>(
-      path + props.params.key
-    ),
-    adapter: (snapshot)=>(
-      console.log('snapshot user', snapshot.val()),
-      { userData: fromJS(snapshot.val()) || undefined}
-    ),
-  },
   {
     path: '/sheets',
     orderByChild: 'createdBy',
@@ -38,33 +44,17 @@ export default class UserProfile extends Component {
 
   constructor(props) {
     super(props);
-
     this.userInterface = getUserInterface();
-
-    if (this.userInterface.uid === props.params.key) {
-      this.state = {
-        currentUser: true,
-        userInfo: getUser()
-      };
-    } else {
-      this.state = {
-        currentUser: false,
-      };
-    }
   }
 
   @autobind
   updateProfile(value, prop) {
     if (prop) {
       this.userInterface
-        .updateProfile({
-          [prop]: value
-        })
+        .updateProfile(this.props.user.set(prop, value).toJS())
         .then( ()=>{
-          this.setState({
-            userInfo: getUser()
-          });
-          updateDb('/users/' + this.userInterface.uid + '/' + prop, value);
+          console.log('user update successfull');
+          updateDb('/users/' + this.props.uid + '/' + prop, value);
         }, (error)=>(
           console.log('update failed', error)
         ) )
@@ -73,27 +63,39 @@ export default class UserProfile extends Component {
   }
 
   @injectProps
-  render({sheets = Map()}) {
-    const user = this.state.userInfo || this.props.userData || Map();
-    const isCurrentUser = this.state.currentUser;
-    console.log('UserProfile user', user.toJS(), 'isCurrentUser', isCurrentUser);
-    console.log('UserProfile sheets', sheets.toJS());
+  render({
+    sheets = Map(),
+    uid,
+    isCurrentUser,
+    user = new Map({uid: this.props.uid})
+  }) {
     const styles = require('./UserProfile.scss');
-    const name = (user.get('displayName') || user.get('uid'));
+    if (!uid) {
+      return (<div className={styles.UserProfile}>
+        <Helmet title={'User not found'}/>
+        <Alert>User not found</Alert>
+      </div>);
+    }
+    const name = (user.get('displayName') || uid);
 
     return (
       <div className={styles.UserProfile}>
         <Helmet title={ name }/>
-
         <div className="container">
+          <h1>{ isCurrentUser
+            ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'displayName'} placeholder="please fill in name" >
+                { name || ' ' }
+              </Editable>
+            : name
+          }</h1>
 
-          <h1>{ isCurrentUser ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'displayName'} placeholder="please fill in name" >{ name || ' ' }</Editable> : name }</h1>
+          {user.get('created') ? <p>Created {(new Date(user.get('created'))).toLocaleString()}</p> : null}
 
           <FormGroup className={ styles.UserProfile_photo } childTypes={[null, 'flexible']} >
             <img src={user.get('photoURL')} className={ styles.UserProfile_photo_img } />
             <div>
               <h3>Image URL</h3>
-              {isCurrentUser ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'photoURL'} >{ user.get('photoURL') || '-none-'}</Editable> : null }
+              {isCurrentUser ? <Editable type="text" onSubmit={this.updateProfile} onSubmitParams={'photoURL'} placeholder="https://i.imgur.com/VSCr50R.gif">{ user.get('photoURL') || '-none-'}</Editable> : null }
             </div>
           </FormGroup>
 
@@ -102,7 +104,6 @@ export default class UserProfile extends Component {
           <SheetList sheets={sheets} user={user} />
 
         </div>
-
       </div>
     );
   }

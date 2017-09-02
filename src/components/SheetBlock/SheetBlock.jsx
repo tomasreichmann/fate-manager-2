@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Input, FormGroup, Alert, Button, Togglable } from 'components';
+import { Input, FormGroup, Alert, Togglable } from 'components';
 import { Map } from 'immutable';
 import { intersperse } from '../../utils/utils';
 import classnames from 'classnames';
@@ -71,7 +71,7 @@ export default class SheetBlock extends Component {
 
     // description ---
     const descriptionBlock = description ? (<Togglable
-      className={styles.SheetBlock_description}
+      className={classnames(styles.SheetBlock_description, styles.SheetBlock_contentBlock)}
       label="toggle full description"
       collapsedContent={<div
         className={styles.SheetBlock_description__hidden}
@@ -84,16 +84,26 @@ export default class SheetBlock extends Component {
     </Togglable>) : null;
 
     // image ---
-    const imageBlock = image ? (<div className={styles.SheetBlock_imageBlock}>
-      <div className={classnames(styles.SheetBlock_imageWrapper, {[styles.SheetBlock_imageWrapper__clipped]: !this.state.showFullImage})} >
+    const imageBlock = image ? (<Togglable
+      className={classnames(styles.SheetBlock_imageBlock, styles.SheetBlock_contentBlock)}
+      label="toggle full image"
+      collapsedContent={
+        <div
+          key="imageWrapper"
+          className={classnames(styles.SheetBlock_imageWrapper, styles.SheetBlock_imageWrapper__clipped)}
+        ><img
+          src={image}
+          className={styles.SheetBlock_image}
+        /></div>
+      }
+    >
+      <div key="imageWrapper" className={styles.SheetBlock_imageWrapper}>
         <img
           src={image}
           className={styles.SheetBlock_image}
         />
       </div>
-      <Button link inline active={this.state.showImage} onClick={this.toggleImage} >toggle full image</Button>
-      <hr />
-    </div>) : null;
+    </Togglable>) : null;
 
     // aspects ---
     const {
@@ -113,27 +123,54 @@ export default class SheetBlock extends Component {
       }),
       ', ') : null
     ;
-    const aspectBlock = aspectElements ? (<div className={styles.SheetBlock_aspectsBlock} >
-      <h3>Aspects</h3>
+    const aspectBlock = aspectElements ? (<Togglable
+        className={classnames(styles.SheetBlock_aspectBlock, styles.SheetBlock_contentBlock)}
+        defaultCollapsed={false}
+        position="top"
+        label={<h3>Aspects</h3>}
+      >
       <p className={styles.SheetBlock_aspects}>{aspectElements}</p>
-    </div>) : null;
+    </Togglable>) : null;
 
     // skills ---
     const skillsElements = intersperse(skills.sort().reverse().reduce( ( elements, level, skillSlug ) => (
       level > 0 ? elements.concat([<span className={styles.SheetBlock_skill} >{template.getIn(['skills', skillSlug, 'name'])} {level}</span>]) : elements
     ), [] ), ', ');
-    const skillBlock = skillsElements ? <p className={styles.SheetBlock_skills}>{skillsElements}</p> : null;
+    const skillBlock = skillsElements ? <Togglable
+      className={classnames(styles.SheetBlock_skillsBlock, styles.SheetBlock_contentBlock)}
+      defaultCollapsed={false}
+      position="top"
+      label={<h3>Skills</h3>}
+    >
+      <p className={styles.SheetBlock_skills}>{skillsElements}</p>
+    </Togglable>
+    : null;
 
     // stunts ---
-    const stuntsBlock = stunts && stunts.size ? (<div><h3>Stunts</h3>{stunts.map( (stunt, index)=>(
+    const stuntsBlock = stunts && stunts.size ? (<Togglable
+      className={classnames(styles.SheetBlock_stuntsBlock, styles.SheetBlock_contentBlock)}
+      defaultCollapsed={false}
+      position="top"
+      label={<h3>Stunts</h3>}
+    >
+      {stunts.map( (stunt, index)=>(
         <p key={index} className={styles.SheetBlock_stunt}>{stunt}</p>
-      ) )}</div>) : null;
+      ) )}
+    </Togglable>) : null;
 
     // extras ---
-    const extrasBlock = extras && extras.size ? (<div><h3>Extras</h3><p>{extras.join(', ')}</p></div>) : null;
+    const extrasBlock = extras && extras.size ? (
+      <Togglable
+      className={classnames(styles.SheetBlock_extrasBlock, styles.SheetBlock_contentBlock)}
+      defaultCollapsed={false}
+      position="top"
+      label={<h3>Extras</h3>}
+    >
+      <p>{extras.join(', ')}</p>
+    </Togglable>) : null;
 
     // stress ---
-    const stressBlock = stress ? (<div className={styles.SheetBlock_stressBlock} >
+    const stressBlock = stress ? (<div className={classnames(styles.SheetBlock_stressBlock, styles.SheetBlock_contentBlock)} >
       <h2>Stress</h2>
       <FormGroup childTypes={['flexible', 'flexible']} >
         { template.get('stress').map( (stressLane, stressLaneIndex)=>(
@@ -151,35 +188,62 @@ export default class SheetBlock extends Component {
 
     // consequences ---
 
-    const consequencesBlock = consequences ? (<div className={styles.SheetBlock_consequencesBlock} >
+    const consequencesBlock = consequences ? (<div className={classnames(styles.SheetBlock_consequencesBlock, styles.SheetBlock_contentBlock)} >
       <h2>Consequences</h2>
-      { consequences.toMap().mapEntries( (consequenceEntry, consequenceIndex)=>{
-        const consequenceKey = consequenceEntry[0];
-        const consequence = consequenceEntry[1];
-        return [consequenceKey, (<FormGroup key={'consequence-' + consequenceKey} childTypes={['flexible', null]}>
-          <Input
-            label={template.getIn(['consequences', consequenceIndex, 'label']) || template.get('consequences').last().get('label') }
-            value={consequence}
-            handleChange={this.handleChange}
-            handleChangeParams={{key, path: 'consequences/' + consequenceKey}}
-            superscriptAfter={template.getIn(['consequences', consequenceIndex, 'value']) || template.get('consequences').last().get('value')}
-          />
-        </FormGroup>)];
-      } )}
+      <div className={styles.SheetBlock_consequenceList} >
+        { consequences.toMap().mapEntries( (consequenceEntry, consequenceIndex)=>{
+          const consequenceKey = consequenceEntry[0];
+          const consequence = consequenceEntry[1];
+          return [consequenceKey, (<FormGroup key={'consequence-' + consequenceKey} className={styles.SheetBlock_consequence} childTypes={['flexible', null]}>
+            <Input
+              label={template.getIn(['consequences', consequenceIndex, 'label']) || template.get('consequences').last().get('label') }
+              value={consequence}
+              handleChange={this.handleChange}
+              handleChangeParams={{key, path: 'consequences/' + consequenceKey}}
+              superscriptAfter={template.getIn(['consequences', consequenceIndex, 'value']) || template.get('consequences').last().get('value')}
+            />
+          </FormGroup>)];
+        } )}
+      </div>
     </div>) : null;
 
     return hasData ? (<div className={styles.SheetBlock} key={key} >
       <h2 className={styles.SheetBlock_name} ><span>{name}</span>{headingRefresh}</h2>
-      <div className={styles.SheetBlock_imageDescriptionWrapper} >
-        {imageBlock}
-        {descriptionBlock}
+      <div className={styles.SheetBlock_contentWrapper} >
+        {(imageBlock)
+          ? <div className={styles.SheetBlock_blockWrapper} >
+              {imageBlock}
+            </div>
+          : null
+        }
+        {(descriptionBlock)
+          ? <div className={styles.SheetBlock_blockWrapper} >
+              {descriptionBlock}
+            </div>
+          : null
+        }
+        {(aspectBlock || skillBlock)
+          ? <div className={styles.SheetBlock_blockWrapper} >
+              {aspectBlock}
+              {skillBlock}
+            </div>
+          : null
+        }
+        {(stuntsBlock || extrasBlock)
+          ? <div className={styles.SheetBlock_blockWrapper} >
+              {stuntsBlock}
+              {extrasBlock}
+            </div>
+          : null
+        }
+        {(stressBlock || consequencesBlock)
+          ? <div className={styles.SheetBlock_blockWrapper} >
+              {stressBlock}
+              {consequencesBlock}
+            </div>
+          : null
+        }
       </div>
-      {aspectBlock}
-      {skillBlock}
-      {stuntsBlock}
-      {extrasBlock}
-      {stressBlock}
-      {consequencesBlock}
       {children}
     </div>) : <Alert className={styles.SheetBlock_notFound} warning >No sheet to display</Alert>;
   }

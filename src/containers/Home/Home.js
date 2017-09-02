@@ -30,8 +30,7 @@ export default class Home extends Component {
           <p><Image mode1to1 imageUrl="https://vignette3.wikia.nocookie.net/roblox-medieval-warfare-reforged/images/0/08/Resized_courage-wolf-meme-generator-im-gonna-be-alpha-u-got-a-problem-with-that-cf9fdb.jpg/revision/latest?cb=20150311022101" /></p>
 
           <h2>TO DO</h2>
-          <p>Resolve createdBy displayName</p>
-          <p>Private sheets and documents</p>
+          <p>Private documents</p>
           <p>Read-only documents</p>
           <p>Template editing</p>
           <p>Display campaigns created and assigned on profile page</p>
@@ -39,8 +38,14 @@ export default class Home extends Component {
 
           <h2>Changelog</h2>
 
+          <h3>2/09/17</h3>
+          <p><strong>Private sheets<br />(Private sheets still listed in Sheets but hidden on campaign detail page unless created by current user)</strong></p>
+          <p><strong>SheetList shows CreatedBy user with link to profile</strong></p>
+          <p>NPC sheets - just a tag with an icon</p>
+          <p>SheetBlock style update</p>
+
           <h3>30/08/17</h3>
-          <p>App version checking with autoreload</p>
+          <p><strong>App version checking with autoreload</strong></p>
           <p>SheetBlocks cosmetic update, image, description clipping</p>
 
           <h3>27/08/17</h3>

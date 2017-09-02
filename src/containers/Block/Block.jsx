@@ -96,7 +96,7 @@ export default class Block extends Component {
         <div className={styles.Blocks_list}>
           <Loading show={!firebaseConnectDone} message="Loading" />
           { user ? null : <Alert className={styles.Blocks_notLoggedIn} warning >To use all features, you must <Link to={ '/login/' + encodeURIComponent('sheet/' + params.keys) } ><Button link >log in</Button></Link>.</Alert> }
-          { selectedSheets.map( (sheet)=>( <div className={styles.Blocks_item} key={sheet.get('key')} >
+          { firebaseConnectDone ? selectedSheets.map( (sheet)=>( <div className={styles.Blocks_item} key={sheet.get('key')} >
             <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
               <div className={styles.Blocks_actions} >
                 <Button primary disabled={!user} onClick={this.duplicateSheet} onClickParams={sheet} clipBottomLeft ><FaClone /></Button>
@@ -104,8 +104,8 @@ export default class Block extends Component {
                 <Button danger disabled={!user} onClick={ this.deleteSheet.bind(this, sheet.get('key')) } confirmMessage="Really delete forever?" ><FaTrash /></Button>
               </div>
             </SheetBlock>
-          </div> ) ) }
-          { selectedSheets.size === 0 ? <Alert warning >No sheet found</Alert> : null }
+          </div> ) ) : null }
+          { (firebaseConnectDone && selectedSheets.size === 0) ? <Alert warning >No sheet found</Alert> : null }
         </div>
       </div>
     );

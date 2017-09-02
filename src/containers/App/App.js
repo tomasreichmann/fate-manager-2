@@ -2,11 +2,13 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { IndexLink } from 'react-router';
 import { LinkContainer } from 'react-router-bootstrap';
+import { fromJS } from 'immutable';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Helmet from 'react-helmet';
 import { myFirebaseConnect, updateDb, getInitialUser, connectSheets, logout, connectSession, saveRoute } from 'redux/modules/firebase';
+import { updateApp } from 'redux/modules/app';
 import { closeModal } from 'redux/modules/modal';
 import { push } from 'react-router-redux';
 import { Modal } from 'components';
@@ -24,7 +26,7 @@ const { version = '0.0.0' } = packageJson;
     session: state.firebase.get('session'),
     sheetsLoaded: state.firebase.getIn(['sheets', 'loaded']),
   }),
-  {getInitialUser, logout, pushState: push, connectSession, connectSheets, closeModal}
+  {getInitialUser, logout, pushState: push, connectSession, connectSheets, closeModal, updateApp}
 )
 @myFirebaseConnect([
   {
@@ -32,12 +34,19 @@ const { version = '0.0.0' } = packageJson;
     adapter: (snapshot)=>(
       { version: snapshot.val() }
     ),
+  },
+  {
+    path: '/users',
+    adapter: (snapshot)=>(
+      { users: fromJS(snapshot.val()).map( (user) => ( user.delete('editedSheets') ) ) }
+    ),
   }
 ])
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
     user: PropTypes.object,
+    users: PropTypes.object,
     modal: PropTypes.object,
     session: PropTypes.object,
     sheetsLoaded: PropTypes.bool,
@@ -45,7 +54,7 @@ export default class App extends Component {
     pushState: PropTypes.func.isRequired,
     connectSession: PropTypes.func.isRequired,
     connectSheets: PropTypes.func.isRequired,
-    saveRoute: PropTypes.func.isRequired,
+    updateApp: PropTypes.func.isRequired,
     closeModal: PropTypes.func.isRequired,
     routeBeforeLogin: PropTypes.string,
     getInitialUser: PropTypes.func.isRequired,
@@ -64,6 +73,9 @@ export default class App extends Component {
 
   componentWillMount() {
     this.props.getInitialUser();
+    if (this.props.users) {
+      this.props.updateApp({ path: 'users', value: this.props.users});
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -72,8 +84,14 @@ export default class App extends Component {
     const versionDifference = nextProps.version !== null ? this.compareVersions(nextProps.version, version) : 0;
     console.log('versionDifference', versionDifference);
 
+    // save users to redux
+    if (nextProps.users && nextProps.users !== this.props.users) {
+      console.log('App componentWillReceiveProps nextProps.users', nextProps.users);
+      this.props.updateApp({ path: 'users', value: nextProps.users});
+    }
+
     if ( versionDifference < 0 && process.env.NODE_ENV === 'production' ) {
-      console.log('updateDb', updateDb);
+      console.log('updateDb', version);
       updateDb('version', version).then( ()=>(window.location.reload()) );
     } else if (versionDifference > 0) {
       window.location.reload();
@@ -164,7 +182,7 @@ export default class App extends Component {
               }
               {user ? <LinkContainer to={'/user'} onClick={this.collapseNavbar} >
                 <NavItem eventKey={9} >
-                  Profile: {user.get('displayName') || user.get('email')}
+                  {user.get('photoURL') ? <img src={user.get('photoURL')} className={styles.User_image} /> : null} {user.get('displayName') || user.get('email')}
                 </NavItem>
               </LinkContainer> : null }
             </Nav>
