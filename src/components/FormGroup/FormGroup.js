@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
+import classnames from 'classnames';
 
 export default class FormGroup extends Component {
   static propTypes = {
     className: PropTypes.string,
     alignRight: PropTypes.bool,
+    verticalCenter: PropTypes.bool,
     childTypes: PropTypes.array,
     children: PropTypes.any,
   };
@@ -19,21 +21,20 @@ export default class FormGroup extends Component {
       className = '',
       childTypes = [],
       alignRight,
+      verticalCenter,
       ...props
     } = this.props;
 
-    const modeCls = [];
-    if ( alignRight ) {
-      modeCls.push(styles['FormGroup--alignRight']);
-    }
-
-    const processedClassName = [styles.FormGroup].concat(modeCls, className.slice(' ')).join(' ');
+    const processedClassName = classnames(styles.FormGroup, {
+      [styles.FormGroup__alignRight]: alignRight,
+      [styles.FormGroup__verticalCenter]: verticalCenter,
+    }, className);
 
     return (<div className={processedClassName} {...props}>{
       ((typeof children.map === 'function') ? children : [children]).map( (child, childIndex)=>( <div key={'item-' + childIndex} className={
           (childTypes[childIndex] ? childTypes[childIndex].split(' ') : [])
-          .map( (type)=>( styles['FormGroup-item--' + type] ) )
-          .concat([styles['FormGroup-item']])
+          .map( (type)=>( styles['FormGroup_item__' + type] ) )
+          .concat([styles.FormGroup_item])
           .join(' ')
       } >{child}</div> ) )
     }</div>);

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import Textarea from 'react-textarea-autosize';
+import { RadioButtonGroup } from 'components';
 
 export default class Input extends Component {
   static propTypes = {
@@ -51,16 +52,26 @@ export default class Input extends Component {
       const checkedProperty = value !== undefined ? { checked: !!value } : { defaultChecked: false };
       // console.log('path', path, 'inputRef', inputRef, 'value', value, 'styles', styles, '...props', props );
       return (<input
-              {...props}
-              ref={inputRef}
-              className={classnames([styles.Input, styles['Input--checkbox']], inputClassName)}
-              type="checkbox"
-              key={path}
-              data-model={path}
-              {...checkedProperty}
-              onChange={this.handleChange}
-            />);
+        {...props}
+        ref={inputRef}
+        className={classnames([styles.Input, styles['Input--checkbox']], inputClassName)}
+        type="checkbox"
+        key={path}
+        data-model={path}
+        {...checkedProperty}
+        onChange={this.handleChange}
+      />);
     },
+    radioButtonGroup: ({path, value, styles, ...props})=>(
+      <RadioButtonGroup
+        {...props}
+        className={classnames([styles.Input, styles['Input--radioButtonGroup']])}
+        key={path}
+        data-model={path}
+        value={value}
+        onChange={(selectedValue) => { return this.handleChange({ target: { value: selectedValue }}); } }
+      />
+    ),
     select: ({path, options = [], inputRef, value, styles, inputClassName, ...props})=>(
       <select
         {...props}
@@ -109,16 +120,13 @@ export default class Input extends Component {
     } = this.props;
 
     const template = type in this.inputTemplates ? type : 'text';
-    const classNames = [styles.Label, styles['Label--' + type]].concat(className.split(' '));
-    if (inline) {
-      classNames.push(styles['Label--inline']);
-    }
-    if (inherit) {
-      classNames.push(styles['Label--inherit']);
-    }
+    const classNames = classnames(styles.Label, styles['Label--' + type], {
+      [styles['Label--inline']]: inline,
+      [styles['Label--inherit']]: inherit,
+    }, className);
 
-    return (<label className={classNames.join(' ')}>
-      {superscriptBefore ? <span className={[styles['Label-superscript'], styles['Label-superscript--before']].join(' ')} >{superscriptBefore}</span> : null}
+    return (<label className={classNames}>
+      {superscriptBefore ? <span className={classnames(styles['Label-superscript'], styles['Label-superscript--before'])} >{superscriptBefore}</span> : null}
       {label ? <span className={styles['Label-text']} >{label}</span> : null}
       <div className={styles['Label-inputWrap']} >
       {this.inputTemplates[template]({

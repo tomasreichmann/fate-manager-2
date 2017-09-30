@@ -1,6 +1,6 @@
 import React, { Component, PropTypes, cloneElement } from 'react';
 import { Link } from 'react-router';
-import { Button, Input, User } from 'components';
+import { Button, Input, User, Alert } from 'components';
 import { updateDb } from 'redux/modules/firebase';
 import { Map } from 'immutable';
 import { injectProps } from 'relpers';
@@ -80,7 +80,7 @@ export default class SheetList extends Component {
           <Input type="checkbox" handleChange={this.selectAll} value={filteredSelection.size === sheets.size} inline />&emsp;Select all
         </div>
       </div>
-      { sheets
+      { sheets.size ? sheets
           .map( (item)=>( <div className={styles['SheetList-item']} key={item.get('key')} >
         <div className={styles['SheetList-item-select']} >
           <Input type="checkbox" handleChange={this.select} handleChangeParams={item.get('key')} value={!!selection.get(item.get('key'))}/>
@@ -96,7 +96,7 @@ export default class SheetList extends Component {
           <Button noClip={!!actions.length} danger disabled={!user} onClick={ this.deleteSheet.bind(this, item.get('key')) } confirmMessage="Really delete?" ><FaTrash /></Button>
           { actions.map( (ActionComponent, actionIndex)=>( cloneElement(ActionComponent, { onClickParams: item.get('key'), key: actionIndex }) ) ) }
         </div>
-      </div> ) ) }
+      </div> ) ) : <Alert warning >No sheets</Alert> }
       { filteredSelection.size ? <div className={styles['SheetList-openAll']} >
         <Link to={'/sheet/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';')} >
           Open all selected: {

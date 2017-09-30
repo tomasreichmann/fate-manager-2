@@ -30,13 +30,16 @@ export default class Home extends Component {
           <p><Image mode1to1 imageUrl="https://vignette3.wikia.nocookie.net/roblox-medieval-warfare-reforged/images/0/08/Resized_courage-wolf-meme-generator-im-gonna-be-alpha-u-got-a-problem-with-that-cf9fdb.jpg/revision/latest?cb=20150311022101" /></p>
 
           <h2>TO DO</h2>
-          <p>Private documents</p>
           <p>Read-only documents</p>
           <p>Template editing</p>
-          <p>Display campaigns created and assigned on profile page</p>
-          <p>Sheet list paging</p>
+          <p>Sheet list paging and search</p>
 
           <h2>Changelog</h2>
+
+          <h3>30/09/17</h3>
+          <p><strong>Private campaigns, documents<br />(hidden in lists unless created by current user)</strong></p>
+          <p>Views, campaigns, documents show CreatedBy user with link to profile</p>
+          <p>Profiles list created campaigns</p>
 
           <h3>2/09/17</h3>
           <p><strong>Private sheets<br />(Private sheets still listed in Sheets but hidden on campaign detail page unless created by current user)</strong></p>

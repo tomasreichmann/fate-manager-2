@@ -10,7 +10,7 @@ import { injectProps } from 'relpers';
 import { sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
 import { Loading, Button, Alert, Editable, SheetList, FormGroup, Input, Breadcrumbs, User } from 'components';
-import { FaPlus, FaChain, FaChainBroken, FaTrash} from 'react-icons/lib/fa';
+import { FaPlus, FaChain, FaChainBroken, FaTrash, FaUserTimes } from 'react-icons/lib/fa';
 
 @connect(
   (state) => ({
@@ -237,13 +237,20 @@ export default class CampaignDetail extends Component {
     const documentsBlock = (<div className={styles.CampaignDetail_documents} >
       <h2>Documents</h2>
       <div className={styles.CampaignDetail_documents_list} >
-      { documents.size ? documents.map( (doc, docKey) => (
+      { documents.size ? documents.filter( (document) => {
+        return document.get('sharing') !== 'private' || user && document.get('createdBy') === user.get('uid');
+      }).map( (doc, docKey) => (
         <FormGroup key={docKey} childTypes={['flexible', null]} >
-          <Link to={'/campaign/' + campaignKey + '/document/' + docKey} ><Button link >{doc.get('name') || doc.get('key')}</Button></Link>
+          <Link to={'/campaign/' + campaignKey + '/document/' + docKey} >
+            <Button link >
+              {doc.get('sharing') === 'private' ? [<FaUserTimes />, ' '] : null}
+              {doc.get('name') || doc.get('key')}
+            </Button>
+          </Link>
           <Button danger onClick={ this.deleteDocument } onClickParams={docKey} confirmMessage="Really delete?" ><FaTrash /></Button>
         </FormGroup>
       ) )
-      : <Alert warning >No documents yet</Alert>}
+      : <Alert warning >No documents yet. Create one <Link to={'/campaign/' + campaignKey + '/new-document'} ><Button primary ><FaPlus /></Button></Link> </Alert>}
       </div>
       <FormGroup>
         <Link to={'/campaign/' + campaignKey + '/new-document'} ><Button primary ><FaPlus /></Button></Link>
@@ -263,7 +270,14 @@ export default class CampaignDetail extends Component {
             (<div className={ styles.CampaignDetail + '-content' }>
               <Helmet title={(campaign.get('name') || campaign.get('key'))}/>
               <h1><Editable block type="textarea" onSubmit={this.updateCampaign} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>
-              <p>Created on {(new Date(campaign.get('created'))).toLocaleString()} by <User uid={campaign.get('createdBy')} /></p>
+              <FormGroup verticalCenter >
+                <span>Created on {(new Date(campaign.get('created'))).toLocaleString()}</span>
+                <span>by&emsp;<User uid={campaign.get('createdBy')} /></span>
+                <Input inline type="radioButtonGroup" value={campaign.get('sharing') || 'public'} options={[
+                  { label: 'Public', value: 'public' },
+                  { label: 'Private', value: 'private' },
+                ]} handleChange={this.updateCampaign} handleChangeParams={{ path: 'sharing' }} />
+              </FormGroup>
               { descriptionBlock }
               { playersBlock }
               { sheetsBlock }

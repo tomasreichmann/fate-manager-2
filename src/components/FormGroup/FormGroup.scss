@@ -6,24 +6,28 @@
   align-items: flex-end;
   margin: $padding-base-vertical ($padding-base-horizontal * -1);
 
-  &--alignRight {
+  &__alignRight {
     justify-content: flex-end;
   }
 
-  &-item {
+  &__verticalCenter {
+    align-items: center;
+  }
+
+  &_item {
     min-width: 1px;
     padding: 0 $padding-base-horizontal;
     margin: $padding-base-vertical 0;
 
-    &--flexible {
+    &__flexible {
       flex: 1 1 100px;
     }
-    &--full {
+    &__full {
       width: 100%;
     }
   }
 
-  &-item--full + &-item {
+  &_item__full + &_item {
     margin-left: 0;
   }
 }

@@ -46,17 +46,22 @@ $inputBorder: 2px solid $inverse-bg;
     transform: translate(-50%, -50%);
     background-color: $inverse-bg;
   }
+
+  &--radioButtonGroup {
+    border: 0;
+    padding: 0;
+  }
 }
 
 .Label {
   position: relative;
-  vertical-align: middle;
   display: block;
   margin: 0;
   font-size: 1.5rem;
 
   &--inline {
     display: inline-flex;
+    vertical-align: middle;
   }
 
   &--inline &-text {

@@ -5,10 +5,10 @@ import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
-import { Loading, Button, Alert, FormGroup, User } from 'components';
+import { Loading, Button, Alert, FormGroup, CampaignList } from 'components';
 import { Link } from 'react-router';
 import autobind from 'autobind-decorator';
-import { FaPlus, FaTrash} from 'react-icons/lib/fa';
+import { FaPlus } from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -49,9 +49,6 @@ export default class CampaignOverview extends Component {
   @injectProps
   render({campaigns = new OrderedMap(), user, pushState, firebaseConnectDone}) {
     const styles = require('./CampaignOverview.scss');
-    const filteredCampaigns = campaigns.filter( (campaign) => {
-      return campaign.get('sharing') !== 'private' || user && campaign.get('createdBy') === user.uid;
-    } );
 
     return (
       <div className={ styles.CampaignOverview + ' container' }>
@@ -62,19 +59,7 @@ export default class CampaignOverview extends Component {
         { !user ? <Alert className={styles['Blocks-notLoggedIn']} warning >To use all features, you must <Link to="/login/campaigns" ><Button link >log in.</Button></Link></Alert> : null }
 
         <div className={ styles['CampaignOverview-list'] }>
-          { filteredCampaigns.size ? filteredCampaigns.map( (campaign)=>(
-            <FormGroup childTypes={['flexible', null]} className={styles['CampaignOverview-item']} key={campaign.get('key')} >
-              <div className={styles['CampaignOverview-item-title']} >
-                <Button link className="text-left" block onClick={pushState.bind(this, '/campaign/' + encodeURIComponent(campaign.get('key')) )} >{campaign.get('name') || campaign.get('key')}</Button>
-              </div>
-              <div className={styles['CampaignOverview-item-createdBy']} >
-                <User uid={campaign.get('createdBy')} />
-              </div>
-              <div className={styles['CampaignOverview-item-actions']} >
-                <Button danger disabled={!user} onClick={ this.deleteCampaign } onClickParams={campaign.get('key')} confirmMessage="Really delete?" ><FaTrash /></Button>
-              </div>
-            </FormGroup>
-          ) ) : <Alert warning >No campaigns available</Alert> }
+          <CampaignList campaigns={campaigns} user={user} />
         </div>
 
         <FormGroup childTypes={[null]}>
