@@ -38,12 +38,13 @@
     flex-wrap: wrap;
     margin: 0 $padding-base-horizontal*-1 $padding-large-vertical $padding-base-horizontal*-1
   }
-  
+
   &_blockWrapper {
     flex: 2 0 300px;
     min-width: 300px;
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
   }
 
   &_contentBlock {
@@ -51,17 +52,17 @@
     min-width: 300px;
     padding: 0 $padding-base-horizontal $padding-large-vertical $padding-base-horizontal
   }
-  
+
   &_imageBlock {
     position: relative;
     flex: 1 0 200px;
     min-width: 200px;
   }
-  
+
   &_image {
     width: 100%;
   }
-  
+
   &_imageWrapper {
     margin-bottom: $padding-base-vertical;
   }

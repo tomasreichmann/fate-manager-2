@@ -15,7 +15,7 @@ import { FaPlus, FaChain, FaChainBroken, FaTrash} from 'react-icons/lib/fa';
 @connect(
   (state) => ({
     user: state.firebase.get('user'),
-    availablePlayers: state.app.get('users'),
+    users: state.app.get('users'),
     templates: state.firebase.getIn(['templates', 'list']),
   }),
   {
@@ -26,11 +26,10 @@ import { FaPlus, FaChain, FaChainBroken, FaTrash} from 'react-icons/lib/fa';
   {
     path: '/campaigns/',
     pathResolver: (path, {params = {}})=>(
-      console.log('campaign pathResolver params', params),
       path + params.key
     ),
     adapter: (snapshot)=>{
-      console.log('campaign snapshot', snapshot, snapshot.val());
+      console.log('!!! snapshot.val()', fromJS(snapshot.val()) );
       return { campaign: fromJS(snapshot.val()) || undefined };
     },
   },
@@ -40,12 +39,10 @@ import { FaPlus, FaChain, FaChainBroken, FaTrash} from 'react-icons/lib/fa';
       let availableSheets = new OrderedMap();
       snapshot.forEach( (sheetSnapshot)=>{
         const sheet = fromJS(sheetSnapshot.val());
-        console.log('sheet', sheet.toJS(), props.user.get('uid') );
         if ( !sheet.get('private') || sheet.get('createdBy') === props.user.get('uid') ) {
           availableSheets = availableSheets.set(sheet.get('key'), sheet );
         }
       });
-      console.log('CampaignOverview snapshot availableSheets', availableSheets.toJS() );
       return { availableSheets };
     },
     orderByChild: 'name',
@@ -143,25 +140,19 @@ export default class CampaignDetail extends Component {
     campaign,
     templates,
     availableSheets = new OrderedMap(),
-    availablePlayers = new OrderedMap(),
+    users = new OrderedMap(),
     params = {},
     user,
     firebaseConnectDone,
   }) {
+    console.log('campaign', campaign);
+    console.log('this.props.campaign', this.props.campaign);
     const styles = require('./CampaignDetail.scss');
     const { sheetKeys = Map(), playerKeys = Map(), key: campaignKey, documents = Map(), description } = (campaign ? campaign.toObject() : {});
 
-    console.log('CampaignDetail!!! sheetKeys', sheetKeys.toJS() );
-    console.log('CampaignDetail!!! availableSheets', availableSheets.toJS() );
-
-
     const sheets = availableSheets.filter((sheet = Map())=>( sheetKeys.includes(sheet.get('key')) ));
-    const players = availablePlayers.filter((player = Map())=>( playerKeys.includes(player.get('uid')) ));
+    const players = users.filter((player = Map())=>( playerKeys.includes(player.get('uid')) ));
     const CampaignDetailInstance = this;
-    console.log('CampaignDetail sheets', sheetKeys.toJS(), sheets.toJS() );
-    console.log('CampaignDetail prop keys, props', Object.keys(this.props), this.props);
-    console.log('CampaignDetail campaign', campaign && campaign.toJS() );
-    console.log('CampaignDetail marked', marked );
 
     const descriptionBlock = (<div className={styles.CampaignDetail_description} >
       <Editable
@@ -176,7 +167,7 @@ export default class CampaignDetail extends Component {
       </Editable>
     </div>);
 
-    const assignPlayerOptions = availablePlayers
+    const assignPlayerOptions = users
       .filter( (availablePlayer)=>( !players.includes(availablePlayer) ) )
       .map( (availablePlayer)=>({ label: availablePlayer.get('displayName') || availablePlayer.get('uid'), value: availablePlayer.get('uid') } ) )
     ;
@@ -272,7 +263,7 @@ export default class CampaignDetail extends Component {
             (<div className={ styles.CampaignDetail + '-content' }>
               <Helmet title={(campaign.get('name') || campaign.get('key'))}/>
               <h1><Editable block type="textarea" onSubmit={this.updateCampaign} onSubmitParams={{ path: 'name' }} >{ campaign.get('name') || campaign.get('key') }</Editable></h1>
-              <p>Created on {(new Date(campaign.get('created'))).toString()} by: {campaign.get('createdBy')}</p>
+              <p>Created on {(new Date(campaign.get('created'))).toLocaleString()} by <User uid={campaign.get('createdBy')} /></p>
               { descriptionBlock }
               { playersBlock }
               { sheetsBlock }
