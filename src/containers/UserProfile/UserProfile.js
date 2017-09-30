@@ -7,7 +7,7 @@ import sortByKey from '../../helpers/sortByKey';
 import autobind from 'autobind-decorator';
 
 import { myFirebaseConnect, getUserInterface, updateDb } from '../../redux/modules/firebase';
-import { Editable, FormGroup, SheetList, Alert } from 'components';
+import { Editable, FormGroup, SheetList, CampaignList, Alert } from 'components';
 
 @connect(
   (state, props) => {
@@ -21,6 +21,7 @@ import { Editable, FormGroup, SheetList, Alert } from 'components';
     return {
       uid,
       user: users.get(uid),
+      currentUser: currentUser,
       isCurrentUser,
     };
   }
@@ -32,6 +33,14 @@ import { Editable, FormGroup, SheetList, Alert } from 'components';
     equalTo: (props) => ( props.params.key ),
     adapter: (snapshot)=>(
       { sheets: snapshot.val() ? fromJS(snapshot.val()).sort(sortByKey('name')) : new OrderedMap() }
+    ),
+  },
+  {
+    path: '/campaigns',
+    orderByChild: 'createdBy',
+    equalTo: (props) => ( props.params.key ),
+    adapter: (snapshot)=>(
+      { campaigns: snapshot.val() ? fromJS(snapshot.val()).sort(sortByKey('name')) : new OrderedMap() }
     ),
   }
 ])
@@ -64,9 +73,11 @@ export default class UserProfile extends Component {
 
   @injectProps
   render({
-    sheets = Map(),
+    sheets = new OrderedMap(),
+    campaigns = new OrderedMap(),
     uid,
     isCurrentUser,
+    currentUser = new Map(),
     user = new Map({uid: this.props.uid})
   }) {
     const styles = require('./UserProfile.scss');
@@ -99,9 +110,14 @@ export default class UserProfile extends Component {
             </div>
           </FormGroup>
 
-          <h2>Created sheets</h2>
+          <h2>Created campaigns</h2>
+          <CampaignList campaigns={campaigns.filter( (campaign) => ( campaign.get('createdBy') === user.get('uid') ) )} user={currentUser} />
 
-          <SheetList sheets={sheets} user={user} />
+          <h2>Player in campaigns</h2>
+          <CampaignList campaigns={campaigns.filter( (campaign) => ( !!campaign.getIn(['playerKeys', user.get('uid')]) ) )} user={currentUser} />
+
+          <h2>Created sheets</h2>
+          <SheetList sheets={sheets} user={currentUser} />
 
         </div>
       </div>
