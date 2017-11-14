@@ -6,12 +6,13 @@ import { Link } from 'react-router';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import autobind from 'autobind-decorator';
-import { Button, Alert, Editable, FormGroup, Input, User } from 'components';
+import { Button, Alert, Editable, FormGroup, User, AccessControls } from 'components';
 import { FaExternalLink } from 'react-icons/lib/fa';
 
 @connect(
   (state) => ({
-    user: state.firebase.get('user')
+    user: state.firebase.get('user'),
+    users: state.app.get('users')
   })
 )
 @myFirebaseConnect([
@@ -45,7 +46,8 @@ export default class ViewEdit extends Component {
   render({
     view,
     firebaseConnectDone,
-    params = {}
+    params = {},
+    users
   }) {
     const styles = require('./ViewEdit.scss');
     const { key, name } = (view ? view.toObject() : {});
@@ -65,11 +67,13 @@ export default class ViewEdit extends Component {
             <FormGroup verticalCenter >
               <span>Created on {(new Date(view.get('created'))).toLocaleString()}</span>
               <span>by&emsp;<User uid={view.get('createdBy')} /></span>
-              <Input inline type="radioButtonGroup" value={view.get('sharing') || 'public'} options={[
-                { label: 'Public', value: 'public' },
-                { label: 'Private', value: 'private' },
-              ]} handleChange={this.updateView} handleChangeParams={{ path: 'sharing' }} />
             </FormGroup>
+            <AccessControls
+              access={view.get('access')}
+              users={users}
+              onChange={this.updateView}
+              onChangeParams={{ path: 'access' }}
+            />
           </div>)
          : <Alert className={styles['ViewEdit-notFoung']} warning >View { params.key } not found. Back to <Link to="/views" ><Button primary >Views</Button></Link></Alert> }
       </div>

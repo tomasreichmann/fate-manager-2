@@ -6,6 +6,10 @@
   align-items: flex-end;
   margin: $padding-base-vertical ($padding-base-horizontal * -1);
 
+  &__noWrap {
+    flex-wrap: no-wrap;
+  }
+
   &__alignRight {
     justify-content: flex-end;
   }

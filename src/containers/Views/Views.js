@@ -2,13 +2,14 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import Helmet from 'react-helmet';
 import { Map, fromJS } from 'immutable';
-import { Loading, Button, FormGroup, Alert, Image } from 'components';
+import { Loading, Button, FormGroup, Alert, Image, User } from 'components';
 import { myFirebaseConnect, updateDb } from '../../redux/modules/firebase';
 import { openModal } from '../../redux/modules/modal';
 import { connect } from 'react-redux';
 import { injectProps } from 'relpers';
+import { resolveAccess, hasLimitedAccess, sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
-import { FaQrcode, FaEdit, FaTrash } from 'react-icons/lib/fa';
+import { FaQrcode, FaEdit, FaTrash, FaEyeSlash } from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -55,8 +56,6 @@ export default class Views extends Component {
   render({views = Map(), user, firebaseConnectDone}) {
     const styles = require('./Views.scss');
 
-    console.log('Views render', views && views.toJS() );
-
     return (
       <div className={styles.Views}>
         <Helmet title="Views"/>
@@ -67,14 +66,34 @@ export default class Views extends Component {
           { (!user && firebaseConnectDone) ? <Alert className={styles.Views_notLoggedIn} warning >To use all features, you must <Link to="/login/views" ><Button link >log in.</Button></Link></Alert> : null }
 
           <div className={styles.Views_list} >
-            { views.size ? views.map( (view, viewKey)=>(
-              <FormGroup childTypes={['flexible']} >
-                <Link to={ '/view/' + viewKey } ><Button block className="text-left" link>{view.get('name') || viewKey}</Button></Link>
-                <Button info onClick={this.openQrModal} onClickParams={viewKey} ><FaQrcode /></Button>
-                <Link to={ '/view/' + viewKey + '/edit' } ><Button warning ><FaEdit /></Button></Link>
-                <Button disabled={!user} onClick={this.deleteView} onClickParams={viewKey} danger confirmMessage="Really remove view forever?" ><FaTrash /></Button>
-              </FormGroup>
-            ) ) : <Alert>No views yet</Alert> }
+            { views.size ? views.filter( (view) => {
+              return resolveAccess(view, user.get('uid'));
+            })
+            .sort( sortByKey('name') )
+            .map( (view, viewKey)=>{
+              const viewColumns = [
+                <Link to={ '/view/' + viewKey } >
+                  <Button block className="text-left" link>
+                    {hasLimitedAccess(view) ? [<FaEyeSlash key="icon" />, ' '] : null}
+                    {view.get('name') || viewKey}
+                  </Button>
+                </Link>,
+                <div className={styles.Views_item_created} >
+                  {(new Date(view.get('created'))).toLocaleString()}
+                </div>,
+                <User uid={view.get('createdBy')} />,
+                <Button info onClick={this.openQrModal} onClickParams={viewKey} ><FaQrcode /></Button>,
+              ];
+
+              if (view.get('createdBy') === user.get('uid')) {
+                viewColumns.push(
+                  <Link to={ '/view/' + viewKey + '/edit' } ><Button warning ><FaEdit /></Button></Link>,
+                  <Button danger onClick={ this.deleteView } onClickParams={viewKey} confirmMessage="Really remove view forever?" ><FaTrash /></Button>
+                );
+              }
+
+              return (<FormGroup childTypes={['flexible']} children={viewColumns}/>);
+            }) : <Alert>No views yet</Alert> }
           </div>
 
           <hr />

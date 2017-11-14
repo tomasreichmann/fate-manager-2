@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
-import { Button, Image, FormGroup } from 'components';
+import { Button, Image, FormGroup, Alert } from 'components';
 import { Link } from 'react-router';
 import { FaDesktop, FaFileText, FaFlag } from 'react-icons/lib/fa';
 
@@ -30,11 +30,24 @@ export default class Home extends Component {
           <p><Image mode1to1 imageUrl="https://vignette3.wikia.nocookie.net/roblox-medieval-warfare-reforged/images/0/08/Resized_courage-wolf-meme-generator-im-gonna-be-alpha-u-got-a-problem-with-that-cf9fdb.jpg/revision/latest?cb=20150311022101" /></p>
 
           <h2>TO DO</h2>
+          <p>Access control user groups</p>
+          <p>Document outline and navigation</p>
           <p>Read-only documents</p>
           <p>Template editing</p>
           <p>Sheet list paging and search</p>
 
           <h2>Changelog</h2>
+
+          <h3>14/11/17</h3>
+          <Alert warning>
+            <p><strong>Updated access controls</strong></p>
+            <p>Campaigns, Documents, Sheets, Views now support acccess controls.</p>
+            <p>That means you can set the access rights to "everyone", so everyone can see them in lists. Or "just me", so only you can see them. For both options, you can add as many exceptions as you want. That means you can share items with a list of users by selecting: "Just me, exceptions: User1, User2" or hide items from specific users by selecting: Everybody, exceptions: User1, User2.</p>
+            <p>Items that were private are left private untill previous version is deprecated in the next release</p>
+            <p><strong>So make sure to review your access settings on all private items and set them using the new UI "Access Rights" panel.</strong></p>
+          </Alert>
+          <p>Campaigns, Documents, Sheets, Views are now sorted alphabetically</p>
+          <p>Campaigns, Documents, Sheets, Views now list creation date and author</p>
 
           <h3>30/09/17</h3>
           <p><strong>Private campaigns, documents<br />(hidden in lists unless created by current user)</strong></p>

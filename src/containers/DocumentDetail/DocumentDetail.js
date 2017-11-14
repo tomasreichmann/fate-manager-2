@@ -8,14 +8,15 @@ import { myFirebaseConnect, updateDb, pushToDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import { sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
-import { Loading, Button, Alert, Editable, FormGroup, Input, Breadcrumbs, User } from 'components';
+import { Loading, Button, Alert, Editable, FormGroup, Input, Breadcrumbs, User, AccessControls } from 'components';
 import contentComponents from 'contentComponents';
 import { FaChevronDown, FaChevronUp, FaTrash, FaEye, FaPlus, FaExternalLink, FaEraser} from 'react-icons/lib/fa';
 import { MdCast } from 'react-icons/lib/md';
 
 @connect(
   (state) => ({
-    user: state.firebase.get('user')
+    user: state.firebase.get('user'),
+    users: state.app.get('users')
   }),
   {
     pushState: push
@@ -41,11 +42,11 @@ import { MdCast } from 'react-icons/lib/md';
     path: '/views',
     adapter: (snapshot)=>{
       console.log('snapshot views', snapshot, snapshot.val());
-      const views = fromJS(snapshot.val()) || undefined;
+      const views = fromJS(snapshot.val()).sort(sortByKey('name')) || undefined;
       return {
-        views: views,
+        views,
       };
-    },
+    }
   }
 ])
 export default class DocumentDetail extends Component {
@@ -151,6 +152,7 @@ export default class DocumentDetail extends Component {
     campaign,
     params = {},
     firebaseConnectDone,
+    users,
   }) {
     const styles = require('./DocumentDetail.scss');
 
@@ -244,11 +246,14 @@ export default class DocumentDetail extends Component {
               <FormGroup verticalCenter >
                 <span>Created on {(new Date(doc.get('created'))).toLocaleString()}</span>
                 <span>by&emsp;<User uid={doc.get('createdBy')} /></span>
-                <Input inline type="radioButtonGroup" value={doc.get('sharing') || 'public'} options={[
-                  { label: 'Public', value: 'public' },
-                  { label: 'Private', value: 'private' },
-                ]} handleChange={this.updateDocument} handleChangeParams={{ path: 'sharing' }} />
               </FormGroup>
+              <AccessControls
+                access={doc.get('access')}
+                users={users}
+                onChange={this.updateDocument}
+                onChangeParams={{ path: 'access' }}
+              />
+              <hr />
               { contentBlock }
             </div>)
           : <Alert className={styles['DocumentDetail-notFoung']} warning >Document { params.key } not found. Back to <Link to="/campaigns" ><Button link>Campaign Overview</Button></Link></Alert> }

@@ -29,3 +29,4 @@ export SoundsContent from './Sounds/SoundsContent';
 export Breadcrumbs from './Breadcrumbs/Breadcrumbs';
 export Togglable from './Togglable/Togglable';
 export User from './User/User';
+export AccessControls from './AccessControls/AccessControls';

@@ -46,6 +46,9 @@ export default class Button extends Component {
   onClickHandler(event) {
     clearTimeout(this.state.timeout);
     const args = this.props.onClickParams ? [this.props.onClickParams, event] : [event];
+    if (this.props.onClick) {
+      event.preventDefault();
+    }
     this.props.onClick(...args);
     this.setState({
       confirmIsShown: false,

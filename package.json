@@ -3,7 +3,7 @@
   "description": "Your toolbox for running and playing FATE CORE RPG",
   "author": "Tomas Reichmann <tomasreichmann@gmail.com> (http://github.com/tomasreichmann)",
   "license": "MIT",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/tomasreichmann/fate-manager-2"

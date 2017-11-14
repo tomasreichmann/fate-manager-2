@@ -9,9 +9,11 @@ export function seq(count) {
 
 export function sortByKey(key) {
   return (itemA, itemB) => {
-    if (itemA.get(key) < itemB.get(key)) { return -1; }
-    if (itemA.get(key) > itemB.get(key)) { return 1; }
-    if (itemA.get(key) === itemB.get(key)) { return 0; }
+    const normalizedA = itemA.get ? itemA.toJS() : itemA;
+    const normalizedB = itemB.get ? itemB.toJS() : itemB;
+    if (normalizedA[key] < normalizedB[key]) { return -1; }
+    if (normalizedA[key] > normalizedB[key]) { return 1; }
+    if (normalizedA[key] === normalizedB[key]) { return 0; }
   };
 }
 
@@ -29,4 +31,30 @@ export function intersperse(arr, sep) {
   return arr.slice(1).reduce((output, item)=>{
     return output.concat([sep, item]);
   }, [arr[0]]);
+}
+
+export function resolveAccess(document, uid) {
+  const isPublic = document.get('access') === undefined
+    || !!document.getIn(['access', 'isPublic']);
+  const isAuthor = document.get('createdBy') === uid;
+
+  // TODO: remove after trial period
+  if ((document.get('sharing') === 'private' || document.get('private') === true) && document.get('access') === undefined) {
+    return isAuthor;
+  }
+  return isAuthor
+    || (isPublic && !document.getIn(['access', 'exceptions', uid]))
+    || (!isPublic && document.getIn(['access', 'exceptions', uid]));
+}
+
+export function hasLimitedAccess(document) {
+  // TODO: remove after trial period
+  if ((document.get('sharing') === 'private' || document.get('private') === true) && document.get('access') === undefined) {
+    return true;
+  }
+
+  const exceptions = document.getIn(['access', 'exceptions']) || new Map();
+  const isPublic = document.get('access') === undefined
+    || !!document.getIn(['access', 'isPublic']);
+  return exceptions.size > 0 || !isPublic;
 }

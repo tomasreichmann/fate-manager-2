@@ -1,0 +1,14 @@
+@import "../../theme/variables.scss";
+
+.CampaignDetail {
+    &_document_created {
+        display: none;
+    }
+}
+@media (min-width: $tabletPortrait) {
+    .CampaignDetail {
+        &_document_created {
+            display: block;
+        }
+    }
+}

@@ -1,0 +1,21 @@
+@import "../../theme/variables.scss";
+
+.AccessControls {
+    &_label {
+        margin: 0;
+        padding: $padding-base-vertical $padding-large-horizontal $padding-base-vertical $padding-base-horizontal;
+    }
+    &_exceptions {
+        font-weight: bold;
+        display: inline-block;
+        padding: $padding-base-vertical 0;
+    }
+    &_userItem {
+        display: inline-block;
+        padding: 0 $padding-base-horizontal;
+    }
+    &_user {
+        display: inline-block;
+        padding-right: $padding-base-horizontal;
+    }
+}

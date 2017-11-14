@@ -6,6 +6,7 @@ export default class FormGroup extends Component {
     className: PropTypes.string,
     alignRight: PropTypes.bool,
     verticalCenter: PropTypes.bool,
+    noWrap: PropTypes.bool,
     childTypes: PropTypes.array,
     children: PropTypes.any,
   };
@@ -22,12 +23,14 @@ export default class FormGroup extends Component {
       childTypes = [],
       alignRight,
       verticalCenter,
+      noWrap,
       ...props
     } = this.props;
 
     const processedClassName = classnames(styles.FormGroup, {
       [styles.FormGroup__alignRight]: alignRight,
       [styles.FormGroup__verticalCenter]: verticalCenter,
+      [styles.FormGroup__noWrap]: noWrap,
     }, className);
 
     return (<div className={processedClassName} {...props}>{

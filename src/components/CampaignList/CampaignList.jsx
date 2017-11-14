@@ -4,7 +4,8 @@ import { Button, User, FormGroup, Alert } from 'components';
 import { updateDb } from 'redux/modules/firebase';
 import { OrderedMap } from 'immutable';
 import { injectProps } from 'relpers';
-import { FaTrash, FaUserTimes } from 'react-icons/lib/fa';
+import { resolveAccess, hasLimitedAccess } from 'utils/utils';
+import { FaTrash, FaEyeSlash } from 'react-icons/lib/fa';
 
 export default class CampaignList extends Component {
 
@@ -28,24 +29,27 @@ export default class CampaignList extends Component {
     const styles = require('./CampaignList.scss');
 
     const filteredCampaigns = campaigns.filter( (campaign) => {
-      return campaign.get('sharing') !== 'private' || user && campaign.get('createdBy') === user.get('uid');
+      return resolveAccess(campaign, user.get('uid'));
     } );
 
     return (<div className={styles.CampaignList} >
       { filteredCampaigns.size ? filteredCampaigns.map( (campaign)=>(
-        <FormGroup childTypes={['flexible', null]} className={styles['CampaignOverview-item']} key={campaign.get('key')} >
-          <div className={styles['CampaignOverview-item-title']} >
+        <FormGroup childTypes={['flexible', null]} className={styles.CampaignList_item} key={campaign.get('key')} >
+          <div className={styles.CampaignList_item_title} >
             <Link to={'/campaign/' + encodeURIComponent(campaign.get('key'))} >
               <Button link className="text-left" block >
-                {campaign.get('sharing') === 'private' ? [<FaUserTimes />, ' '] : null}
+                {hasLimitedAccess(campaign) ? [<FaEyeSlash key="icon" />, ' '] : null}
                 {campaign.get('name') || campaign.get('key')}
               </Button>
             </Link>
           </div>
-          <div className={styles['CampaignOverview-item-createdBy']} >
+          <div className={styles.CampaignList_item_created} >
+            {(new Date(campaign.get('created'))).toLocaleString()}
+          </div>
+          <div className={styles.CampaignList_item_createdBy} >
             <User uid={campaign.get('createdBy')} />
           </div>
-          <div className={styles['CampaignOverview-item-actions']} >
+          <div className={styles.CampaignList_item_actions} >
             <Button danger disabled={!user || user.get('uid') !== campaign.get('createdBy')} onClick={ this.deleteCampaign } onClickParams={campaign.get('key')} confirmMessage="Really delete?" ><FaTrash /></Button>
           </div>
         </FormGroup>

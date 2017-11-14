@@ -3,8 +3,18 @@
 .Views {
   padding-top: 1rem;
 
+  &_item_created {
+    display: none;
+  }
+
   &_qr.Views_qr {
     width: 300px;
     max-width: 80vmin;
+  }
+
+  @media (min-width: $tabletPortrait) {
+    &_item_created {
+        display: block;
+    }
   }
 }

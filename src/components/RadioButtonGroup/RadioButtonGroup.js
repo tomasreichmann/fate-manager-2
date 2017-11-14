@@ -72,7 +72,6 @@ export default class RadioButtonGroup extends Component {
         } else if ( optionIndex < options.length - 1 ) {
           propsWithActive.noClip = true;
         }
-        console.log('value === this.state.value', value === this.state.value, value, this.state.value);
         return <Button {...propsWithActive} onClick={this.onChange} onClickParams={{ value, onChangeParams }} key={optionIndex} >{ label || value }</Button>;
       } ) }
     </span>);

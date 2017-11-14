@@ -7,16 +7,16 @@ import { push } from 'react-router-redux';
 import marked from 'marked';
 import { myFirebaseConnect, updateDb } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
-import { sortByKey } from 'utils/utils';
+import { sortByKey, resolveAccess, hasLimitedAccess } from 'utils/utils';
 import autobind from 'autobind-decorator';
-import { Loading, Button, Alert, Editable, SheetList, FormGroup, Input, Breadcrumbs, User } from 'components';
-import { FaPlus, FaChain, FaChainBroken, FaTrash, FaUserTimes } from 'react-icons/lib/fa';
+import { Loading, Button, Alert, Editable, SheetList, FormGroup, Input, Breadcrumbs, User, AccessControls } from 'components';
+import { FaPlus, FaChain, FaChainBroken, FaTrash, FaEyeSlash } from 'react-icons/lib/fa';
 
 @connect(
   (state) => ({
     user: state.firebase.get('user'),
-    users: state.app.get('users'),
-    templates: state.firebase.getIn(['templates', 'list']),
+    users: state.app.get('users').sort(sortByKey('displayName')),
+    templates: state.firebase.getIn(['templates', 'list']).sort(sortByKey('name')),
   }),
   {
     pushState: push,
@@ -151,7 +151,9 @@ export default class CampaignDetail extends Component {
     const { sheetKeys = Map(), playerKeys = Map(), key: campaignKey, documents = Map(), description } = (campaign ? campaign.toObject() : {});
 
     const sheets = availableSheets.filter((sheet = Map())=>( sheetKeys.includes(sheet.get('key')) ));
-    const players = users.filter((player = Map())=>( playerKeys.includes(player.get('uid')) ));
+    const players = users
+      .filter((player = Map())=>( playerKeys.includes(player.get('uid')) ))
+      .map( player => player.set('displayName', player.get('displayName') || player.get('uid') ) );
     const CampaignDetailInstance = this;
 
     const descriptionBlock = (<div className={styles.CampaignDetail_description} >
@@ -170,6 +172,7 @@ export default class CampaignDetail extends Component {
     const assignPlayerOptions = users
       .filter( (availablePlayer)=>( !players.includes(availablePlayer) ) )
       .map( (availablePlayer)=>({ label: availablePlayer.get('displayName') || availablePlayer.get('uid'), value: availablePlayer.get('uid') } ) )
+      .sort(sortByKey('label'))
     ;
 
     const playersBlock = (<div className={styles.CampaignDetail_players} >
@@ -237,17 +240,28 @@ export default class CampaignDetail extends Component {
     const documentsBlock = (<div className={styles.CampaignDetail_documents} >
       <h2>Documents</h2>
       <div className={styles.CampaignDetail_documents_list} >
-      { documents.size ? documents.filter( (document) => {
-        return document.get('sharing') !== 'private' || user && document.get('createdBy') === user.get('uid');
-      }).map( (doc, docKey) => (
+      { documents.size ? documents
+      .filter( (document) => {
+        return document.get('sharing') === 'public'
+          ? resolveAccess(document, user.get('uid'))
+          : document.get('sharing') !== 'private' || user && document.get('createdBy') === user.get('uid');
+      })
+      .sort( sortByKey('name') ).map( (doc, docKey) => (
         <FormGroup key={docKey} childTypes={['flexible', null]} >
           <Link to={'/campaign/' + campaignKey + '/document/' + docKey} >
             <Button link >
-              {doc.get('sharing') === 'private' ? [<FaUserTimes />, ' '] : null}
+              {hasLimitedAccess(doc) ? [<FaEyeSlash />, ' '] : null}
               {doc.get('name') || doc.get('key')}
             </Button>
           </Link>
-          <Button danger onClick={ this.deleteDocument } onClickParams={docKey} confirmMessage="Really delete?" ><FaTrash /></Button>
+          <div className={styles.CampaignDetail_document_created} >
+            {(new Date(doc.get('created'))).toLocaleString()}
+          </div>
+          <User uid={doc.get('createdBy')} />
+          { doc.get('createdBy') === user.get('uid')
+            ? <Button danger onClick={ this.deleteDocument } onClickParams={docKey} confirmMessage="Really delete?" ><FaTrash /></Button>
+            : null
+          }
         </FormGroup>
       ) )
       : <Alert warning >No documents yet. Create one <Link to={'/campaign/' + campaignKey + '/new-document'} ><Button primary ><FaPlus /></Button></Link> </Alert>}
@@ -273,11 +287,14 @@ export default class CampaignDetail extends Component {
               <FormGroup verticalCenter >
                 <span>Created on {(new Date(campaign.get('created'))).toLocaleString()}</span>
                 <span>by&emsp;<User uid={campaign.get('createdBy')} /></span>
-                <Input inline type="radioButtonGroup" value={campaign.get('sharing') || 'public'} options={[
-                  { label: 'Public', value: 'public' },
-                  { label: 'Private', value: 'private' },
-                ]} handleChange={this.updateCampaign} handleChangeParams={{ path: 'sharing' }} />
               </FormGroup>
+              <AccessControls
+                access={campaign.get('access')}
+                users={users}
+                onChange={this.updateCampaign}
+                onChangeParams={{ path: 'access' }}
+              />
+              <hr />
               { descriptionBlock }
               { playersBlock }
               { sheetsBlock }

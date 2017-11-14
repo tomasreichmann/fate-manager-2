@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
 import { push } from 'react-router-redux';
 import { connect } from 'react-redux';
-import { Alert, Input, Button, FormGroup, Editable, Breadcrumbs } from 'components';
+import { Alert, Input, Button, FormGroup, Editable, Breadcrumbs, AccessControls } from 'components';
 import { Map } from 'immutable';
 import { updateSession, pushToSession, updateDb, discardSheetUpdates } from 'redux/modules/firebase';
 import autobind from 'autobind-decorator';
@@ -14,6 +14,7 @@ import { FaPlus, FaMinus, FaSignOut, FaEraser, FaCheck, FaTrash} from 'react-ico
     sheets: state.firebase.getIn(['sheets', 'list']),
     templates: state.firebase.getIn(['templates', 'list']),
     editedSheets: state.firebase.getIn(['session', 'editedSheets']),
+    users: state.app.get('users'),
   }),
   {
     pushState: push,
@@ -33,6 +34,7 @@ export default class EditSheet extends Component {
     discardSheetUpdates: PropTypes.func.isRequired,
     params: PropTypes.object.isRequired,
     templates: PropTypes.object,
+    users: PropTypes.object,
   };
 
   static contextTypes = {
@@ -123,8 +125,16 @@ export default class EditSheet extends Component {
     event.preventDefault();
   }
 
+  updateSheet(value, {path}) {
+    console.log('value', value);
+    console.log('path', path);
+    const sessionPath = 'editedSheets/' + this.props.params.key + '/' + path;
+    console.log('sessionPath', sessionPath);
+    this.props.updateSession(sessionPath, value);
+  }
+
   render() {
-    const {params, editedSheets, templates} = this.props;
+    const {params, editedSheets, templates, users} = this.props;
     const styles = require('./EditSheet.scss');
     const key = params.key;
 
@@ -283,17 +293,6 @@ export default class EditSheet extends Component {
               <Input
                 inline
                 type="checkbox"
-                value={sheet.get('private')}
-                className={styles.EditSheet_privateInput}
-                label="Private"
-                handleChange={this.handleChange}
-                handleChangeParams={{path: 'private'}}
-              />
-            </div>
-            <div>
-              <Input
-                inline
-                type="checkbox"
                 value={sheet.get('npc')}
                 className={styles.EditSheet_npcInput}
                 label="NPC"
@@ -313,6 +312,13 @@ export default class EditSheet extends Component {
               />
             </div>
           </h2>
+          <AccessControls
+            className={styles.EditSheet_accessBlock}
+            access={sheet.get('access')}
+            users={users}
+            onChange={this.updateSheet}
+            onChangeParams={{ path: 'access' }}
+          />
           {imageBlock}
           {descriptionBlock}
           {aspectsBlock}

@@ -1,4 +1,13 @@
 @import "../../theme/variables.scss";
 
 .CampaignList {
+    &_item_created {
+        display: none;
+    }
+
+    @media (min-width: $tabletPortrait) {
+        &_item_created {
+            display: block;
+        }
+    }
 }

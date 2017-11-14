@@ -11,7 +11,7 @@ import { Link } from 'react-router';
     users: (typeof state.app === 'object' && 'get' in state.app) ? state.app.get('users') : console.error('state.app', state.app) && new Map(),
   })
 )
-export default class BlockContent extends Component {
+export default class User extends Component {
   static propTypes = {
     uid: PropTypes.string,
     users: PropTypes.object,
