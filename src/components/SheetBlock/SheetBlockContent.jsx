@@ -51,6 +51,10 @@ export default class BlockContent extends Component {
     console.log('selectedSheets', selectedSheets);
     console.log('options', selectedSheets.map( (sheet)=>( { label: sheet.get('name') || sheet.get('key'), value: sheet.get('key') } ) ));
 
+    if (selectedSheets.length === 0) {
+      return <Alert className={ styles.SheetBlockContent_blocks } {...props} >No sheets selected</Alert>;
+    }
+
     return preview ?
     (<div className={ styles.SheetBlockContent_blocks } {...props} > { selectedSheets.map( (sheet, sheetIndex) => (
       sheet ?

@@ -6,6 +6,7 @@
   text-transform: uppercase;
   background: $btn-default-bg;
   border: 0;
+  border-radius: 0;
   color: #fff;
   vertical-align: middle;
   padding: $padding-small-vertical ($btn-clipping-size + $padding-base-horizontal) $padding-small-vertical $padding-base-horizontal;
@@ -16,21 +17,21 @@
   font-weight: normal;
   margin: 0;
   cursor: pointer;
-  
+
   &--noClip,
   &--link {
     clip-path: none;
   }
-  
+
   &--noClip {
     padding-right: $padding-base-horizontal;
   }
-  
+
   &--clipBottomLeft {
     clip-path: $clip-bottom-left;
     padding: $padding-small-vertical $padding-base-horizontal $padding-small-vertical ($btn-clipping-size + $padding-base-horizontal);
   }
-  
+
   &--appIcon {
     clip-path: $clip-diagonal;
     padding: $padding-large-vertical ($btn-clipping-size + $padding-large-horizontal) $padding-large-vertical ($btn-clipping-size + $padding-large-horizontal);

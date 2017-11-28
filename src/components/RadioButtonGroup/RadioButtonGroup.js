@@ -10,7 +10,7 @@ export default class RadioButtonGroup extends Component {
     onChangeParams: PropTypes.any,
     value: PropTypes.any,
     block: PropTypes.bool,
-    options: PropTypes.array,
+    options: PropTypes.object,
   };
 
   static defaultProps = {
@@ -58,8 +58,6 @@ export default class RadioButtonGroup extends Component {
       className,
       block ? styles.RadioButtonGroup__block : null
     ]);
-
-    console.log('this.state.value', this.state.value);
 
     return (<span className={cls} {...props} >
       { options.map( ({ label, value, buttonProps = { primary: true }, onChangeParams = {} }, optionIndex) => {

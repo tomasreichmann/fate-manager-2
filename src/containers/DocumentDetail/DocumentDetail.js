@@ -1,16 +1,21 @@
 import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
+import { partial, range, get } from 'lodash';
 import { Map, fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { push } from 'react-router-redux';
-import { myFirebaseConnect, updateDb, pushToDb } from 'redux/modules/firebase';
+import Transition from 'react-transition-group/Transition';
+import classnames from 'classnames';
+
+import { myFirebaseConnect, updateDb, getPushKey } from 'redux/modules/firebase';
 import { injectProps } from 'relpers';
 import { sortByKey } from 'utils/utils';
 import autobind from 'autobind-decorator';
 import { Loading, Button, Alert, Editable, FormGroup, Input, Breadcrumbs, User, AccessControls } from 'components';
 import contentComponents from 'contentComponents';
-import { FaChevronDown, FaChevronUp, FaTrash, FaEye, FaPlus, FaExternalLink, FaEraser} from 'react-icons/lib/fa';
+import * as FaIcons from 'react-icons/lib/fa';
+import { FaChevronDown, FaChevronUp, FaTrash, FaEdit, FaExternalLink, FaEraser} from 'react-icons/lib/fa';
 import { MdCast } from 'react-icons/lib/md';
 
 @connect(
@@ -61,9 +66,22 @@ export default class DocumentDetail extends Component {
 
   constructor(props) {
     super(props);
-    this.addContentSelects = {};
     this.sendToViewSelects = {};
   }
+
+  getAddContentGroup = (placementKey, placeBelow) => {
+    const contentButtons = new Map(contentComponents)
+      .sort(sortByKey('label'))
+      .toList()
+      .toJSON()
+      .map(({componentName, icon, label}, index, all) => {
+        const Icon = FaIcons[icon];
+        const isFirst = index === 0;
+        const isLast = index === all.length - 1;
+        return <Button key={componentName} clipBottomLeft={isFirst} noClip={!isFirst && !isLast} primary onClick={this.addContent} onClickParams={{placementKey, componentName, placeBelow}} ><Icon/>&emsp;{label}</Button>;
+      });
+    return (<FormGroup children={[<h5>{'Add content ' + (placeBelow ? 'after' : 'before')}</h5>, contentButtons]} />);
+  };
 
   @autobind
   updateDocument(value, { path }, method) {
@@ -73,25 +91,56 @@ export default class DocumentDetail extends Component {
   }
 
   @autobind
-  addContent(selectKey) {
+  addContent({placementKey, componentName, placeBelow}) {
     const { campaign, doc } = this.props;
-    const selectedElement = this.addContentSelects[selectKey].value;
-    const data = {
-      component: selectedElement,
-    };
+
+    const documentPath = '/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key');
+    const contentElementsSubPath = 'contentElements';
+    const contentElementsPath = documentPath + '/' + contentElementsSubPath;
+
+    const contentElements = doc.get('contentElements') || Map();
     const lastOrderNumber = this.maxOrder(doc.get('contentElements') || []) + 1;
-    console.log('addContent', selectedElement, 'lastOrderNumber', lastOrderNumber);
-    pushToDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/contentElements', (key) => ( {
-      key,
+
+    const newContentElementKey = getPushKey(contentElementsPath);
+    const newContentElement = new Map({
       order: lastOrderNumber,
-      ...data,
-    } ) );
+      component: componentName,
+      label: get(contentComponents, componentName, {}).label || componentName,
+      key: newContentElementKey,
+    });
+
+    const sortedComponentElements = this
+      .sortByOrder(contentElements)
+      .toList()
+      .push(newContentElement);
+
+    if (placementKey) {
+      const placementIndex = sortedComponentElements.findIndex((contentElement) => (
+        contentElement.get('key') === placementKey
+      ));
+      const placeBelowShift = placeBelow ? -1 : 0;
+      const positionShift = sortedComponentElements.size - 1 - placementIndex + placeBelowShift;
+
+      const updatedComponentElements = range(positionShift).reduce((updatedElements, stepIndex) => {
+        const targetIndex = sortedComponentElements.size - 1 - stepIndex - 1;
+        const targetKey = sortedComponentElements.getIn([targetIndex, 'key']);
+        const targetOrder = updatedElements.getIn([targetKey, 'order']);
+        const sourceOrder = updatedElements.getIn([newContentElementKey, 'order']);
+        return updatedElements
+        .setIn([newContentElementKey, 'order'], targetOrder)
+        .setIn([targetKey, 'order'], sourceOrder);
+      }, contentElements.set(newContentElementKey, newContentElement));
+
+      this.updateDocument(updatedComponentElements.toJSON(), { path: contentElementsSubPath });
+    } else {
+      this.updateDocument(newContentElement.toJSON(), { path: contentElementsSubPath + '/' + newContentElementKey });
+    }
+    this.updateDocument(newContentElementKey, { path: 'editingContentKey' });
   }
 
   @autobind
   updateContent(value, {key, path}) {
     const { campaign, doc } = this.props;
-    // console.log('updateContent', key, path, value, 'campaign', campaign, doc);
     updateDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/contentElements/' + key + '/' + path, value);
   }
 
@@ -166,54 +215,65 @@ export default class DocumentDetail extends Component {
       value: viewKey
     }) );
 
-    const contentElementOptions = Map(contentComponents).map( ({ label, componentName }) => ({
-      label,
-      value: componentName,
-    }) ).toList().toJSON();
-    console.log('contentElementOptions', contentElementOptions );
-    console.log('contentComponents', contentComponents );
-
     const sortedContentElements = this.sortByOrder(contentElements);
-
     const DocumentDetailInstance = this;
-
-    // console.log('DocumentDetail campaign', campaign && campaign.toJS() );
-    // console.log('DocumentDetail doc', doc && doc.toJS() );
-    // console.log('DocumentDetail contentElements', contentElements && contentElements.toJS() );
+    const editingContentKey = doc ? doc.get('editingContentKey', null) : null;
 
     const contentBlock = (<div className={ styles.DocumentDetail_contentBlock } >
       { sortedContentElements.size ? sortedContentElements.map( (componentElement, key)=>{
-        const {component, componentProps = {}, preview} = componentElement ? componentElement.toJS() : {};
+        const {component, componentProps = {}, view} = componentElement ? componentElement.toJS() : {};
         const ContentElement = contentComponents[component] && contentComponents[component].component;
-        // console.log('componentElement', componentElement, component, componentProps, ContentElement);
         if (!ContentElement) {
+          console.warn('Malformed component', component, componentProps);
           return <Alert warning>Malformed component - <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /></Button></Alert>;
         }
-        return (<div className={ styles.DocumentDetail_contentElement } key={key}>
-          <FormGroup childTypes={[null, 'flexible']}>
-            <div>
-              <Button secondary clipBottomLeft disabled={componentElement === sortedContentElements.first()} onClick={this.moveContent} onClickParams={{ shift: -1, key}} ><FaChevronUp /></Button>
-              <Button secondary disabled={componentElement === sortedContentElements.last()} onClick={this.moveContent} onClickParams={{ shift: 1, key}} ><FaChevronDown /></Button>
-            </div>
-            <strong>{component}</strong>
-            <Input inline type="checkbox" label={<FaEye style={{ verticalAlign: 'text-bottom' }} />} value={preview} handleChange={this.updateContent} handleChangeParams={{key, path: 'preview'}} />
-            <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /></Button>
-          </FormGroup>
-          <ContentElement {...componentProps} preview={preview} handleChange={this.updateContent} handleChangeParams={{key}} admin />
-          <FormGroup childTypes={['flexible']}>
-            <div></div>
-            <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects[key] = sendToViewSelect) } />
-            <Button secondary onClick={this.sendToView} onClickParams={{key}} ><MdCast /></Button>
-          </FormGroup>
-          <hr />
-        </div>);
+
+        const isBeingEdited = key === editingContentKey;
+        const getClassName = (state) => {
+          const cls = classnames([styles.DocumentDetail_contentElement, styles['DocumentDetail_contentElement_' + state]]);
+          console.log('state', state, cls);
+          return cls;
+        };
+
+        return (<Transition in={isBeingEdited} timeout={100}>
+          {(state) => (
+            <div className={ getClassName(state) } key={key}>
+            <FormGroup childTypes={[null, 'flexible', null]}>
+              <div>
+                { isBeingEdited ? [
+                  <Button secondary clipBottomLeft disabled={componentElement === sortedContentElements.first()} onClick={this.moveContent} onClickParams={{ shift: -1, key}} ><FaChevronUp /></Button>,
+                  <Button secondary disabled={componentElement === sortedContentElements.last()} onClick={this.moveContent} onClickParams={{ shift: 1, key}} ><FaChevronDown /></Button>
+                ] : null }
+              </div>
+              <h4 style={{margin: 0}}>{ componentElement.get('label') || get(contentComponents, componentElement.get('componentName'), {}).label || componentElement.get('componentName') }</h4>
+              <div>
+                { isBeingEdited
+                  ? <Button inline success clipBottomLeft
+                      onClick={partial(this.updateDocument, null, {path: 'editingContentKey'}, undefined)}
+                    ><FaEdit /> Preview</Button>
+                  : <Button inline warning clipBottomLeft active={isBeingEdited}
+                      onClick={partial(this.updateDocument, key, {path: 'editingContentKey'}, undefined)}
+                    ><FaEdit /> Edit</Button>
+                }
+                <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /> Delete</Button>
+              </div>
+            </FormGroup>
+            <ContentElement {...componentProps} preview={!isBeingEdited} handleChange={this.updateContent} handleChangeParams={{key}} admin />
+            { isBeingEdited ? this.getAddContentGroup(key, true) : <FormGroup childTypes={['flexible']}>
+              <div></div>
+              <Input inline type="select" label="View" options={ viewOptions } value={view} handleChange={this.updateContent} handleChangeParams={{key, path: 'view'}} inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects[key] = sendToViewSelect) } />
+              <div>
+                <Button secondary clipBottomLeft onClick={this.sendToView} onClickParams={{ key }} ><MdCast /> Send</Button>
+                <Button primary noClip onClick={this.openViewInNewTab} onClickParams={key} ><FaExternalLink /> Open</Button>
+                <Button warning onClick={this.sendToView} onClickParams={{ key, clear: true }} ><FaEraser /> Clear</Button>
+              </div>
+            </FormGroup> }
+            <hr />
+          </div>)}
+        </Transition>);
       } ) :
         <Alert warning>No content yet. Add Some</Alert> }
-      <hr />
-      <FormGroup>
-        <Input type="select" options={ contentElementOptions } inputRef={ (addContentSelect)=>(this.addContentSelects.last = addContentSelect) } />
-        <Button primary onClick={this.addContent} onClickParams="last" ><FaPlus /> Add Content</Button>
-      </FormGroup>
+      { (doc) ? this.getAddContentGroup(null, false) : null }
     </div>);
 
     return (
@@ -232,16 +292,17 @@ export default class DocumentDetail extends Component {
         <div className="container" >
           { doc ?
             (<div className={ styles.DocumentDetail + '-content' }>
+              <FormGroup childTypes={['flexible', null]} >
+                <div />
+                <Input label="View" inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) } />
+                <div>
+                  <Button secondary clipBottomLeft onClick={this.sendToView} onClickParams={{ key: 'doc' }} ><MdCast /> Send All</Button>
+                  <Button primary noClip onClick={this.openViewInNewTab} onClickParams={'doc'} ><FaExternalLink /> Open</Button>
+                  <Button warning onClick={this.sendToView} onClickParams={{ key: 'doc', clear: true }} ><FaEraser /> Clear</Button>
+                </div>
+              </FormGroup>
               <h1>
-                <FormGroup childTypes={['flexible']} >
-                  <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ docName }</Editable>
-                  <Input inline type="select" options={ viewOptions } inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects.doc = sendToViewSelect) } />
-                  <div>
-                    <Button primary clipBottomLeft onClick={this.openViewInNewTab} onClickParams={'doc'} ><FaExternalLink /></Button>
-                    <Button secondary noClip onClick={this.sendToView} onClickParams={{ key: 'doc' }} ><MdCast /></Button>
-                    <Button warning onClick={this.sendToView} onClickParams={{ key: 'doc', clear: true }} ><FaEraser /></Button>
-                  </div>
-                </FormGroup>
+                <Editable type="text" onSubmit={this.updateDocument} onSubmitParams={{ path: 'name' }} >{ docName }</Editable>
               </h1>
               <FormGroup verticalCenter >
                 <span>Created on {(new Date(doc.get('created'))).toLocaleString()}</span>

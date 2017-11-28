@@ -1,0 +1,22 @@
+@import "../../theme/variables.scss";
+
+.DocumentDetail {
+    &_contentElement {
+
+        &_entering {
+            background-color: rgba($brand-warning, 0.25);
+        }
+        &_entered {
+            transition: background-color 300ms ease-out;
+            background-color: rgba($brand-warning, 0);
+        }
+
+        &_exiting {
+            background-color: rgba($brand-success, 0.25);
+        }
+        &_exited {
+            transition: background-color 300ms ease-out;
+            background-color: rgba($brand-success, 0);
+        }
+    }
+}

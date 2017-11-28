@@ -7,7 +7,6 @@ import { FaDesktop, FaFileText, FaFlag } from 'react-icons/lib/fa';
 export default class Home extends Component {
   render() {
     const styles = require('./Home.scss');
-
     return (
       <div className={styles.home}>
         <Helmet title="Home"/>
@@ -30,6 +29,7 @@ export default class Home extends Component {
           <p><Image mode1to1 imageUrl="https://vignette3.wikia.nocookie.net/roblox-medieval-warfare-reforged/images/0/08/Resized_courage-wolf-meme-generator-im-gonna-be-alpha-u-got-a-problem-with-that-cf9fdb.jpg/revision/latest?cb=20150311022101" /></p>
 
           <h2>TO DO</h2>
+          <p>Adventuring journal</p>
           <p>Access control user groups</p>
           <p>Document outline and navigation</p>
           <p>Read-only documents</p>
@@ -37,6 +37,11 @@ export default class Home extends Component {
           <p>Sheet list paging and search</p>
 
           <h2>Changelog</h2>
+
+          <h3>28/11/17</h3>
+          <p>Document content elements now toggle between preview and edit modes. Only one element can be edited at once</p>
+          <p>Image component upgrade. Images can now be rotated, shifted and resized for both fullscreen and regular modes.</p>
+          <p>Most components now show an alert if they are empty</p>
 
           <h3>14/11/17</h3>
           <Alert warning>

@@ -233,10 +233,14 @@ export function updateDb(path, value = null, method = 'set') {
   return firebaseDb.ref(path)[method](...params);
 }
 
-export function pushToDb(path, setter = ()=>(null) ) {
-  console.log('pushToDb', path, setter);
+export function getPushKey(path) {
   const ref = firebaseDb.ref(path);
-  const key = ref.push().key;
+  return ref.push().key;
+}
+
+export function pushToDb(path, setter ) {
+  const ref = firebaseDb.ref(path);
+  const key = getPushKey(path);
   return ref.child(key).set( setter(key) );
 }
 

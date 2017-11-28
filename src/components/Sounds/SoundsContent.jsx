@@ -23,10 +23,11 @@ export default class SoundsContent extends Component {
   }
 
   @autobind
-  search() {
+  search(event) {
+    event.preventDefault();
     const query = this.searchInput.value;
     searchSound(query).then(
-      ( resultsData )=>( console.log('SoundsContent search resolve', resultsData, fromJS(resultsData)),
+      ( resultsData )=>(
       this.setState({
         ...this.state,
         ...resultsData,
@@ -55,7 +56,6 @@ export default class SoundsContent extends Component {
     const { results } = this.state;
     const styles = require('./Sounds.scss');
     const soundsMap = fromJS(sounds) || new OrderedMap();
-    console.log('SoundsContent sounds', soundsMap.toJS());
 
     return preview ?
       (<div className={ styles.SoundsContent } {...props} >
@@ -63,10 +63,10 @@ export default class SoundsContent extends Component {
       </div>)
       :
       (<div className={ styles.SoundsContent } {...props} >
-        <FormGroup childTypes={['flexible']} >
+        <form onSubmit={this.search} ><FormGroup childTypes={['flexible']} >
           <Input type="text" inputRef={ (input) => ( this.searchInput = input ) } placeholder="Search" name="query" />
-          <Button onClick={this.search} primary ><FaSearch /></Button>
-        </FormGroup>
+          <Button primary type="submit" ><FaSearch /></Button>
+        </FormGroup></form>
         <div className={ styles.SoundContent_results } >
         {
           results.length ?
@@ -99,7 +99,7 @@ export default class SoundsContent extends Component {
             </FormGroup>
           ) )
           :
-          <Alert warning >No sounds saved</Alert>
+          <Alert>No sounds saved</Alert>
         }
         </div>
       </div>)

@@ -4,4 +4,8 @@
   display: inline-block;
   position: relative;
   vertical-align: text-bottom;
+
+  &__block {
+    display: block;
+  }
 }

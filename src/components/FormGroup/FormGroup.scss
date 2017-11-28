@@ -18,6 +18,16 @@
     align-items: center;
   }
 
+  &__noVerticalMargin {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  &__noVerticalMargin &_item {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
   &_item {
     min-width: 1px;
     padding: 0 $padding-base-horizontal;

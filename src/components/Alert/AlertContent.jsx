@@ -1,45 +1,65 @@
 import React, { Component, PropTypes } from 'react';
-import { Alert, FormGroup, Input } from 'components';
+import { Alert, FormGroup, Input, RadioButtonGroup } from 'components';
 import { injectProps } from 'relpers';
+import autobind from 'autobind-decorator';
 
 export default class AlertContent extends Component {
   static propTypes = {
     preview: PropTypes.bool,
     handleChange: PropTypes.func,
     handleChangeParams: PropTypes.any,
+    children: PropTypes.any,
+    message: PropTypes.any,
+    danger: PropTypes.bool,
+    warning: PropTypes.bool,
+    primary: PropTypes.bool,
+    secondary: PropTypes.bool,
+    success: PropTypes.bool,
+    info: PropTypes.bool,
+  }
+
+  @autobind
+  handleBrandChange(brand) {
+    const { handleChangeParams, children = 'no message', message } = this.props;
+    const updatedComponentProps = {
+      message: message || children,
+      danger: false,
+      warning: false,
+      primary: false,
+      secondary: false,
+      success: false,
+      info: false,
+      [brand]: true
+    };
+    this.props.handleChange(updatedComponentProps, { ...handleChangeParams, path: 'componentProps' });
   }
 
   @injectProps
   render({
     preview = false,
-    children = 'no message',
+    children = '',
     handleChange,
     handleChangeParams,
     ...props,
   } = {}) {
-    const {
-      message,
-      danger,
-      warning,
-      primary,
-      secondary,
-      success,
-      info,
-    } = props;
     const styles = require('./AlertContent.scss');
-    console.log('preview', preview);
+    const { message } = this.props;
+    const brandMap = {
+      danger: this.props.danger,
+      warning: this.props.warning,
+      primary: this.props.primary,
+      secondary: this.props.secondary,
+      success: this.props.success,
+      info: this.props.info,
+    };
+    const brands = Object.keys(brandMap);
+    const brandOptions = brands.map(brand => ({ label: brand, value: brand }));
+    const brandSelection = brands.find((brand) => brandMap[brand]);
     return preview ? <Alert {...props}>{children}</Alert> : (<div className={styles.AdminContent} {...props} >
       <FormGroup childTypes={['flexible']}>
-        <Input label="Message" type="textarea" name="message" value={message} handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/message' }} />
+        <Input label="Message" type="textarea" value={message || children} placeholder="no message" handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/children' }} />
       </FormGroup>
-      <FormGroup>
-        <Input inline label="Danger" type="checkbox" name="danger" value={danger} handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/danger' }} />
-        <Input inline label="Warning" type="checkbox" name="warning" value={warning} handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/warning' }} />
-        <Input inline label="Primary" type="checkbox" name="primary" value={primary} handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/primary' }} />
-        <Input inline label="Secondary" type="checkbox" name="secondary" value={secondary} handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/secondary' }} />
-        <Input inline label="Success" type="checkbox" name="success" value={success} handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/success' }} />
-        <Input inline label="Info" type="checkbox" name="info" value={info} handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/info' }} />
-      </FormGroup>
+      <RadioButtonGroup value={brandSelection} options={brandOptions} onChange={this.handleBrandChange}/>
     </div>);
   }
 }

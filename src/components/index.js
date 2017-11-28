@@ -30,3 +30,4 @@ export Breadcrumbs from './Breadcrumbs/Breadcrumbs';
 export Togglable from './Togglable/Togglable';
 export User from './User/User';
 export AccessControls from './AccessControls/AccessControls';
+export TransformedImage from './TransformedImage/TransformedImage';

@@ -65,7 +65,7 @@ export default class SheetBlock extends Component {
     console.log('name', name, 'key', key, 'refresh', refresh, 'aspects', aspects, 'skills', skills, 'consequences', consequences, 'stress', stress, 'stunts', stunts, 'extras', extras);
     const styles = require('./SheetBlock.scss');
 
-    const hasData = this.props.sheet && this.props.template;
+    const hasData = this.props.sheet && (this.props.sheet.size > 0) && this.props.template;
 
     const headingRefresh = <span className={styles.SheetBlock_heading_refresh}>{refresh}</span>;
 

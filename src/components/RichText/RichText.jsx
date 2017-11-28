@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { injectProps } from 'relpers';
+import { Alert } from 'components';
 
 export default class RichText extends Component {
   @injectProps
@@ -13,6 +14,10 @@ export default class RichText extends Component {
       clsMap[cls] ? clsList.concat([styles['RichText__' + cls]]) : clsList
     ), [] ) ).join(' ');
 
-    return <div className={processedClassNames} dangerouslySetInnerHTML={{__html: htmlContent || '<p>-no content-</p>'}} />;
+    if (!htmlContent || htmlContent.length === 0) {
+      return (<Alert className={processedClassNames} >No content</Alert>);
+    }
+
+    return <div className={processedClassNames} dangerouslySetInnerHTML={{__html: htmlContent}} />;
   }
 }

@@ -7,6 +7,7 @@ export default class Input extends Component {
   static propTypes = {
     type: PropTypes.string,
     label: PropTypes.any,
+    labelAfter: PropTypes.any,
     inline: PropTypes.bool,
     inherit: PropTypes.bool,
     multiple: PropTypes.bool,
@@ -109,6 +110,7 @@ export default class Input extends Component {
     const styles = require('./Input.scss');
     const {
       label,
+      labelAfter,
       className = '',
       inputClassName = '',
       type = 'text',
@@ -129,15 +131,16 @@ export default class Input extends Component {
       {superscriptBefore ? <span className={classnames(styles['Label-superscript'], styles['Label-superscript--before'])} >{superscriptBefore}</span> : null}
       {label ? <span className={styles['Label-text']} >{label}</span> : null}
       <div className={styles['Label-inputWrap']} >
-      {this.inputTemplates[template]({
-        ...props,
-        inputClassName,
-        type,
-        styles,
-      })}
-      {type === 'checkbox' ? <span className={styles['Input-fauxCheckbox']} ></span> : null}
-      {superscriptAfter ? <span className={[styles['Label-superscript'], styles['Label-superscript--after']].join(' ')} >{superscriptAfter}</span> : null}
+        {this.inputTemplates[template]({
+          ...props,
+          inputClassName,
+          type,
+          styles,
+        })}
+        {type === 'checkbox' ? <span className={styles['Input-fauxCheckbox']} ></span> : null}
+        {superscriptAfter ? <span className={[styles['Label-superscript'], styles['Label-superscript--after']].join(' ')} >{superscriptAfter}</span> : null}
       </div>
+      {labelAfter ? <span className={styles['Label-text--after']} >{labelAfter}</span> : null}
     </label>);
   }
 }
