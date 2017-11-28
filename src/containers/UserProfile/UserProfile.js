@@ -16,8 +16,6 @@ import { Editable, FormGroup, SheetList, CampaignList, Alert } from 'components'
     const isCurrentUser = currentUser.get('uid') === uid;
     const users = state.app.get('users');
 
-    console.log('currentUser', currentUser);
-
     return {
       uid,
       user: users.get(uid),
@@ -62,10 +60,9 @@ export default class UserProfile extends Component {
       this.userInterface
         .updateProfile(this.props.user.set(prop, value).toJS())
         .then( ()=>{
-          console.log('user update successfull');
           updateDb('/users/' + this.props.uid + '/' + prop, value);
         }, (error)=>(
-          console.log('update failed', error)
+          console.error('update failed', error)
         ) )
       ;
     }

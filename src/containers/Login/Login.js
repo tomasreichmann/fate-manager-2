@@ -28,7 +28,6 @@ export default class Login extends Component {
     event.preventDefault();
     const email = this.emailElement;
     const password = this.passwordElement;
-    console.log('login', email.value, password.value, this.props.params.routeBeforeLogin);
     this.props.login(email.value, password.value, this.props.params.routeBeforeLogin);
     password.value = '';
   }
@@ -41,7 +40,6 @@ export default class Login extends Component {
   render() {
     const {user, logout: logoutAction} = this.props;
     const styles = require('./Login.scss');
-    console.log('user', user);
     return (
       <div className={styles.loginPage + ' container'}>
         <Helmet title="Login"/>

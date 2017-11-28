@@ -12,7 +12,6 @@ function makeParamString(params = {}) {
 
 export default function searchSound(query) {
   const uri = uris.textSearch + makeParamString({query, token, fields: 'id,name,previews'});
-  console.log('searchSound uri', uri);
   return fetch( uri ).then(
     (response) => ( response.json() )
   );

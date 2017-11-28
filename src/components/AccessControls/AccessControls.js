@@ -36,7 +36,6 @@ export default class AccessControls extends Component {
   onChange(value, {path}) {
     const selectedUid = this.exceptionsSelect.value;
     const pathFragments = path.split('/');
-    console.log('onChange value', value);
 
     let { access } = this.props;
     // if path === 'exceptions' > add selectedUid to exceptions
@@ -46,7 +45,6 @@ export default class AccessControls extends Component {
       // else modify path with value
       access = access.setIn(pathFragments, value);
     }
-    console.log('onChange access', access.toJS());
     this.props.onChange(access.toJSON(), this.props.onChangeParams);
   }
 
@@ -69,17 +67,15 @@ export default class AccessControls extends Component {
         value: true
       },
       {
-        label: 'Just me',
+        label: 'Just author',
         value: false
       }
     ]);
 
     const isPublic = access.get('isPublic');
     const exceptions = access.get('exceptions') || new Map();
-    console.log('Render access', access.toJS());
 
     const exceptionUsers = exceptions.map( (selected, uid) => {
-      console.log('Render uid', uid);
       return (<span className={styles.AccessControls_userItem}>
         <User key={uid} uid={uid} className={styles.AccessControls_user} />
         <Button danger onClick={this.onChange.bind(this, null)} onClickParams={{ path: 'exceptions/' + uid }} ><FaTrash /></Button>
@@ -97,7 +93,6 @@ export default class AccessControls extends Component {
         value: uid
       };
     } ).sort( sortByKey('label') );
-    console.log('unselectedUsers', unselectedUsers.toJS());
 
     return (<div className={cls} >
       <FormGroup>

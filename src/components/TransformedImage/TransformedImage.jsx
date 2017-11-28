@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { cloneDeep } from 'lodash';
 import Measure from 'react-measure';
 
 export default class TransformedImage extends Component {
@@ -66,6 +67,7 @@ export default class TransformedImage extends Component {
     const [ clipModeVertical, clipModeHorizontal ] = clipMode.split('|');
 
     const wrapperStyles = {
+      display: 'block',
       position: 'relative',
     };
 
@@ -88,6 +90,7 @@ export default class TransformedImage extends Component {
     let containerHeight = parseFloat(height) || this.state.containerHeight;
 
     const containerStyles = {
+      display: 'block',
       position: 'relative',
     };
 
@@ -216,8 +219,8 @@ export default class TransformedImage extends Component {
   render() {
     const { src, className } = this.props;
 
-    if (this.state.imageWidth === null) {
-      return <div>loading</div>;
+    if (!this.state.imageWidth) {
+      return <span>loading or could not load image</span>;
     }
 
     const {
@@ -230,7 +233,6 @@ export default class TransformedImage extends Component {
       <Measure
         bounds
         onResize={(contentRect) => {
-          console.log('contentRect', contentRect);
           this.setState({
             containerWidth: contentRect.bounds.width,
             containerHeight: contentRect.bounds.height,
@@ -238,16 +240,14 @@ export default class TransformedImage extends Component {
         }}
       >
         {({ measureRef }) =>
-          <div ref={measureRef} style={{
-            ...containerStyles,
-          }} className={className} >
-            <div style={wrapperStyles} >
+          <span ref={measureRef} style={cloneDeep(containerStyles)} className={className} >
+            <span style={cloneDeep(wrapperStyles)} >
               <img
                 src={src}
                 style={imageStyles}
               />
-            </div>
-          </div>
+            </span>
+          </span>
         }
       </Measure>);
   }

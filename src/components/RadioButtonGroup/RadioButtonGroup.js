@@ -36,7 +36,6 @@ export default class RadioButtonGroup extends Component {
 
   @autobind
   onChange({ value, onChangeParams = {} }) {
-    console.log('onChange value', value);
     this.props.onChange(value, {
       ...this.props.onChangeParams,
       ...onChangeParams,

@@ -25,11 +25,9 @@ import { FaPlus } from 'react-icons/lib/fa';
     path: '/sheets',
     adapter: (snapshot)=>{
       let sheets = new OrderedMap();
-      console.log('Sheets snapshot', snapshot.val() );
       snapshot.forEach( (child)=>{
         sheets = sheets.set(child.val().key, fromJS(child.val()));
       });
-      console.log('Sheets snapshot new sheets', 'sheets', sheets.toJS() );
       return { sheets };
     },
     orderByChild: 'name',
@@ -55,7 +53,6 @@ export default class Sheets extends Component {
   }
 
   newSheet() {
-    console.log('newSheet');
     const templateKey = this.newSheetTemplateSelect.value;
     this.props.pushState('/sheet/new/' + templateKey);
   }
@@ -63,10 +60,6 @@ export default class Sheets extends Component {
   render() {
     const styles = require('./Sheets.scss');
     const {sheets, selection, templates, toggleSelection, user, firebaseConnectDone} = this.props;
-    // require the logo image both from client and server
-
-    console.log('render sheets', sheets, sheets && sheets.toJS() );
-
     const SheetsInstance = this;
 
     return (

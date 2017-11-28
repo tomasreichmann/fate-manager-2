@@ -37,28 +37,24 @@ export default (store) => {
   };
 
   const initNewSheet = (nextState, replace, cb) => {
-    console.log('initNewSheet');
     const key = createNewSheet(store.getState(), nextState.params.template, nextState.params.campaignKey);
     replace(null, '/sheet/' + key + '/edit');
     cb();
   };
 
   const initNewCampaign = (nextState, replace, cb) => {
-    console.log('initNewCampaign');
     const key = createNewCampaign(store.getState());
     replace(null, '/campaign/' + key);
     cb();
   };
 
   const initNewDocument = (nextState, replace, cb) => {
-    console.log('initNewDocument');
     const docKey = createNewDocument(store.getState(), nextState.params.campaignKey);
     replace(null, '/campaign/' + nextState.params.campaignKey + '/document/' + docKey);
     cb();
   };
 
   const initNewView = (nextState, replace, cb) => {
-    console.log('initNewView');
     const viewKey = createNewView(store.getState());
     replace(null, '/view/' + viewKey + '/edit');
     cb();

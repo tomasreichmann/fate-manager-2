@@ -21,7 +21,6 @@ export default function modal(state = initialState, action = {}) {
       };
     }
     case CLOSE: {
-      console.log('CLOSE');
       return initialState;
     }
     default: {

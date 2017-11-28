@@ -23,9 +23,6 @@ export default class CampaignList extends Component {
 
   @injectProps
   render({campaigns = new OrderedMap(), user}) {
-    console.log('CampaignList campaigns', campaigns.toJS());
-    console.log('CampaignList user', user);
-
     const styles = require('./CampaignList.scss');
 
     const filteredCampaigns = campaigns.filter( (campaign) => {

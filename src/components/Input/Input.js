@@ -51,7 +51,6 @@ export default class Input extends Component {
     ),
     checkbox: ({path, inputRef, value, styles, inputClassName, ...props})=>{
       const checkedProperty = value !== undefined ? { checked: !!value } : { defaultChecked: false };
-      // console.log('path', path, 'inputRef', inputRef, 'value', value, 'styles', styles, '...props', props );
       return (<input
         {...props}
         ref={inputRef}

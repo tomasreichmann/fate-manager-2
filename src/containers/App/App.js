@@ -79,19 +79,18 @@ export default class App extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('process.env.NODE_ENV', process.env.NODE_ENV);
-    console.log('nextProps.version', nextProps.version);
     const versionDifference = nextProps.version !== null ? this.compareVersions(nextProps.version, version) : 0;
-    console.log('versionDifference', versionDifference);
+    if (versionDifference !== 0) {
+      console.warn('there is a version difference', versionDifference);
+    }
 
     // save users to redux
     if (nextProps.users && nextProps.users !== this.props.users) {
-      console.log('App componentWillReceiveProps nextProps.users', nextProps.users);
       this.props.updateApp({ path: 'users', value: nextProps.users});
     }
 
     if ( versionDifference < 0 && process.env.NODE_ENV === 'production' ) {
-      console.log('updateDb', version);
+      console.info('notify database of new version', version, 'version difference', versionDifference);
       updateDb('version', version).then( ()=>(window.location.reload()) );
     } else if (versionDifference > 0) {
       window.location.reload();
@@ -119,7 +118,6 @@ export default class App extends Component {
   }
 
   compareVersions(serverVersion = '0.0.0', clientVersion = '0.0.0') {
-    console.log('serverVersion clientVersion', serverVersion, clientVersion);
     const serverSubversions = serverVersion.split('.');
     const clientSubversions = clientVersion.split('.');
     for (let subversionIndex = 0; subversionIndex < serverSubversions.length; subversionIndex++) {

@@ -36,7 +36,6 @@ export default class RichTextContent extends Component {
   @autobind
   onChange(value) {
     const newVal = value.toString('html');
-    console.log('onChange', 'newVal', newVal, 'this.props.htmlContent', this.props.htmlContent);
     this.setState({value});
     if (this.props.handleChange && newVal !== this.props.htmlContent ) {
       this.defferChange( this.props.handleChange, [newVal, {...this.props.handleChangeParams, path: 'componentProps/htmlContent'}] );
@@ -45,7 +44,6 @@ export default class RichTextContent extends Component {
 
   @autobind
   defferChange(callback, callbackParams) {
-    console.log('defferChange', callbackParams);
     clearTimeout(this.onChangeTimeout);
     this.onChangeTimeout = setTimeout( ()=>(
       callback(...callbackParams)

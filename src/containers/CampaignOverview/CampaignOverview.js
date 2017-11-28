@@ -26,7 +26,6 @@ import { FaPlus } from 'react-icons/lib/fa';
       snapshot.forEach( (child)=>{
         campaigns = campaigns.set(child.val().key, fromJS(child.val()));
       });
-      console.log('CampaignOverview snapshot new campaigns', 'campaigns', campaigns.toJS() );
       return { campaigns };
     },
     orderByChild: 'name',
@@ -42,7 +41,6 @@ export default class CampaignOverview extends Component {
 
   @autobind
   deleteCampaign(key) {
-    console.log('deleteCampaign', key);
     updateDb('/campaigns/' + key, null);
   }
 

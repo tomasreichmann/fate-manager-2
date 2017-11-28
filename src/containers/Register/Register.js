@@ -28,7 +28,6 @@ export default class Register extends Component {
     event.preventDefault();
     const email = this.emailElement;
     const password = this.passwordElement;
-    console.log('register', email.value, password.value);
     this.props.register(email.value, password.value, this.props.params.routeBeforeLogin);
     password.value = '';
   }
@@ -41,7 +40,6 @@ export default class Register extends Component {
   render() {
     const {user, logout: logoutAction} = this.props;
     const styles = require('./Register.scss');
-    console.log('user', user);
     return (
       <div className={styles.registerPage + ' container'}>
         <Helmet title="Register"/>

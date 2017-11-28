@@ -71,7 +71,6 @@ export default class SheetList extends Component {
 
   @autobind
   toggleSheetSelection(keys) {
-    console.log('toggleSheetSelection keys', keys, this.state);
     const toggleSheetKeys = Array.isArray(keys) ? keys : [keys];
     return this.setState({
       selection: toggleSheetKeys.reduce( (updatedSelectedKeys, sheetKey) => (
@@ -82,7 +81,6 @@ export default class SheetList extends Component {
 
   @autobind
   selectAll(value) {
-    console.log('selectAll(value)', value);
     const {selection = this.state.selection, sheets = Map(), toggleSheetSelection = this.toggleSheetSelection} = this.props;
 
     if (!value) {
@@ -96,7 +94,6 @@ export default class SheetList extends Component {
   }
 
   deleteSheet(key) {
-    console.log('deleteSheet', key );
     updateDb('/sheets/' + key, null);
   }
 

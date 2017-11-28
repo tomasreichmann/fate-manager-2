@@ -40,7 +40,6 @@ export default class Views extends Component {
 
   @autobind
   deleteView(viewKey) {
-    console.log('deleteView', viewKey);
     updateDb('/views/' + viewKey, null);
   }
 

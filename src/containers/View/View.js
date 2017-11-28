@@ -18,11 +18,9 @@ import contentComponents from 'contentComponents';
   {
     path: '/views/',
     pathResolver: (path, {params = {}})=>(
-      console.log('pathResolver params', params),
       path + params.key
     ),
     adapter: (snapshot)=>(
-      console.log('snapshot view', snapshot, snapshot.val()),
       { view: fromJS(snapshot.val()) || undefined }
     ),
   }
@@ -38,7 +36,6 @@ export default class View extends Component {
   @autobind
   updateView({ path }, value) {
     const { view } = this.props;
-    console.log('updateView', path, value);
     updateDb('/views/' + view.get('key') + '/' + path, value);
   }
 
@@ -50,8 +47,6 @@ export default class View extends Component {
   }) {
     const styles = require('./View.scss');
     const { key, name, contentElements = Map() } = (view ? view.toObject() : {});
-
-    console.log('contentComponents', contentComponents);
 
     const contentBlock = contentElements.size ?
       contentElements.sort( (CEa, CEb)=>{

@@ -19,11 +19,9 @@ import { FaExternalLink } from 'react-icons/lib/fa';
   {
     path: '/views/',
     pathResolver: (path, {params = {}})=>(
-      console.log('pathResolver params', params),
       path + params.key
     ),
     adapter: (snapshot)=>(
-      console.log('snapshot view', snapshot, snapshot.val()),
       { view: fromJS(snapshot.val()) || undefined }
     ),
   }
@@ -38,7 +36,6 @@ export default class ViewEdit extends Component {
   @autobind
   updateView(value, { path }) {
     const { view } = this.props;
-    console.log('updateView', path, value);
     updateDb('/views/' + view.get('key') + '/' + path, value);
   }
 

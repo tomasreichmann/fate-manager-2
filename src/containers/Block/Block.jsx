@@ -48,14 +48,12 @@ export default class Block extends Component {
   @autobind
   redirect(to) {
     return ()=>{
-      console.log('redirect', to );
       this.props.pushState(to);
     };
   }
 
   @autobind
   deleteSheet(key) {
-    console.log('deleteSheet');
     updateDb('/sheets/' + key, null);
     this.props.pushState('/sheets');
   }
@@ -79,7 +77,6 @@ export default class Block extends Component {
 
   render() {
     const {sheets, templates, params, user, firebaseConnectDone } = this.props;
-    console.log('this.props', this.props);
     const keys = params.keys.split(';');
     const styles = require('./Block.scss');
     const selectedSheets = sheets ? sheets.filter( (sheet)=>( keys.indexOf( sheet.get('key') ) > -1 ) ) : List();

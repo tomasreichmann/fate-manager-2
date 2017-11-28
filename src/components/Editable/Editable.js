@@ -28,7 +28,6 @@ export default class Editable extends Component {
   @autobind
   @killEvent
   onSubmit() {
-    console.log('onSUbmit this.inputElement', this.inputElement);
     if (typeof this.props.onSubmit === 'function') {
       this.props.onSubmit(this.inputElement.value, this.props.onSubmitParams);
     }

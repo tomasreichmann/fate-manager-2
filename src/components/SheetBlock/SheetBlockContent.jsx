@@ -41,15 +41,11 @@ export default class BlockContent extends Component {
     ...props,
   } = {}) {
     const styles = require('./SheetBlockContent.scss');
-    console.log('sheetKeys', sheetKeys);
     const selectedSheets = sheetKeys.map( (sheetKey) => (
       sheets.get(sheetKey)
     ) );
 
     const sheetKeysValue = (typeof sheetKeys === 'object' && 'map' in sheetKeys) ? sheetKeys : [sheetKeys];
-
-    console.log('selectedSheets', selectedSheets);
-    console.log('options', selectedSheets.map( (sheet)=>( { label: sheet.get('name') || sheet.get('key'), value: sheet.get('key') } ) ));
 
     if (selectedSheets.length === 0) {
       return <Alert className={ styles.SheetBlockContent_blocks } {...props} >No sheets selected</Alert>;

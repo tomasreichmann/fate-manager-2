@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Image, FormGroup, Input, RadioButtonGroup } from 'components';
 import { injectProps } from 'relpers';
-import autobind from 'autobind-decorator';
 
 const AlignIcon = ({vertical, horizontal, size = 30, squareSize = 20, strokeWidth = 4, color = 'white'}) => {
   const alignmentMap = {
@@ -27,11 +26,6 @@ export default class ImageContent extends Component {
     admin: PropTypes.bool,
     handleChange: PropTypes.func,
     handleChangeParams: PropTypes.any,
-  }
-
-  @autobind
-  onChange() {
-    console.log('onChange');
   }
 
   @injectProps

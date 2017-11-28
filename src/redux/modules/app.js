@@ -15,7 +15,6 @@ export default function app(state = initialState, action = {}) {
 }
 
 export function updateApp({ path, value }) {
-  console.log('updateApp', path, value, typeof value);
   if ( !path ) {
     console.error('missing path');
     return {
