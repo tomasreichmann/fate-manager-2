@@ -29,7 +29,6 @@ import { FaPlus, FaChain, FaChainBroken, FaTrash, FaEyeSlash } from 'react-icons
       path + params.key
     ),
     adapter: (snapshot)=>{
-      console.log('!!! snapshot.val()', fromJS(snapshot.val()) );
       return { campaign: fromJS(snapshot.val()) || undefined };
     },
   },
@@ -66,7 +65,6 @@ export default class CampaignDetail extends Component {
 
   @autobind
   toggleSheetSelection(keys) {
-    console.log('toggleSheetSelection', keys);
     const sheetKeys = Array.isArray(keys) ? keys : [keys];
     const selectedSheets = sheetKeys.reduce( (updatedSelectedKeys, sheetKey) => (
       {
@@ -82,7 +80,6 @@ export default class CampaignDetail extends Component {
 
   @autobind
   addExistingSheet() {
-    console.log('addExistingSheet');
     const sheetKey = this.addExistingSheetSelect.value;
     if (sheetKey) {
       updateDb('/campaigns/' + this.props.campaign.get('key') + '/sheetKeys/' + sheetKey, sheetKey, 'set');
@@ -97,7 +94,6 @@ export default class CampaignDetail extends Component {
 
   @autobind
   assignPlayer() {
-    console.log('assignPlayer');
     const playerKey = this.assignPlayerSelect.value;
     if (playerKey) {
       updateDb('/campaigns/' + this.props.campaign.get('key') + '/playerKeys/' + playerKey, playerKey, 'set');
@@ -106,7 +102,6 @@ export default class CampaignDetail extends Component {
 
   @autobind
   unassignPlayer(playerKey) {
-    console.log('unassignPlayer', playerKey);
     if (playerKey) {
       updateDb('/campaigns/' + this.props.campaign.get('key') + '/playerKeys/' + playerKey, null);
     }
@@ -114,7 +109,6 @@ export default class CampaignDetail extends Component {
 
   @autobind
   removeSheetFromCampaign(sheetKey) {
-    console.log('removeSheetFromCampaign', sheetKey);
     if (sheetKey) {
       updateDb('/campaigns/' + this.props.campaign.get('key') + '/sheetKeys/' + sheetKey, null);
     }
@@ -122,7 +116,6 @@ export default class CampaignDetail extends Component {
 
   @autobind
   deleteDocument(docKey) {
-    console.log('deleteDocument', docKey);
     if (docKey) {
       updateDb('/campaigns/' + this.props.campaign.get('key') + '/documents/' + docKey, null);
     }
@@ -131,7 +124,6 @@ export default class CampaignDetail extends Component {
   @autobind
   updateCampaign(value, { path }) {
     const { campaign } = this.props;
-    console.log('updateCampaign', path, value);
     updateDb('/campaigns/' + campaign.get('key') + '/' + path, value);
   }
 
@@ -145,8 +137,6 @@ export default class CampaignDetail extends Component {
     user,
     firebaseConnectDone,
   }) {
-    console.log('campaign', campaign);
-    console.log('this.props.campaign', this.props.campaign);
     const styles = require('./CampaignDetail.scss');
     const { sheetKeys = Map(), playerKeys = Map(), key: campaignKey, documents = Map(), description } = (campaign ? campaign.toObject() : {});
 

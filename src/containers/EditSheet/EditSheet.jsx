@@ -47,14 +47,12 @@ export default class EditSheet extends Component {
 
   redirect(to) {
     return ()=>{
-      console.log('redirect', to );
       this.props.pushState(to);
     };
   }
 
   discard(event) {
     event.preventDefault();
-    console.log('discard');
     this.props.discardSheetUpdates(this.props.params.key);
     this.props.pushState('/sheets');
   }
@@ -63,7 +61,6 @@ export default class EditSheet extends Component {
     event.preventDefault();
     const key = this.props.params.key;
     const sheet = this.props.editedSheets.get(key).update('stress', (stress = Map())=>( stress.map( (stressLane)=>( stressLane || null ) ) ) );
-    console.log('save', key, sheet );
     updateDb('/sheets/' + key, sheet.toJSON() );
     this.props.pushState('/sheet/' + key);
     this.props.discardSheetUpdates(this.props.params.key);
@@ -71,7 +68,6 @@ export default class EditSheet extends Component {
 
   viewAsBlock(event) {
     event.preventDefault();
-    console.log('viewAsBlock');
     const key = this.props.params.key;
     this.props.pushState('/sheet/' + key);
   }
@@ -84,7 +80,6 @@ export default class EditSheet extends Component {
   addSkill(event) {
     event.preventDefault();
     const skillKey = this.newSkillSelect.value;
-    console.log('addSkill');
     const sessionPath = 'editedSheets/' + this.props.params.key + '/skills/' + skillKey;
     this.props.updateSession(sessionPath, 1);
   }
@@ -104,14 +99,12 @@ export default class EditSheet extends Component {
   addStressBox({stressLaneIndex, sheetStressLane }, event) {
     event.preventDefault();
     const newStressBoxIndex = sheetStressLane ? sheetStressLane.size : 0;
-    console.log('addStressBox', stressLaneIndex, sheetStressLane);
     const sessionPath = 'editedSheets/' + this.props.params.key + '/stress/' + stressLaneIndex + '/' + newStressBoxIndex;
     this.props.updateSession(sessionPath, false);
   }
 
   removeStressBox({stressLaneIndex, sheetStressLane}, event) {
     event.preventDefault();
-    console.log('removeStressBox', stressLaneIndex, sheetStressLane);
     if (sheetStressLane) {
       const removeStressBoxIndex = sheetStressLane.size - 1;
       const sessionPath = 'editedSheets/' + this.props.params.key + '/stress/' + stressLaneIndex + '/' + removeStressBoxIndex;
@@ -126,10 +119,7 @@ export default class EditSheet extends Component {
   }
 
   updateSheet(value, {path}) {
-    console.log('value', value);
-    console.log('path', path);
     const sessionPath = 'editedSheets/' + this.props.params.key + '/' + path;
-    console.log('sessionPath', sessionPath);
     this.props.updateSession(sessionPath, value);
   }
 
@@ -139,7 +129,6 @@ export default class EditSheet extends Component {
     const key = params.key;
 
     if ( !editedSheets.getIn([key, 'template']) ) {
-      console.log('EditSheet | NOT FOUND', key, editedSheets && editedSheets.toJS(), editedSheets && editedSheets.get(key), editedSheets && editedSheets.getIn([key, 'template']) );
       return <div className={styles.EditSheet + ' container'} ><Alert className={styles.EditSheet_notFoung} warning >Sheet or template for { params.key } not found.</Alert></div>;
     }
 

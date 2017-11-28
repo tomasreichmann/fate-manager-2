@@ -52,7 +52,6 @@ export function getInitialUser() {
   return function dispatchOnGetInitialUser(dispatch) {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log('user already logged in', user);
         dispatch({
           type: USER_UPDATE,
           payload: {
@@ -82,7 +81,6 @@ export default function reducer(state = initialState, action = {}) {
       return state.setIn(['sheets', 'loading'], true);
     }
     case SHEETS_SUCCESS: {
-      console.log('action', action);
       return state
         .mergeIn(['sheets'], {
           loading: false,
@@ -101,7 +99,6 @@ export default function reducer(state = initialState, action = {}) {
       ;
     }
     case SHEETS_UPDATE: {
-      console.log('action', action);
       return state
         .mergeIn(['sheets'], {
           loading: false,
@@ -180,7 +177,6 @@ export function getUserInterface() {
 }
 
 export function getUser() {
-  console.log('getUser', processUser(firebase.auth().currentUser));
   return processUser(firebase.auth().currentUser);
 }
 
@@ -205,14 +201,12 @@ export function login(email, password, routeBeforeLogin) {
 }
 
 export function register(email, password, routeBeforeLogin) {
-  console.log('register1', email, password, routeBeforeLogin);
   return {
     types: [REGISTER, REGISTER_SUCCESS, REGISTER_FAIL],
     payload: {
       routeBeforeLogin
     },
     promise: () => (
-      console.log('register2', email, password, routeBeforeLogin),
       firebase.auth().createUserWithEmailAndPassword(email, password).then( ()=>{
         const user = getUser();
         firebaseDb.ref('users/' + user.uid).set({
@@ -229,7 +223,6 @@ export function register(email, password, routeBeforeLogin) {
 
 export function updateDb(path, value = null, method = 'set') {
   const params = method !== 'remove' ? [value] : [];
-  console.log('updateDb', path, value, method, params);
   return firebaseDb.ref(path)[method](...params);
 }
 
@@ -273,7 +266,6 @@ export function discardSheetUpdates(key) {
 }
 
 export function connectSession() {
-  console.log('connectSession');
   return function dispatchOnSessionValue(dispatch, getState) {
     const user = getState().firebase.get('user');
     return firebaseDb.ref('users/' + user.get('uid') ).on('value', (snapshot)=>{
@@ -288,9 +280,7 @@ export function connectSession() {
 }
 
 export function createNewSheet(state, templateKey, campaignKey) {
-  console.log('createNewSheet', state, templateKey, campaignKey);
   const user = state.firebase.get('user');
-  console.log('createNewSheet user', user);
   const ref = firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/');
   const key = ref.push().key;
   const newSheet = Map({
@@ -309,9 +299,7 @@ export function createNewSheet(state, templateKey, campaignKey) {
 }
 
 export function createNewCampaign(state) {
-  console.log('createNewCampaign', state);
   const user = state.firebase.get('user');
-  console.log('createNewCampaign user', user);
   const ref = firebaseDb.ref('campaigns');
   const key = ref.push().key;
   const newCampaign = Map({
@@ -326,7 +314,6 @@ export function createNewCampaign(state) {
 }
 
 export function createNewDocument(state, campaignKey) {
-  console.log('createNewDocument', state);
   const user = state.firebase.get('user');
   const ref = firebaseDb.ref('campaigns/' + campaignKey + '/documents');
   const key = ref.push().key;
@@ -342,7 +329,6 @@ export function createNewDocument(state, campaignKey) {
 }
 
 export function createNewView(state) {
-  console.log('createNewView', state);
   const user = state.firebase.get('user');
   const ref = firebaseDb.ref('views');
   const key = ref.push().key;
@@ -359,15 +345,12 @@ export function createNewView(state) {
 
 export function startEditingSheet(state, key) {
   const sheetSession = state.firebase.getIn(['session', 'editedSheets', key]);
-  console.log('startEditingSheet', state, key, sheetSession);
   if (!sheetSession) {
     const user = state.firebase.get('user');
     const originalSheet = state.firebase.getIn(['sheets', 'list', key]);
-    console.log('no sheet session. Original sheet', originalSheet);
     if (originalSheet) {
       firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/' + key ).set(originalSheet.toJSON());
     } else {
-      console.log('Original sheet not found!');
     }
   }
 }
@@ -412,7 +395,6 @@ export function getSheets() {
 }
 
 export function connectSheets() {
-  console.log('connectSheets');
   return function dispatchOnSheetsValue(dispatch) {
     firebaseDb.ref('sheets/').orderByChild('name').on('value', (snapshot)=>{
       dispatch({

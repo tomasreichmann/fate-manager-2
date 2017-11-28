@@ -31,11 +31,9 @@ import { MdCast } from 'react-icons/lib/md';
   {
     path: '/campaigns/',
     pathResolver: (path, {params = {}})=>(
-      console.log('pathResolver params', params),
       path + params.campaignKey
     ),
     adapter: (snapshot, {params = {}})=>{
-      console.log('snapshot campaign', snapshot, snapshot.val());
       const campaign = fromJS(snapshot.val()) || undefined;
       return {
         campaign: campaign,
@@ -46,7 +44,6 @@ import { MdCast } from 'react-icons/lib/md';
   {
     path: '/views',
     adapter: (snapshot)=>{
-      console.log('snapshot views', snapshot, snapshot.val());
       const views = fromJS(snapshot.val()).sort(sortByKey('name')) || undefined;
       return {
         views,
@@ -86,7 +83,6 @@ export default class DocumentDetail extends Component {
   @autobind
   updateDocument(value, { path }, method) {
     const { campaign, doc } = this.props;
-    console.log('updateDocument', path, value, method);
     updateDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/' + path, value, method);
   }
 
@@ -164,11 +160,6 @@ export default class DocumentDetail extends Component {
     const targetKey = targetElement.get('key');
     const currentOrder = currentElement.get('order') || this.maxOrder(doc.get('contentElements') || []) + 1;
     const targetOrder = targetElement.get('order') || this.maxOrder(doc.get('contentElements') || []) + 2;
-    console.log('moveContent shift', shift);
-    console.log('moveContent currentKey', key, 'targetKey', targetKey);
-    console.log('moveContent currentIndex', currentIndex, 'targetIndex', targetIndex);
-    console.log('moveContent currentOrder', currentOrder, 'targetOrder', targetOrder);
-    console.log('moveContent currentElement', currentElement, 'targetElement', targetElement);
 
     updateDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/contentElements/' + key + '/order', targetOrder );
     updateDb('/campaigns/' + campaign.get('key') + '/documents/' + doc.get('key') + '/contentElements/' + targetKey + '/order', currentOrder );
@@ -187,7 +178,6 @@ export default class DocumentDetail extends Component {
 
   @autobind
   sendToView({key, clear}) {
-    console.log('sendToView', key, this.sendToViewSelects, this.sendToViewSelects[key]);
     const { doc } = this.props;
     const viewKey = this.sendToViewSelects[key].value;
     const contentElements = key === 'doc' ? doc.get('contentElements') : Map({key: doc.getIn(['contentElements', key])});
@@ -231,7 +221,6 @@ export default class DocumentDetail extends Component {
         const isBeingEdited = key === editingContentKey;
         const getClassName = (state) => {
           const cls = classnames([styles.DocumentDetail_contentElement, styles['DocumentDetail_contentElement_' + state]]);
-          console.log('state', state, cls);
           return cls;
         };
 
