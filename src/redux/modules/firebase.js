@@ -351,6 +351,7 @@ export function startEditingSheet(state, key) {
     if (originalSheet) {
       firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/' + key ).set(originalSheet.toJSON());
     } else {
+      console.error('original sheet ' + key + ' not found');
     }
   }
 }

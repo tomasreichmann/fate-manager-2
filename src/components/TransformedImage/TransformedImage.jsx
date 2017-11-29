@@ -146,12 +146,16 @@ export default class TransformedImage extends Component {
       wrapperStyles.left = (containerWidth - wrapperWidth) / 2;
     } else if (clipModeHorizontal === 'right') {
       wrapperStyles.left = containerWidth - wrapperWidth;
+    } else {
+      wrapperStyles.left = 0;
     }
 
     if (clipModeVertical === 'middle') {
       wrapperStyles.top = (containerHeight - wrapperHeight) / 2;
     } else if (clipModeVertical === 'bottom') {
       wrapperStyles.top = containerHeight - wrapperHeight;
+    } else {
+      wrapperStyles.top = 0;
     }
 
     wrapperStyles.left = wrapperStyles.left + parseFloat(horizontalShift);
