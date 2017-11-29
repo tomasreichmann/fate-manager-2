@@ -248,7 +248,7 @@ export default class DocumentDetail extends Component {
               </div>
             </FormGroup>
             <ContentElement {...componentProps} preview={!isBeingEdited} handleChange={this.updateContent} handleChangeParams={{key}} admin />
-            { isBeingEdited ? this.getAddContentGroup(key, true) : <FormGroup childTypes={['flexible']}>
+            <FormGroup childTypes={['flexible']}>
               <div></div>
               <Input inline type="select" label="View" options={ viewOptions } value={view} handleChange={this.updateContent} handleChangeParams={{key, path: 'view'}} inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects[key] = sendToViewSelect) } />
               <div>
@@ -256,7 +256,8 @@ export default class DocumentDetail extends Component {
                 <Button primary noClip onClick={this.openViewInNewTab} onClickParams={key} ><FaExternalLink /> Open</Button>
                 <Button warning onClick={this.sendToView} onClickParams={{ key, clear: true }} ><FaEraser /> Clear</Button>
               </div>
-            </FormGroup> }
+            </FormGroup>
+            { isBeingEdited ? this.getAddContentGroup(key, true) : null }
             <hr />
           </div>)}
         </Transition>);
