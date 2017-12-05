@@ -70,9 +70,9 @@ export default class SheetBlockContent extends Component {
     }
 
     const sheetOptions = sheets
-      .filter((sheet) => (
-        resolveAccess(sheet, user.get('key'))
-      ))
+      .filter((sheet) => {
+        return resolveAccess(sheet, user.get('uid'));
+      })
       .map((sheet)=>(
         { label: sheet.get('name') || sheet.get('key'), value: sheet.get('key') }
       ))
