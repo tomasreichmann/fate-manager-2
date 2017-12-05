@@ -6,7 +6,8 @@ import { updateDb, myFirebaseConnect } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
 import { fromJS } from 'immutable';
 import { Link } from 'react-router';
-import { FaClose } from 'react-icons/lib/fa';
+import { FaEdit } from 'react-icons/lib/fa';
+import { sortByKey, resolveAccess } from 'utils/utils';
 
 @connect(
   state => ({
@@ -21,13 +22,14 @@ import { FaClose } from 'react-icons/lib/fa';
     ),
   }
 ])
-export default class BlockContent extends Component {
+export default class SheetBlockContent extends Component {
   static propTypes = {
     preview: PropTypes.bool,
     handleChange: PropTypes.func,
     handleChangeParams: PropTypes.any,
     templates: PropTypes.object,
     sheets: PropTypes.object,
+    user: PropTypes.object,
   }
 
   @injectProps
@@ -35,9 +37,10 @@ export default class BlockContent extends Component {
     preview = false,
     handleChange,
     handleChangeParams,
-    templates = Map(),
-    sheets = Map(),
+    templates = new Map(),
+    sheets = new Map(),
     sheetKeys = [],
+    user = new Map(),
     ...props,
   } = {}) {
     const styles = require('./SheetBlockContent.scss');
@@ -47,27 +50,46 @@ export default class BlockContent extends Component {
 
     const sheetKeysValue = (typeof sheetKeys === 'object' && 'map' in sheetKeys) ? sheetKeys : [sheetKeys];
 
-    if (selectedSheets.length === 0) {
-      return <Alert className={ styles.SheetBlockContent_blocks } {...props} >No sheets selected</Alert>;
+    if (preview) {
+      if (selectedSheets.length === 0) {
+        return <Alert className={ styles.SheetBlockContent_blocks } {...props} >No sheets selected</Alert>;
+      }
+      return (<div className={ styles.SheetBlockContent_blocks } {...props} > { selectedSheets.map( (sheet, sheetIndex) => (
+        sheet ?
+        <div className={ styles.SheetBlockContent_blocks_item } key={sheetIndex} >
+          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
+            <div className={ styles.SheetBlockContent_blocks_actions }>
+              <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning><FaEdit /> Edit</Button></Link>
+            </div>
+          </SheetBlock>
+        </div>
+        :
+        <Alert key={sheetIndex} warning >Sheet {sheetKeys[sheetIndex]} not found</Alert>
+      ) ) }
+      </div>);
     }
 
-    return preview ?
-    (<div className={ styles.SheetBlockContent_blocks } {...props} > { selectedSheets.map( (sheet, sheetIndex) => (
-      sheet ?
-      <div className={ styles.SheetBlockContent_blocks_item } >
-        <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
-          <div className={ styles.SheetBlockContent_blocks_actions }>
-            <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning><FaClose /></Button></Link>
-          </div>
-        </SheetBlock>
-      </div>
-      :
-      <Alert warning >Sheet {sheetKeys[sheetIndex]} not found</Alert>
-    ) ) }
-    </div>)
-    :
-    (<div {...props} >
-      <Input label="Sheets" type="select" name="sheetKeys" size={ Math.min(sheets.size || 0, 10) } options={ sheets.map( (sheet)=>( { label: sheet.get('name') || sheet.get('key'), value: sheet.get('key') } ) ) } value={sheetKeysValue} multiple handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/sheetKeys' }} />
+    const sheetOptions = sheets
+      .filter((sheet) => (
+        resolveAccess(sheet, user.get('key'))
+      ))
+      .map((sheet)=>(
+        { label: sheet.get('name') || sheet.get('key'), value: sheet.get('key') }
+      ))
+      .sort(sortByKey('label'));
+
+    return (<div {...props} >
+      <Input
+        label="Sheets"
+        type="select"
+        name="sheetKeys"
+        size={ Math.min(sheets.size || 0, 10) }
+        options={sheetOptions}
+        value={sheetKeysValue}
+        multiple
+        handleChange={handleChange}
+        handleChangeParams={{...handleChangeParams, path: 'componentProps/sheetKeys' }}
+      />
     </div>);
   }
 }

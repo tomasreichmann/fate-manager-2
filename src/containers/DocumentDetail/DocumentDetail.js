@@ -192,6 +192,7 @@ export default class DocumentDetail extends Component {
     params = {},
     firebaseConnectDone,
     users,
+    user,
   }) {
     const styles = require('./DocumentDetail.scss');
 
@@ -215,7 +216,11 @@ export default class DocumentDetail extends Component {
         const ContentElement = contentComponents[component] && contentComponents[component].component;
         if (!ContentElement) {
           console.warn('Malformed component', component, componentProps);
-          return <Alert warning>Malformed component - <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /></Button></Alert>;
+          // TODO list malformed data
+          return (<Alert warning>
+            Malformed component "{component}" with key {key}- <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /></Button>
+            <pre>{JSON.stringify(componentProps)}</pre>
+          </Alert>);
         }
 
         const isBeingEdited = key === editingContentKey;
@@ -227,39 +232,40 @@ export default class DocumentDetail extends Component {
         return (<Transition in={isBeingEdited} timeout={100}>
           {(state) => (
             <div className={ getClassName(state) } key={key}>
-            <FormGroup childTypes={[null, 'flexible', null]}>
-              <div>
-                { isBeingEdited ? [
-                  <Button secondary clipBottomLeft disabled={componentElement === sortedContentElements.first()} onClick={this.moveContent} onClickParams={{ shift: -1, key}} ><FaChevronUp /></Button>,
-                  <Button secondary disabled={componentElement === sortedContentElements.last()} onClick={this.moveContent} onClickParams={{ shift: 1, key}} ><FaChevronDown /></Button>
-                ] : null }
-              </div>
-              <h4 style={{margin: 0}}>{ componentElement.get('label') || get(contentComponents, componentElement.get('componentName'), {}).label || componentElement.get('componentName') }</h4>
-              <div>
-                { isBeingEdited
-                  ? <Button inline success clipBottomLeft
-                      onClick={partial(this.updateDocument, null, {path: 'editingContentKey'}, undefined)}
-                    ><FaEdit /> Preview</Button>
-                  : <Button inline warning clipBottomLeft active={isBeingEdited}
-                      onClick={partial(this.updateDocument, key, {path: 'editingContentKey'}, undefined)}
-                    ><FaEdit /> Edit</Button>
-                }
-                <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /> Delete</Button>
-              </div>
-            </FormGroup>
-            <ContentElement {...componentProps} preview={!isBeingEdited} handleChange={this.updateContent} handleChangeParams={{key}} admin />
-            <FormGroup childTypes={['flexible']}>
-              <div></div>
-              <Input inline type="select" label="View" options={ viewOptions } value={view} handleChange={this.updateContent} handleChangeParams={{key, path: 'view'}} inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects[key] = sendToViewSelect) } />
-              <div>
-                <Button secondary clipBottomLeft onClick={this.sendToView} onClickParams={{ key }} ><MdCast /> Send</Button>
-                <Button primary noClip onClick={this.openViewInNewTab} onClickParams={key} ><FaExternalLink /> Open</Button>
-                <Button warning onClick={this.sendToView} onClickParams={{ key, clear: true }} ><FaEraser /> Clear</Button>
-              </div>
-            </FormGroup>
-            { isBeingEdited ? this.getAddContentGroup(key, true) : null }
-            <hr />
-          </div>)}
+              <FormGroup childTypes={[null, 'flexible', null]}>
+                <div>
+                  { isBeingEdited ? [
+                    <Button secondary clipBottomLeft disabled={componentElement === sortedContentElements.first()} onClick={this.moveContent} onClickParams={{ shift: -1, key}} ><FaChevronUp /></Button>,
+                    <Button secondary disabled={componentElement === sortedContentElements.last()} onClick={this.moveContent} onClickParams={{ shift: 1, key}} ><FaChevronDown /></Button>
+                  ] : null }
+                </div>
+                <h4 style={{margin: 0}}>{ componentElement.get('label') || get(contentComponents, componentElement.get('componentName'), {}).label || componentElement.get('componentName') }</h4>
+                <div>
+                  { isBeingEdited
+                    ? <Button inline success clipBottomLeft
+                        onClick={partial(this.updateDocument, null, {path: 'editingContentKey'}, undefined)}
+                      ><FaEdit /> Preview</Button>
+                    : <Button inline warning clipBottomLeft active={isBeingEdited}
+                        onClick={partial(this.updateDocument, key, {path: 'editingContentKey'}, undefined)}
+                      ><FaEdit /> Edit</Button>
+                  }
+                  <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /> Delete</Button>
+                </div>
+              </FormGroup>
+              <ContentElement {...componentProps} preview={!isBeingEdited} handleChange={this.updateContent} handleChangeParams={{key}} admin user={user} />
+              <FormGroup childTypes={['flexible']}>
+                <div></div>
+                <Input inline type="select" label="View" options={ viewOptions } value={view} handleChange={this.updateContent} handleChangeParams={{key, path: 'view'}} inputRef={ (sendToViewSelect)=>(DocumentDetailInstance.sendToViewSelects[key] = sendToViewSelect) } />
+                <div>
+                  <Button secondary clipBottomLeft onClick={this.sendToView} onClickParams={{ key }} ><MdCast /> Send</Button>
+                  <Button primary noClip onClick={this.openViewInNewTab} onClickParams={key} ><FaExternalLink /> Open</Button>
+                  <Button warning onClick={this.sendToView} onClickParams={{ key, clear: true }} ><FaEraser /> Clear</Button>
+                </div>
+              </FormGroup>
+              { isBeingEdited ? this.getAddContentGroup(key, true) : null }
+              <hr />
+            </div>
+          )}
         </Transition>);
       } ) :
         <Alert warning>No content yet. Add Some</Alert> }

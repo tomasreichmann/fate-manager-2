@@ -229,7 +229,7 @@ export default class EditSheet extends Component {
           <strong>{stressLane.get('label')}: </strong>
           <div className={styles.EditSheet_stressBlock_boxes}>
             { (sheet.getIn(['stress', stressLaneIndex.toString()]) || []).map( (isUsed, boxIndex)=>(
-              <Input type="checkbox" className={styles.EditSheet_stressBox} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
+              <Input key={boxIndex} type="checkbox" className={styles.EditSheet_stressBox} value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{path: 'stress/' + stressLaneIndex + '/' + boxIndex}} />
             ) ) }
           </div>
           <div>

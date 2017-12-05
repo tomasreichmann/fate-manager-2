@@ -166,7 +166,7 @@ export default class SheetBlock extends Component {
       <h2>Stress</h2>
       <FormGroup childTypes={['flexible', 'flexible']} >
         { template.get('stress').map( (stressLane, stressLaneIndex)=>(
-          <div>
+          <div key={stressLaneIndex}>
             <p>{stressLane.get('label')}</p>
             <div className={styles.SheetBlock_stressBlock_boxes}>
               { (stress.get(stressLaneIndex.toString()) || []).map( (isUsed, boxIndex)=>(

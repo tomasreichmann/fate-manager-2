@@ -109,10 +109,6 @@ export default class TransformedImage extends Component {
       invalidResizeMode = true;
     }
 
-    if (invalidResizeMode) {
-      console.warn('invalidResizeMode!', resizeMode);
-    }
-
     const resizeMod = parseFloat(resizeValue) / 100;
 
     if (resizeMode === 'relativeContainerWidth' || invalidResizeMode) {
@@ -244,7 +240,7 @@ export default class TransformedImage extends Component {
         }}
       >
         {({ measureRef }) =>
-          <span ref={measureRef} style={cloneDeep(containerStyles)} className={className} >
+          <span key="container" ref={measureRef} style={cloneDeep(containerStyles)} className={className} >
             <span style={cloneDeep(wrapperStyles)} >
               <img
                 src={src}
