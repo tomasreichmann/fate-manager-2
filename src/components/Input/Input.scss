@@ -24,11 +24,14 @@ $inputBorder: 2px solid $inverse-bg;
   &--checkbox {
     position: absolute;
     clip: rect(0,0,0,0);
+    width: 0;
+    height: 0;
   }
 
   &--checkbox + &-fauxCheckbox {
     position: relative;
-    display: block;
+    display: inline-block;
+    vertical-align: middle;
     width: 24px;
     height: 24px;
     border: $inputBorder;
@@ -70,6 +73,7 @@ $inputBorder: 2px solid $inverse-bg;
 
   &-text--after {
     margin-left: 1rem;
+    vertical-align: middle;
   }
 
   &-inputWrap {

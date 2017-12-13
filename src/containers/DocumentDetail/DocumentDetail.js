@@ -15,8 +15,14 @@ import autobind from 'autobind-decorator';
 import { Loading, Button, Alert, Editable, FormGroup, Input, Breadcrumbs, User, AccessControls } from 'components';
 import contentComponents from 'contentComponents';
 import * as FaIcons from 'react-icons/lib/fa';
+import * as MdIcons from 'react-icons/lib/md';
 import { FaChevronDown, FaChevronUp, FaTrash, FaEdit, FaExternalLink, FaEraser} from 'react-icons/lib/fa';
 import { MdCast } from 'react-icons/lib/md';
+
+const Icons = {
+  ...FaIcons,
+  ...MdIcons,
+};
 
 @connect(
   (state) => ({
@@ -72,7 +78,7 @@ export default class DocumentDetail extends Component {
       .toList()
       .toJSON()
       .map(({componentName, icon, label}, index, all) => {
-        const Icon = FaIcons[icon];
+        const Icon = Icons[icon];
         const isFirst = index === 0;
         const isLast = index === all.length - 1;
         return <Button key={componentName} clipBottomLeft={isFirst} noClip={!isFirst && !isLast} primary onClick={this.addContent} onClickParams={{placementKey, componentName, placeBelow}} ><Icon/>&emsp;{label}</Button>;

@@ -31,3 +31,7 @@ export Togglable from './Togglable/Togglable';
 export User from './User/User';
 export AccessControls from './AccessControls/AccessControls';
 export TransformedImage from './TransformedImage/TransformedImage';
+export DocumentLink from './DocumentLink/DocumentLink';
+export DocumentLinkContent from './DocumentLink/DocumentLinkContent';
+export VideoPlayer from './VideoPlayer/VideoPlayer';
+export VideoPlayerContent from './VideoPlayer/VideoPlayerContent';

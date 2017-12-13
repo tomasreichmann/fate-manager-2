@@ -4,6 +4,8 @@ import {
   RichTextContent,
   SheetBlockContent,
   SoundsContent,
+  DocumentLinkContent,
+  VideoPlayerContent,
 } from 'components';
 
 const contentComponents = {
@@ -36,6 +38,18 @@ const contentComponents = {
     label: 'Sounds',
     component: SoundsContent,
     componentName: 'SoundsContent',
+  },
+  DocumentLinkContent: {
+    icon: 'FaExternalLink',
+    label: 'Link',
+    component: DocumentLinkContent,
+    componentName: 'DocumentLinkContent',
+  },
+  VideoPlayerContent: {
+    icon: 'MdOndemandVideo',
+    label: 'Video player',
+    component: VideoPlayerContent,
+    componentName: 'VideoPlayerContent',
   },
 };
 
