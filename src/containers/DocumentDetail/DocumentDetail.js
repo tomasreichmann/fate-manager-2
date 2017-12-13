@@ -236,28 +236,29 @@ export default class DocumentDetail extends Component {
         };
 
         return (<Transition in={isBeingEdited} timeout={100}>
-          {(state) => (
-            <div className={ getClassName(state) } key={key}>
-              <FormGroup childTypes={[null, 'flexible', null]}>
-                <div>
-                  { isBeingEdited ? [
-                    <Button secondary clipBottomLeft disabled={componentElement === sortedContentElements.first()} onClick={this.moveContent} onClickParams={{ shift: -1, key}} ><FaChevronUp /></Button>,
-                    <Button secondary disabled={componentElement === sortedContentElements.last()} onClick={this.moveContent} onClickParams={{ shift: 1, key}} ><FaChevronDown /></Button>
-                  ] : null }
-                </div>
-                <h4 style={{margin: 0}}>{ componentElement.get('label') || get(contentComponents, componentElement.get('componentName'), {}).label || componentElement.get('componentName') }</h4>
-                <div>
-                  { isBeingEdited
-                    ? <Button inline success clipBottomLeft
-                        onClick={partial(this.updateDocument, null, {path: 'editingContentKey'}, undefined)}
-                      ><FaEdit /> Preview</Button>
-                    : <Button inline warning clipBottomLeft active={isBeingEdited}
-                        onClick={partial(this.updateDocument, key, {path: 'editingContentKey'}, undefined)}
-                      ><FaEdit /> Edit</Button>
-                  }
-                  <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /> Delete</Button>
-                </div>
-              </FormGroup>
+          {(state) => {
+            const headerChildTypes = isBeingEdited ? [null, 'flexible', null] : ['flexible'];
+            const headerContent = isBeingEdited ? [
+              <div key="moveControls">
+                <Button secondary clipBottomLeft disabled={componentElement === sortedContentElements.first()} onClick={this.moveContent} onClickParams={{ shift: -1, key}} ><FaChevronUp /></Button>
+                <Button secondary disabled={componentElement === sortedContentElements.last()} onClick={this.moveContent} onClickParams={{ shift: 1, key}} ><FaChevronDown /></Button>
+              </div>
+            ] : [];
+            headerContent.push(<h4 key="componentName" style={{margin: 0}}>{ componentElement.get('label') || get(contentComponents, componentElement.get('componentName'), {}).label || componentElement.get('componentName') }</h4>);
+            headerContent.push(<div key="buttons">
+              { isBeingEdited ?
+                (<Button inline success clipBottomLeft
+                  onClick={partial(this.updateDocument, null, {path: 'editingContentKey'}, undefined)}
+                ><FaEdit /> Preview</Button>)
+                : (<Button inline warning clipBottomLeft active={isBeingEdited}
+                  onClick={partial(this.updateDocument, key, {path: 'editingContentKey'}, undefined)}
+                ><FaEdit /> Edit</Button>)
+              }
+              <Button danger confirmMessage="Really permanently remove?" onClick={this.removeContent} onClickParams={key} ><FaTrash /> Delete</Button>
+            </div>);
+
+            return (<div className={ getClassName(state) } key={key}>
+              <FormGroup childTypes={headerChildTypes} children={headerContent} />
               <ContentElement {...componentProps} preview={!isBeingEdited} handleChange={this.updateContent} handleChangeParams={{key}} admin user={user} />
               <FormGroup childTypes={['flexible']}>
                 <div></div>
@@ -270,8 +271,8 @@ export default class DocumentDetail extends Component {
               </FormGroup>
               { isBeingEdited ? this.getAddContentGroup(key, true) : null }
               <hr />
-            </div>
-          )}
+            </div>);
+          }}
         </Transition>);
       } ) :
         <Alert warning>No content yet. Add Some</Alert> }

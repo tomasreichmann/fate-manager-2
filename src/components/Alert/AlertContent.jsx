@@ -57,7 +57,7 @@ export default class AlertContent extends Component {
     const brandSelection = brands.find((brand) => brandMap[brand]);
     return preview ? <Alert {...props}>{children}</Alert> : (<div className={styles.AdminContent} {...props} >
       <FormGroup childTypes={['flexible']}>
-        <Input label="Message" type="textarea" value={message || children} placeholder="no message" handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/children' }} />
+        <Input label="Message" type="textarea" value={children || message} placeholder="no message" handleChange={handleChange} handleChangeParams={{...handleChangeParams, path: 'componentProps/children' }} />
       </FormGroup>
       <RadioButtonGroup value={brandSelection} options={brandOptions} onChange={this.handleBrandChange}/>
     </div>);

@@ -15,8 +15,18 @@ export default class SheetList extends Component {
     sheets: PropTypes.object,
     selection: PropTypes.object,
     actions: PropTypes.array,
+    campaignKey: PropTypes.string,
     toggleSheetSelection: PropTypes.func,
     user: PropTypes.object,
+  };
+
+  static defaultProps = {
+    sheets: new Map(),
+    selection: new Map(),
+    actions: [],
+    campaignKey: null,
+    toggleSheetSelection: fff => fff,
+    user: null,
   };
 
   constructor(props) {
@@ -28,7 +38,7 @@ export default class SheetList extends Component {
 
   @autobind
   getListItem(item) {
-    const {actions = [], selection = this.state.selection, user} = this.props;
+    const {actions = [], selection = this.state.selection, user, campaignKey} = this.props;
     const styles = require('./SheetList.scss');
     const columns = [
       <div className={styles.SheetList_item_select} >
@@ -41,7 +51,7 @@ export default class SheetList extends Component {
     }
     columns.push(
       <div className={styles.SheetList_item_title} >
-        <Link to={'/sheet/' + encodeURIComponent(item.get('key'))} ><Button link className="text-left" block >{item.get('npc') ? <FaUserTimes style={{marginRight: '1rem', fontSize: '1.2em'}} /> : null}{item.get('name')}</Button></Link>
+        <Link to={this.getBlockUrl([item.get('key')], campaignKey)} ><Button link className="text-left" block >{item.get('npc') ? <FaUserTimes style={{marginRight: '1rem', fontSize: '1.2em'}} /> : null}{item.get('name')}</Button></Link>
       </div>,
       <div className={styles.SheetList_item_created} >
         {(new Date(item.get('created'))).toLocaleString()}
@@ -50,7 +60,7 @@ export default class SheetList extends Component {
         <User uid={item.get('createdBy')} />
       </div>,
       <div className={styles.SheetList_item_actions} >
-        <Link to={'/sheet/' + encodeURIComponent(item.get('key')) + '/edit'} ><Button warning clipBottomLeft ><FaEdit /></Button></Link>
+        <Link to={this.getSheetEditUrl(item, campaignKey)} ><Button warning clipBottomLeft ><FaEdit /></Button></Link>
         <Button noClip={!!actions.length} danger disabled={!user} onClick={ this.deleteSheet.bind(this, item.get('key')) } confirmMessage="Really delete?" ><FaTrash /></Button>
         { actions.map( (ActionComponent, actionIndex)=>( cloneElement(ActionComponent, { onClickParams: item.get('key'), key: actionIndex }) ) ) }
       </div>,
@@ -97,27 +107,34 @@ export default class SheetList extends Component {
     updateDb('/sheets/' + key, null);
   }
 
+  getBlockUrl(sheetKeys, campaignKey) {
+    return (campaignKey ? '/campaign/' + campaignKey : '') + '/sheet/' + sheetKeys.map( (sheetKey)=>( encodeURIComponent(sheetKey) ) ).join(';');
+  }
+
+  getSheetEditUrl(sheet, campaignKey) {
+    return (campaignKey ? '/campaign/' + campaignKey : '') + '/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit';
+  }
+
   @injectProps
-  render({sheets = Map(), selection = this.state.selection, user}) {
+  render({sheets = Map(), selection = this.state.selection, user, campaignKey}) {
     const styles = require('./SheetList.scss');
+    const filteredSheets = sheets
+      .filter( (campaign) => {
+        return resolveAccess(campaign, user.get('uid'));
+      });
     const filteredSelection = selection
       .filter( (isSelected)=>(isSelected) )
       .map( (isSelected, key) => (
         sheets.getIn([key, 'name'])
-      ) )
-    ;
+      ) );
     return (<div className={styles.SheetList} >
       <label className={styles.SheetList_item_select_label}><FormGroup className={styles.SheetList_item_select} key="selectAll" >
         <Input type="checkbox" handleChange={this.selectAll} value={filteredSelection.size === sheets.size} inline />
         Select all
       </FormGroup></label>
-      { sheets.size ? sheets
-          .filter( (campaign) => {
-            return resolveAccess(campaign, user.get('uid'));
-          })
-          .map( this.getListItem ) : <Alert warning >No sheets</Alert> }
+      { filteredSheets.size ? filteredSheets.map( this.getListItem ) : <Alert warning >No sheets</Alert> }
       { filteredSelection.size ? <div className={styles.SheetList_openAll} >
-        <Link to={'/sheet/' + filteredSelection.keySeq().map( (key)=>( encodeURIComponent(key) ) ).join(';')} >
+        <Link to={this.getBlockUrl(selection.filter( (isSelected)=>(isSelected) ).keySeq(), campaignKey)} >
           Open all selected: {
             intersperse(filteredSelection.toArray().map((item, index)=>(
               <Button key={index} link >{ item }</Button>

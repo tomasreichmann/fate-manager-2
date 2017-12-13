@@ -2,13 +2,13 @@
 
 .Blocks {
   position: relative;
-  
+
   &_list {
     display: flex;
     flex-wrap: wrap;
   }
 
-  & .Blocks_notLoggedIn {
+  & .Blocks_alert {
     margin: 2rem $padding-large-horizontal 1rem $padding-large-horizontal;
     width: 100%;
   }

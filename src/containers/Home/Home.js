@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
+
 import { Button, Image, FormGroup, Alert } from 'components';
 import { Link } from 'react-router';
 import { FaDesktop, FaFileText, FaFlag } from 'react-icons/lib/fa';
@@ -37,6 +38,11 @@ export default class Home extends Component {
           <p>Sheet list paging and search</p>
 
           <h2>Changelog</h2>
+
+          <h3>13/12/17</h3>
+          <p>New Video player component element - Supports a lot of different video providers, autoplay, fullscreen</p>
+          <p>New Link component element - Makes a link with supplied uri</p>
+          <p>New addresses to support breadcrumb navigation back to campaign</p>
 
           <h3>28/11/17</h3>
           <p>Document content elements now toggle between preview and edit modes. Only one element can be edited at once</p>

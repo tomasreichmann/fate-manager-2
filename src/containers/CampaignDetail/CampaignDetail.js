@@ -196,14 +196,15 @@ export default class CampaignDetail extends Component {
     const sheetsBlock = (<div className={styles.CampaignDetail_sheets} >
       <h2>Sheets</h2>
       <p>
-        <Link to={'/sheet/' + sheets.filter( sheet => !sheet.get('npc') ).map(sheet => sheet.get('key')).join(';')} target="_blank"><Button link>All PC blocks</Button></Link>
+        <Link to={'/campaign/' + campaignKey + '/sheet/' + sheets.filter( sheet => !sheet.get('npc') ).map(sheet => sheet.get('key')).join(';')} target="_blank"><Button link>All PC blocks</Button></Link>
         {' '}
-        <Link to={'/sheet/' + sheets.filter( sheet => sheet.get('npc') ).map(sheet => sheet.get('key')).join(';')} target="_blank"><Button link>All NPC blocks</Button></Link>
+        <Link to={'/campaign/' + campaignKey + '/sheet/' + sheets.filter( sheet => sheet.get('npc') ).map(sheet => sheet.get('key')).join(';')} target="_blank"><Button link>All NPC blocks</Button></Link>
       </p>
       { sheets.size ? <SheetList
         sheets={sheets}
         selection={selectedSheets}
         toggleSheetSelection={this.toggleSheetSelection}
+        campaignKey={campaignKey}
         user={user}
         actions={[<Button onClick={this.removeSheetFromCampaign} warning ><FaChainBroken /></Button>]}
       />

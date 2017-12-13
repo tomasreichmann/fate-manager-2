@@ -13,6 +13,14 @@ export default class SheetBlock extends Component {
     updateDb: PropTypes.func.isRequired,
     template: PropTypes.object,
     children: PropTypes.any,
+    noImage: PropTypes.bool,
+  };
+
+  static defaultPropx = {
+    sheet: new Map(),
+    template: new Map(),
+    children: null,
+    noImage: false,
   };
 
   constructor(props) {
@@ -53,7 +61,7 @@ export default class SheetBlock extends Component {
   }
 
   render() {
-    const { sheet = Map(), template = Map(), children } = this.props;
+    const { sheet = Map(), template = Map(), children, noImage } = this.props;
     const { name, key, refresh, description, aspects, skills = Map(), consequences, stress, stunts, extras, image } = sheet.toObject();
     const styles = require('./SheetBlock.scss');
 
@@ -76,7 +84,7 @@ export default class SheetBlock extends Component {
     </Togglable>) : null;
 
     // image ---
-    const imageBlock = image ? (<Togglable
+    const imageBlock = image && !noImage ? (<Togglable
       className={classnames(styles.SheetBlock_imageBlock, styles.SheetBlock_contentBlock)}
       label="toggle full image"
       collapsedContent={
@@ -128,7 +136,7 @@ export default class SheetBlock extends Component {
     const skillsElements = intersperse(skills.sort().reverse().reduce( ( elements, level, skillSlug ) => (
       level > 0 ? elements.concat([<span className={styles.SheetBlock_skill} >{template.getIn(['skills', skillSlug, 'name'])} {level}</span>]) : elements
     ), [] ), ', ');
-    const skillBlock = skillsElements ? <Togglable
+    const skillBlock = skillsElements.length ? <Togglable
       className={classnames(styles.SheetBlock_skillsBlock, styles.SheetBlock_contentBlock)}
       defaultCollapsed={false}
       position="top"
@@ -165,16 +173,22 @@ export default class SheetBlock extends Component {
     const stressBlock = stress ? (<div className={classnames(styles.SheetBlock_stressBlock, styles.SheetBlock_contentBlock)} >
       <h2>Stress</h2>
       <FormGroup childTypes={['flexible', 'flexible']} >
-        { template.get('stress').map( (stressLane, stressLaneIndex)=>(
-          <div key={stressLaneIndex}>
+        { template.get('stress').map( (stressLane, stressLaneIndex)=>{
+          const stressLaneBoxes = stress.get(stressLaneIndex.toString());
+          return stressLaneBoxes ? (<div key={stressLaneIndex}>
             <p>{stressLane.get('label')}</p>
             <div className={styles.SheetBlock_stressBlock_boxes}>
-              { (stress.get(stressLaneIndex.toString()) || []).map( (isUsed, boxIndex)=>(
-                <span key={'stressBox-' + boxIndex} className={styles.SheetBlock_stressBox}><Input type="checkbox" value={isUsed} inline superscriptAfter={boxIndex + 1} handleChange={this.handleChange} handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}} /></span>
+              { stressLaneBoxes.map( (isUsed, boxIndex)=>(
+                <span key={'stressBox-' + boxIndex} className={styles.SheetBlock_stressBox}>
+                  <Input type="checkbox" value={isUsed} inline superscriptAfter={boxIndex + 1}
+                    handleChange={this.handleChange}
+                    handleChangeParams={{key, path: 'stress/' + stressLaneIndex + '/' + boxIndex}}
+                  />
+                </span>
               ) ) }
             </div>
-          </div>
-        ) ) }
+          </div>) : null;
+        } ) }
       </FormGroup>
     </div>) : null;
 

@@ -2,12 +2,14 @@ import firebaseConfig from '../../../firebase-config';
 import * as firebase from 'firebase';
 import { Map, fromJS } from 'immutable';
 import firebaseConnect from '../../helpers/firebaseConnect';
+import firebaseConnect2 from '../../helpers/firebaseConnect2';
 import templates from './templates';
 
 export const firebaseApp = firebase.initializeApp(firebaseConfig);
 export const firebaseDb = firebaseApp.database();
 
 export const myFirebaseConnect = firebaseConnect.bind(this, firebaseDb);
+export const myFirebaseConnect2 = firebaseConnect2.bind(this, firebaseDb);
 
 const SHEETS = 'fate-manager/firebase/SHEETS';
 const SHEETS_SUCCESS = 'fate-manager/firebase/SHEETS_SUCCESS';

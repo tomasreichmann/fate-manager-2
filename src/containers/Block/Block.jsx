@@ -1,12 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import Helmet from 'react-helmet';
 import { push } from 'react-router-redux';
-import { updateDb, pushToDb, myFirebaseConnect } from 'redux/modules/firebase';
+import { updateDb, pushToDb, myFirebaseConnect2 } from 'redux/modules/firebase';
 import { connect } from 'react-redux';
 import { Loading, Button, SheetBlock, Alert, Breadcrumbs } from 'components';
-import { List, fromJS } from 'immutable';
+import { Map, fromJS } from 'immutable';
 import { Link } from 'react-router';
 import { FaTrash, FaClone, FaEdit} from 'react-icons/lib/fa';
+import { resolveAccess } from 'utils/utils';
 import autobind from 'autobind-decorator';
 
 @connect(
@@ -18,14 +19,47 @@ import autobind from 'autobind-decorator';
     pushState: push
   }
 )
-@myFirebaseConnect([
-  {
+@myFirebaseConnect2((props) => {
+  console.log('myFirebaseConnect2', props);
+  const connectors = [{
     path: '/sheets',
-    adapter: (snapshot)=>(
-      { sheets: fromJS(snapshot.val()) }
-    ),
+    getProps: (snapshot) => {
+      const unAthorized = [];
+      const sheets = fromJS(snapshot.val()).filter( (sheet) => {
+        const sheetKey = sheet.get('key');
+        const keys = props.params.keys.split(';');
+        if (!keys.includes(sheetKey)) {
+          return false;
+        }
+        const hasAccess = resolveAccess(sheet, props.user ? props.user.get('uid') : null);
+        if (!hasAccess) {
+          unAthorized.push(sheetKey);
+          return false;
+        }
+        return true;
+      } );
+
+      console.log('/sheets getProps', {
+        sheets,
+        unAthorized,
+      });
+
+      return {
+        sheets,
+        unAthorized,
+      };
+    },
+  }];
+
+  if (props.params.campaignKey) {
+    connectors.push({
+      path: '/campaigns/' + props.params.campaignKey,
+      getProps: (snapshot) => ({ campaignName: snapshot.val().name || props.params.campaignKey })
+    });
   }
-])
+
+  return connectors;
+})
 export default class Block extends Component {
 
   static propTypes = {
@@ -76,24 +110,30 @@ export default class Block extends Component {
   }
 
   render() {
-    const {sheets, templates, params, user, firebaseConnectDone } = this.props;
-    const keys = params.keys.split(';');
+    const {sheets = new Map({}), campaignName, templates, params, user, firebaseConnectDone, unAthorized = [] } = this.props;
+    console.log('campaignName', campaignName);
     const styles = require('./Block.scss');
-    const selectedSheets = sheets ? sheets.filter( (sheet)=>( keys.indexOf( sheet.get('key') ) > -1 ) ) : List();
-    const selectedSheetNames = selectedSheets.map( (sheet) => ( sheet.get('name') || sheet.get('key') ) ).join(', ');
+    const selectedSheetNames = sheets.size ? sheets.map( (sheet) => ( sheet.get('name') || sheet.get('key') ) ).join(', ') : params.keys.split(';').join(', ');
+
+    const breadcrumbLinks = [{url: '/', label: '⌂'}];
+    if (params.campaignKey) {
+      breadcrumbLinks.push({url: '/campaign/' + params.campaignKey, label: campaignName || params.campaignKey});
+    } else {
+      breadcrumbLinks.push({url: '/sheets', label: 'Sheets'});
+    }
 
     return (
       <div className={styles.Blocks}>
         <Helmet title={selectedSheetNames}/>
         <Breadcrumbs links={[
-          {url: '/', label: '⌂'},
-          {url: '/sheets', label: 'Sheets'},
-          {label: selectedSheets.map( (sheet)=>( sheet.get('name') || sheet.get('key') )).join(', ') }
+          ...breadcrumbLinks,
+          {label: sheets.map( (sheet)=>( sheet.get('name') || sheet.get('key') )).join(', ') }
         ]} />
         <div className={styles.Blocks_list}>
           <Loading show={!firebaseConnectDone} message="Loading" />
-          { user ? null : <Alert className={styles.Blocks_notLoggedIn} warning >To use all features, you must <Link to={ '/login/' + encodeURIComponent('sheet/' + params.keys) } ><Button link >log in</Button></Link>.</Alert> }
-          { firebaseConnectDone ? selectedSheets.map( (sheet)=>( <div className={styles.Blocks_item} key={sheet.get('key')} >
+          { unAthorized.length ? <Alert warning className={styles.Blocks_alert} >You are unathorized to view {unAthorized.length} sheets: {unAthorized.join(', ')}</Alert> : null }
+          { user ? null : <Alert className={styles.Blocks_alert} warning >To use all features, you must <Link to={ '/login/' + encodeURIComponent('sheet/' + params.keys) } ><Button link >log in</Button></Link>.</Alert> }
+          { firebaseConnectDone ? sheets.map( (sheet)=>( <div className={styles.Blocks_item} key={sheet.get('key')} >
             <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
               <div className={styles.Blocks_actions} >
                 <Button primary disabled={!user} onClick={this.duplicateSheet} onClickParams={sheet} clipBottomLeft ><FaClone /></Button>
@@ -102,7 +142,7 @@ export default class Block extends Component {
               </div>
             </SheetBlock>
           </div> ) ) : null }
-          { (firebaseConnectDone && selectedSheets.size === 0) ? <Alert warning >No sheet found</Alert> : null }
+          { (firebaseConnectDone && sheets.size === 0) ? <Alert warning className={styles.Blocks_alert} >No sheet found</Alert> : null }
         </div>
       </div>
     );

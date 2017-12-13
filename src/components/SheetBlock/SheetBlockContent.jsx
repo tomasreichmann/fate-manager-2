@@ -40,6 +40,7 @@ export default class SheetBlockContent extends Component {
     templates = new Map(),
     sheets = new Map(),
     sheetKeys = [],
+    noImage = false,
     user = new Map(),
     ...props,
   } = {}) {
@@ -57,7 +58,7 @@ export default class SheetBlockContent extends Component {
       return (<div className={ styles.SheetBlockContent_blocks } {...props} > { selectedSheets.map( (sheet, sheetIndex) => (
         sheet ?
         <div className={ styles.SheetBlockContent_blocks_item } key={sheetIndex} >
-          <SheetBlock sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
+          <SheetBlock noImage={noImage} sheet={sheet} template={templates.get( sheet.get('template') )} updateDb={updateDb} >
             <div className={ styles.SheetBlockContent_blocks_actions }>
               <Link to={'/sheet/' + encodeURIComponent(sheet.get('key')) + '/edit'} ><Button warning><FaEdit /> Edit</Button></Link>
             </div>
@@ -79,6 +80,10 @@ export default class SheetBlockContent extends Component {
       .sort(sortByKey('label'));
 
     return (<div {...props} >
+      <Input type="checkbox" value={noImage} labelAfter="No image"
+        handleChange={handleChange}
+        handleChangeParams={{...handleChangeParams, path: 'componentProps/noImage' }}
+      />
       <Input
         label="Sheets"
         type="select"

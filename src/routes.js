@@ -94,6 +94,8 @@ export default (store) => {
         <Route path="/campaign/new-sheet" onEnter={initEditSheet} />
         <Route path="/campaign/new" onEnter={initNewCampaign} component={CampaignDetail}/>
         <Route path="/campaign/:campaignKey/new-sheet/:template" onEnter={initNewSheet} />
+        <Route path="/campaign/:campaignKey/sheet/:key/edit" onEnter={initEditSheet} component={EditSheet} />
+        <Route path="/campaign/:campaignKey/sheet/:keys" component={Block} />
         <Route path="/campaign/:campaignKey/new-document" onEnter={initNewDocument} />
         <Route path="/campaign/:campaignKey/document/:docKey" component={DocumentDetail} />
         <Route path="/campaign/:key" component={CampaignDetail}/>

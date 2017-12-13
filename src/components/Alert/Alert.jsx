@@ -28,7 +28,7 @@ const Alert = ({
   )
   .concat( className.split(' ') )
   .join(' ');
-  return <div className={classString} role="alert">{message || children || 'no message'}</div>;
+  return <div className={classString} role="alert">{children || message || 'no message'}</div>;
 };
 
 export default Alert;
