@@ -351,7 +351,11 @@ export function startEditingSheet(state, key) {
     const user = state.firebase.get('user');
     const originalSheet = state.firebase.getIn(['sheets', 'list', key]);
     if (originalSheet) {
-      firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/' + key ).set(originalSheet.toJSON());
+      console.log('originalSheet.toJSON()', originalSheet.toJSON());
+      const editedSheet = originalSheet.update('stress', (stress) => {
+        return stress.map( stressLane => (stressLane || null) );
+      }).toJSON();
+      firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/' + key ).set(editedSheet);
     } else {
       console.error('original sheet ' + key + ' not found');
     }
