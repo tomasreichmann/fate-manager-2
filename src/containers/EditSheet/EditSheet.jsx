@@ -204,7 +204,7 @@ export default class EditSheet extends Component {
       <h2>Extras</h2>
       {sheet.get('extras') && sheet.get('extras').size && sheet.get('extras').map( (extra, extraKey) =>{
         return (<FormGroup key={'extra-' + extraKey} childTypes={['flexible', null]}>
-          <Input type="text" value={extra} handleChange={this.handleChange} handleChangeParams={{path: 'extras/' + extraKey}} />
+          <Input type="textarea" value={extra} handleChange={this.handleChange} handleChangeParams={{path: 'extras/' + extraKey}} />
           <Button type="button" danger onClick={this.removeItem} onClickParams={{path: 'extras/' + extraKey}} ><FaTrash /></Button>
         </FormGroup>);
       }) || null }
@@ -215,7 +215,7 @@ export default class EditSheet extends Component {
       <h2>Stunts</h2>
       {sheet.get('stunts') && sheet.get('stunts').size && sheet.get('stunts').map( (stunt, stuntKey) =>{
         return (<FormGroup key={'stunt-' + stuntKey} childTypes={['flexible', null]}>
-          <Input type="text" value={stunt} handleChange={this.handleChange} handleChangeParams={{path: 'stunts/' + stuntKey}} />
+          <Input type="textarea" value={stunt} handleChange={this.handleChange} handleChangeParams={{path: 'stunts/' + stuntKey}} />
           <Button type="button" danger onClick={this.removeItem} onClickParams={{path: 'stunts/' + stuntKey}} ><FaTrash /></Button>
         </FormGroup>);
       }) || null }
@@ -247,6 +247,7 @@ export default class EditSheet extends Component {
         const consequence = consequenceEntry[1];
         return [consequenceIndex, (<FormGroup key={'consequence-' + consequenceKey} childTypes={['flexible', null]}>
           <Input
+            type="textarea"
             label={template.getIn(['consequences', consequenceIndex, 'label']) || template.get('consequences').last().get('label') }
             value={consequence}
             handleChange={this.handleChange}

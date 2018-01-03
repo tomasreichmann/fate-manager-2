@@ -203,6 +203,7 @@ export default class SheetBlock extends Component {
           return [consequenceKey, (<FormGroup key={'consequence-' + consequenceKey} className={styles.SheetBlock_consequence} childTypes={['flexible', null]}>
             <Input
               label={template.getIn(['consequences', consequenceIndex, 'label']) || template.get('consequences').last().get('label') }
+              type="textarea"
               value={consequence}
               handleChange={this.handleChange}
               handleChangeParams={{key, path: 'consequences/' + consequenceKey}}
