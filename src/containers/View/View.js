@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { isEqual, get, noop } from 'lodash';
 import Helmet from 'react-helmet';
 import { fromJS, Map } from 'immutable';
 import { connect } from 'react-redux';
@@ -31,12 +32,24 @@ export default class View extends Component {
     user: PropTypes.object,
     params: PropTypes.object.isRequired,
     firebaseConnectDone: PropTypes.bool,
+    contentElements: PropTypes.object,
   };
 
   @autobind
   updateView({ path }, value) {
     const { view } = this.props;
     updateDb('/views/' + view.get('key') + '/' + path, value);
+  }
+
+  componentDidUpdate(prevProps) {
+    if ( isEqual(this.props.contentElements, prevProps.contentElements) && typeof window !== 'undefined' ) {
+      console.log('vibrate');
+      try {
+        get(window, 'navigator.vibrate', noop )(200, 100, 200);
+      } catch (error) {
+        console.error('cannot vibrate', error);
+      }
+    }
   }
 
   @injectProps
