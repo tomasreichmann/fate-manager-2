@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { isEqual, get, noop } from 'lodash';
+import { isEqual } from 'lodash';
 import Helmet from 'react-helmet';
 import { fromJS, Map } from 'immutable';
 import { connect } from 'react-redux';
@@ -43,9 +43,9 @@ export default class View extends Component {
 
   componentDidUpdate(prevProps) {
     if ( isEqual(this.props.contentElements, prevProps.contentElements) && typeof window !== 'undefined' ) {
-      console.log('vibrate');
       try {
-        get(window, 'navigator.vibrate', noop )(200, 100, 200);
+        window.navigator.vibrate(200);
+        console.log('vibrate');
       } catch (error) {
         console.error('cannot vibrate', error);
       }
