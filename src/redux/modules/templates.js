@@ -260,6 +260,11 @@ export default Map({
           key: 'boj',
           name: 'Boj'
         },
+        demonologie: {
+          description: 'např. získání informací o démonech',
+          key: 'demonologie',
+          name: 'Demonologie'
+        },
         diplomacie: {
           description: 'vyjednávání, obchodování',
           key: 'diplomacie',
@@ -290,6 +295,11 @@ export default Map({
           key: 'kradmost',
           name: 'Kradmost'
         },
+        media: {
+          description: 'např. vyhlevání na internetu, hackování',
+          key: 'media',
+          name: 'Média'
+        },
         medicina: {
           description: 'léčení, znalost anatomie, léčení fyzických následků',
           key: 'medicina',
@@ -316,7 +326,7 @@ export default Map({
           name: 'Střelba'
         },
         technologie: {
-          description: 'Tvorba a oprava elektroniky, hackování',
+          description: 'Tvorba a oprava elektroniky',
           key: 'technologie',
           name: 'Technologie'
         },
