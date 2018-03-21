@@ -300,6 +300,11 @@ export default Map({
           key: 'media',
           name: 'Média'
         },
+        magie: {
+          description: 'např. kouzlení na cokoliv co neni démon',
+          key: 'magie',
+          name: 'Magie'
+        },
         medicina: {
           description: 'léčení, znalost anatomie, léčení fyzických následků',
           key: 'medicina',
