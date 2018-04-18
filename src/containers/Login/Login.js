@@ -2,9 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import { push } from 'react-router-redux';
 import Helmet from 'react-helmet';
-import {login, logout} from 'redux/modules/firebase';
+import {login, logout, sendResetEmail} from 'redux/modules/firebase';
 import { Button, Alert, Input } from 'components';
-import { FaSignOut, FaSignIn, FaUserPlus } from 'react-icons/lib/fa';
+import { FaSignOut, FaSignIn, FaUserPlus, FaQuestion } from 'react-icons/lib/fa';
 
 @connect(
   state => ({
@@ -30,6 +30,12 @@ export default class Login extends Component {
     const password = this.passwordElement;
     this.props.login(email.value, password.value, this.props.params.routeBeforeLogin);
     password.value = '';
+  }
+
+  handleResetPassword = (event) => {
+    event.preventDefault();
+    const email = this.emailElement.value;
+    sendResetEmail(email);
   }
 
   goRegister = (event) => {
@@ -64,6 +70,7 @@ export default class Login extends Component {
           { this.props.errorMessage ? (<div className={styles.formRow}><Alert message={this.props.errorMessage} /></div>) : null }
 
           <div className={styles.formRow}>
+            <Button warning block onClick={this.handleResetPassword}><FaQuestion />&emsp;Forgotten Password</Button>
             <Button success block onClick={this.handleSubmit}><FaSignIn />&emsp;Log in</Button>
             <Button link block onClick={this.goRegister}><FaUserPlus />&emsp;Register</Button>
           </div>

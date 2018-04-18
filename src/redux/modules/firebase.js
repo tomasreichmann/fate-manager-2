@@ -4,6 +4,7 @@ import { Map, fromJS } from 'immutable';
 import firebaseConnect from '../../helpers/firebaseConnect';
 import firebaseConnect2 from '../../helpers/firebaseConnect2';
 import templates from './templates';
+import { isEmail } from '../../utils/utils';
 
 export const firebaseApp = firebase.initializeApp(firebaseConfig);
 export const firebaseDb = firebaseApp.database();
@@ -371,6 +372,17 @@ export function logout() {
 
 export function createUserData() {
   return processUser(firebase.auth().currentUser);
+}
+
+export function sendResetEmail(email) {
+  if (isEmail(email)) {
+    return firebase.auth().sendPasswordResetEmail(email).then(() => {
+      alert('Reset email has been sent.');
+    }).catch((error) => {
+      alert('There was a problem sening your email. ' + error);
+    });
+  }
+  alert('Please fill in valid email');
 }
 
 export function toggleSheetSelection(keys) {
