@@ -39,9 +39,9 @@ export default class ImageContent extends Component {
     const {
       imageUrl,
       rotate = 0,
-      fullscreen = false,
+      fullscreen = true,
       clipMode = 'middle|center',
-      resizeMode = 'relativeContainerWidth',
+      resizeMode = 'contain',
       resizeValue = 100,
       horizontalShift = 0,
       verticalShift = 0,
