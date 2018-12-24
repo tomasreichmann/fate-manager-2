@@ -813,7 +813,7 @@ export default Map({
         'padelani': {
           'description': "Padělání dokumentů, mincí, umění",
           'key': "padelani",
-          'name': "Odemykání"
+          'name': "Padělání"
         },
         'pasti': {
           'description': "Pokládání a deaktivace pastí",
