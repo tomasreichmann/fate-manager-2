@@ -718,6 +718,176 @@ export default Map({
           label: 'Psychický stress'
         }
       ]
+    },
+    'Zneucteni-Postava': {
+      'aspects': {
+        'types': [ {
+          'label': "Hlavní koncept",
+          'value': "main"
+        }, {
+          'label': "Trable",
+          'value': "trouble"
+        }, {
+          'label': "Další",
+          'value': "other"
+        } ]
+      },
+      'consequences': [ {
+        'label': "Mírný",
+        'value': 2
+      }, {
+        'label': "Střední",
+        'value': 4
+      }, {
+        'label': "Vážný",
+        'value': 6
+      }, {
+        'label': "Mírný",
+        'value': 2,
+        'condition': [ {
+          'skill': "fyzickaZdatnost",
+          'value': 5
+        }, {
+          'skill': "vule",
+          'value': 5
+        } ]
+      } ],
+      'key': "Zneucteni-Postava",
+      'name': "Zneuctění - Postava",
+      'skills': {
+        'alchymie': {
+          'description': "schopnost poznávat a vyrábět lektvary, výbušniny",
+          'key': "alchymie",
+          'name': "Alchymie"
+        },
+        'atletika': {
+          'description': "šplh, plavání, úskok, tanec",
+          'key': "atletika",
+          'name': "Atletika"
+        },
+        'bojBezeZbrane': {
+          'description': "Boj pěstmi, škrcení",
+          'key': "bojBezeZbrane",
+          'name': "Boj beze zbraně"
+        },
+        'diplomacie': {
+          'description': "vyjednávání, přesvědčování, obchodování",
+          'key': "diplomacie",
+          'name': "Diplomacie"
+        },
+        'fyzickaZdatnost': {
+          'description': "schopnost ustát ránu, zápasení, překonání silou",
+          'key': "fyzickaZdatnost",
+          'name': "Fyzická zdatnost"
+        },
+        'jizda': {
+          'description': "jízda na koni, řízení dopravních prostředků",
+          'key': "jizda",
+          'name': "Jízda"
+        },
+        'klamani': {
+          'description': "lhaní, přestrojení",
+          'key': "klamani",
+          'name': "Klamání"
+        },
+        'konexe': {
+          'description': "např. sehnat nocleh na jednu noc, informace, apod.",
+          'key': "konexe",
+          'name': "Konexe"
+        },
+        'kradmost': {
+          'description': "plížení, vykrádání kapes",
+          'key': "kradmost",
+          'name': "Kradmost"
+        },
+        'medicina': {
+          'description': "léčení zranění, nemocí, jedů, znalost anatomie, léčení fyzických následků",
+          'key': "medicina",
+          'name': "Medicína"
+        },
+        'odemykani': {
+          'description': "Odemykání zámků a safů",
+          'key': "odemykani",
+          'name': "Odemykání"
+        },
+        'padelani': {
+          'description': "Padělání dokumentů, mincí, umění",
+          'key': "padelani",
+          'name': "Odemykání"
+        },
+        'pasti': {
+          'description': "Pokládání a deaktivace pastí",
+          'key': "pasti",
+          'name': "Pasti"
+        },
+        'provokace': {
+          'description': "manipulace, vyhrožování, vydírání",
+          'key': "provokace",
+          'name': "Provokace"
+        },
+        'remeslo': {
+          'description': "Ušít oblečení, zpravit boty, vyrobit nábytek, upéct dort, ukovat prsten",
+          'key': "remeslo",
+          'name': "Řemeslo"
+        },
+        'strelbaVrhani': {
+          'description': "Střelba a vrhání",
+          'key': "strelbaVrhani",
+          'name': "Střelba a vrhání"
+        },
+        'vciteni': {
+          'description': "čtení emocí, motivací, vyslýchání, léčení psychických následků, svádění",
+          'key': "vciteni",
+          'name': "Vcítění"
+        },
+        'vsimavost': {
+          'description': "Pohotovost, schopnost zpozorovat skryté věci a pasti",
+          'key': "vsimavost",
+          'name': "Všímavost"
+        },
+        'vule': {
+          'description': "schopnost odolat psychickému útoku",
+          'key': "vule",
+          'name': "Vůle"
+        },
+        'vzdelanost': {
+          'description': "Znalost historie, zeměpisu, kultury, jazyků",
+          'key': "vzdelanost",
+          'name': "Světoznalost"
+        },
+        'zbraneNaBlízko': {
+          'description': "boj na blízko se zbraněmi",
+          'key': "zbraneNaBlízko",
+          'name': "Zbraně na blízko"
+        }
+      },
+      'stress': [ {
+        'bonusConditions': [ {
+          'bonus': 1,
+          'level': 1,
+          'skill': "fyzickaZdatnost"
+        }, {
+          'bonus': 1,
+          'level': 3,
+          'skill': "fyzickaZdatnost"
+        } ],
+        'defaultCount': 2,
+        'key': "physical",
+        'label': "Fyzický stress"
+      }, {
+        'bonusConditions': [ {
+          'bonus': 1,
+          'level': 1,
+          'skill': "vule"
+        }, {
+          'bonus': 1,
+          'level': 3,
+          'skill': "vule"
+        } ],
+        'defaultCount': 2,
+        'key': "mental",
+        'label': "Psychický stress"
+      } ]
     }
   }))
 });
