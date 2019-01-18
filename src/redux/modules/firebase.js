@@ -353,9 +353,10 @@ export function startEditingSheet(state, key) {
     const originalSheet = state.firebase.getIn(['sheets', 'list', key]);
     if (originalSheet) {
       console.log('originalSheet.toJSON()', originalSheet.toJSON());
+      const sheetJson = originalSheet.toJSON();
       const editedSheet = {
-        ...originalSheet,
-        stress: originalSheet.stress ? originalSheet.stress.map(stressLane => (stressLane || null)) : []
+        ...sheetJson,
+        stress: sheetJson.stress ? sheetJson.stress.map(stressLane => (stressLane || null)) : []
       };
       firebaseDb.ref('users/' + user.get('uid') + '/editedSheets/' + key ).set(editedSheet);
     } else {
