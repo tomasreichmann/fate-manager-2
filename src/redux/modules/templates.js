@@ -888,6 +888,192 @@ export default Map({
         key: 'mental',
         label: 'Psychický stress'
       } ]
+    },
+    'Frostpunk-Postava': {
+      aspects: {
+        types: [
+          {
+            label: 'Hlavní koncept',
+            value: 'main'
+          },
+          {
+            label: 'Trable',
+            value: 'trouble'
+          },
+          {
+            label: 'Další',
+            value: 'other'
+          }
+        ]
+      },
+      consequences: [
+        {
+          label: 'Mírný',
+          value: 2
+        },
+        {
+          label: 'Střední',
+          value: 4
+        },
+        {
+          label: 'Vážný',
+          value: 6
+        },
+        {
+          condition: [
+            {
+              skill: 'fyzickaZdatnost',
+              value: 5
+            },
+            {
+              skill: 'vule',
+              value: 5
+            }
+          ],
+          label: 'Mírný',
+          value: 2
+        }
+      ],
+      key: 'Frostpunk-Postava',
+      name: 'Frostpunk - Postava',
+      skills: {
+        vareni: {
+          description: 'úprava syrových potravin',
+          key: 'vareni',
+          name: 'Vaření'
+        },
+        atletika: {
+          description: 'šplh, plavání, úskok, tanec',
+          key: 'atletika',
+          name: 'Atletika'
+        },
+        fyzickyUtok: {
+          description: 'Boj pěstmi, škrcení, chladné zbraně',
+          key: 'fyzickyUtok',
+          name: 'Boj beze zbraně'
+        },
+        diplomacie: {
+          description: 'vyjednávání, přesvědčování, obchodování',
+          key: 'diplomacie',
+          name: 'Diplomacie'
+        },
+        fyzickaZdatnost: {
+          description: 'schopnost ustát ránu, zápasení, překonání silou',
+          key: 'fyzickaZdatnost',
+          name: 'Fyzická zdatnost'
+        },
+        rizeni: {
+          description: 'řízení dopravních prostředků, strojů',
+          key: 'rizeni',
+          name: 'Řízení'
+        },
+        klamani: {
+          description: 'lhaní, přestrojení',
+          key: 'klamani',
+          name: 'Klamání'
+        },
+        navigace: {
+          description: 'orientace v krajině, práce s mapami',
+          key: 'navigace',
+          name: 'Navigace'
+        },
+        kradmost: {
+          description: 'plížení, vykrádání kapes',
+          key: 'kradmost',
+          name: 'Kradmost'
+        },
+        medicina: {
+          description: 'léčení zranění, nemocí, jedů, znalost anatomie, léčení fyzických následků',
+          key: 'medicina',
+          name: 'Medicína'
+        },
+        herectvi: {
+          description: 'Schopnost projevů a herectví',
+          key: 'herectvi',
+          name: 'Herectví'
+        },
+        zdroje: {
+          description: 'Nošení spousty užitečných věcí po kapsách',
+          key: 'zdroje',
+          name: 'Zdroje'
+        },
+        pasti: {
+          description: 'Pokládání a deaktivace pastí',
+          key: 'pasti',
+          name: 'Pasti'
+        },
+        provokace: {
+          description: 'manipulace, vyhrožování, vydírání',
+          key: 'provokace',
+          name: 'Provokace'
+        },
+        spiritualizmus: {
+          description: 'Vztah k duševnu, bohoslužby',
+          key: 'spiritualizmus',
+          name: 'Spiritualizmus'
+        },
+        vudcovstvi: {
+          description: 'Střelba a vrhání',
+          key: 'vudcovstvi',
+          name: 'Vůdcovství'
+        },
+        vciteni: {
+          description: 'čtení emocí, motivací, vyslýchání, léčení psychických následků, svádění',
+          key: 'vciteni',
+          name: 'Vcítění'
+        },
+        vsimavost: {
+          description: 'Pohotovost, schopnost zpozorovat skryté věci a pasti',
+          key: 'vsimavost',
+          name: 'Všímavost'
+        },
+        vule: {
+          description: 'schopnost odolat psychickému útoku',
+          key: 'vule',
+          name: 'Vůle'
+        },
+        veda: {
+          description: 'Znalost technických věd',
+          key: 'veda',
+          name: 'Věda'
+        }
+      },
+      stress: [
+        {
+          bonusConditions: [
+            {
+              bonus: 1,
+              level: 1,
+              skill: 'fyzickaZdatnost'
+            },
+            {
+              bonus: 1,
+              level: 3,
+              skill: 'fyzickaZdatnost'
+            }
+          ],
+          defaultCount: 2,
+          key: 'physical',
+          label: 'Fyzický stress'
+        },
+        {
+          bonusConditions: [
+            {
+              bonus: 1,
+              level: 1,
+              skill: 'vule'
+            },
+            {
+              bonus: 1,
+              level: 3,
+              skill: 'vule'
+            }
+          ],
+          defaultCount: 2,
+          key: 'mental',
+          label: 'Naděje'
+        }
+      ]
     }
   }))
 });
